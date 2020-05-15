@@ -1,0 +1,102 @@
+package com.mkweb.database;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
+public class MkDbAccessor {
+	private String TAG = "[MkDbAccessor]";
+	
+	private Connection dbCon = null;
+	private PreparedStatement psmt = null;
+	
+	String stmt = "";
+	
+	public MkDbAccessor(int type, ArrayList<String> args) {
+		
+		if(!.isValidSQLType()) {
+			System.out.println(TAG + "(line: 25) sql-type is invalid.");
+			return;
+		}
+		
+		setPreparedStatement(type, args);
+		
+		try {
+			dbCon = connectDB();
+		} catch (SQLException e) {
+			System.out.println(TAG + "(line: 32) dbCon = connectDB(): " + e.getMessage());
+		}
+	}
+	
+	private Connection connectDB() throws SQLException{
+		Connection conn = null;
+		
+		try {
+			try {
+				Class.forName("com.mysql.cj.jdbc.Driver");
+			} catch (ClassNotFoundException e) {
+				System.out.println(TAG + "(line: 44) ClassNotFoundException: " + e.getMessage());
+			}
+			
+			String url = "jdbc:mysql://eugenes.iptime.org:3306/tripdiary?characterEncoding=UTF-8&serverTimezone=UTC";
+			conn = DriverManager.getConnection(url, "", "");
+			
+			
+		}catch(SQLException e){
+			System.out.println(TAG + "(line: 50) SQLException : " + e.getMessage());
+		}catch(Exception e){
+			System.out.println(TAG + " " + e.getMessage());
+		}
+		
+		return conn;
+	}
+	private void setPreparedStatement(int type, ArrayList<String> args) {
+		String stmt = "null";
+		
+		this.stmt = stmt;
+	}
+	
+	public ResultSet executeSQL() {
+		ResultSet rs = null;
+		if(dbCon != null)
+		{
+			if(this.stmt != null)
+			{
+				try {
+					psmt = dbCon.prepareStatement(this.stmt);
+					
+					rs = psmt.executeQuery(); 
+					
+					if(!rs.next()) {
+						rs = null;
+					}
+				} catch (SQLException e) {
+					System.out.println(TAG + "(line: 96~105) psmt = this.dbCon.prepareStatement(" + this.stmt + ") :" + e.getMessage());
+				}finally {
+					try {
+						if(dbCon != null)
+							dbCon.close();
+						if(psmt != null)
+							psmt.close();
+						
+						return rs;
+					}catch(Exception e)
+					{
+						System.out.println(TAG + "(line: 107~110): " + e.getMessage());
+					}
+				}
+			}else {
+				System.out.println(TAG + "(line:93) NullPointerException: stmt is null object");
+				return null;
+			}
+			
+		}else {
+			System.out.println(TAG + "(line:91) NullPointerException: dbCon is null object");
+			return null;
+		}
+		return rs;
+	}
+}

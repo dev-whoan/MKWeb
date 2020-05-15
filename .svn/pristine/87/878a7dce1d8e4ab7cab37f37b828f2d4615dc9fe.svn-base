@@ -1,0 +1,10 @@
+package com.mkweb.tag;
+
+import javax.servlet.jsp.tagext.SimpleTagSupport;
+
+public class tagSQL extends SimpleTagSupport {
+	public tagSQL() {
+		dbAccessor DA = new dbAccessor();
+		
+	}
+}

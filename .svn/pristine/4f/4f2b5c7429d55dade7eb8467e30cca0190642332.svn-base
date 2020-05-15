@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="MkWeb" default="00.init" >
+	<property name="dir.source.home" value="../MkWeb" />
+    
+
+	<property name="host.trip" value="eugenes.iptime.org" />
+	
+ 	<property name="host.trip.acc" value="mkweb" />
+ 	<property name="host.trip.pass" value="mkweb" />
+
+ 	<property name="host.webapps.root" value="/mkweb/webapps/ROOT" />
+ 	<property name="host.daemons.root" value="/mkweb/daemons" />
+ 	
+    
+    <target name="00.init">
+    </target>
+	
+	
+    <target name="00.01 www today">
+		<tstamp>
+			<format property="today.date" pattern="yyyy-MM-dd" offset="0" unit="day" />
+		</tstamp>
+		
+		<echo>today.date:${today.date}</echo>
+				
+   		<ftp server="${host.trip}"
+			 port="21"
+			 remotedir="${host.webapps.root}"
+			 userid="${host.trip.acc}"
+			 password="${host.trip.pass}"
+			 passive="no"
+			 binary="true"
+			 verbose="yes" >
+    		<fileset dir="${dir.source.home}/WebContent">
+    			<include name="**/*" />
+				<date datetime="${today.date}" pattern="yyyy-MM-dd" when="after"/>
+    		</fileset>
+		</ftp>
+
+		<ftp server="${host.trip}"
+			 port="21"
+			 remotedir="${host.webapps.root}/WEB-INF"
+			 userid="${host.trip.acc}"
+			 password="${host.trip.pass}"
+			 passive="no"
+			 binary="true"
+			 verbose="yes" >
+    		<fileset dir="${dir.source.home}/build/">
+    			<include name="**/*" />
+				<date datetime="${today.date}" pattern="yyyy-MM-dd" when="after"/>
+    		</fileset>
+		</ftp>
+
+    </target>
+    
+    <target name="00.02.www">
+				
+   		<ftp server="${host.trip}"
+			 port="21"
+			 remotedir="${host.webapps.root}"
+			 userid="${host.trip.acc}"
+			 password="${host.trip.pass}"
+			 passive="no"
+			 binary="true"
+			 verbose="yes" >
+    		<fileset dir="${dir.source.home}/WebContent">
+    			<include name="**/*" />
+    			<exclude name="ckeditor/*" />
+    			<exclude name="intro/*" />
+    			<exclude name="images/emo/*" />
+    		</fileset>
+		</ftp>
+
+		<ftp server="${host.trip}"
+			 port="21"
+			 remotedir="${host.webapps.root}/WEB-INF"
+			 userid="${host.trip.acc}"
+			 password="${host.trip.pass}"
+			 passive="no"
+			 binary="true"
+			 verbose="yes" >
+    		<fileset dir="${dir.source.home}/build/">
+    			<include name="**/*" />
+    		</fileset>
+		</ftp>
+    </target>
+    
+</project>
