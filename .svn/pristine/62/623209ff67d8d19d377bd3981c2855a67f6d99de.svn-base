@@ -4,18 +4,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
+<meta charset="EUC-KR">
 <title>Insert title here</title>
 </head>
 <body>
-
-This is home... (^_^)7
-<mkw:get obj="list" rst="beta">
-	<h1>${item.test_SEQ} 번째 정보 </h1>
-	<p> ${item.TITLE} </p>
-	${item.INFO}
-</mkw:get>
-
+	Thisis index2
+	
+<mkw:get obj="list" rst="item">
+	<h1>${item.user_SEQ} 번째 정보 </h1>
+		<p> ${item.name} </p>
+		${item.address}
+	</mkw:get>
 
 </body>
 </html>

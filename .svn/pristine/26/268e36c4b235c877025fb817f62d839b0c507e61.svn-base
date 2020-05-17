@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<views dir="/views/root">
+	<view name="page1" dir="page1.jsp" debug="error">
+		<Control>
+			<sql id="selectAlpha" obj="list" rst="alpha">
+				<parameter>
+					<value1>
+					
+					</value1>
+				</parameter>
+			</sql>
+		</Control>
+		
+		<Control>
+			<sql id="deleteBeta" obj="list" rst="beta">
+				<parameter>
+					<value1>
+						
+					</value1>
+					
+					<value2>
+					
+					</value2>
+				</parameter>
+			</sql>
+		</Control>
+	</view>
+</views>
+
+<views name="page2" dir="/views/root/page2.jsp" debug="true">
+	<Control>
+		<sql id="selectAlpha" obj="list">
+			<parameter>
+				<value1>
+				
+				</value1>
+			</parameter>
+		</sql>
+	</Control>
+</views>

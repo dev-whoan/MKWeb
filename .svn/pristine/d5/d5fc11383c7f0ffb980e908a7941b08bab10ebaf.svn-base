@@ -27,49 +27,46 @@ public class MkLogger extends AbsXmlData{
 	
 	private static String logMsg = null;
 
-	private static void Log(Object msg, String caller) {
+	private static void Log(String msg) {
 		try {
 			if(log_configs.get("use_catalina").toString().equals("yes"))
-				System.out.println(TAG + msg.toString());
+				System.out.println(TAG + msg);
 			else {
 				File logFile = new File(log_configs.get("log_location").toString());
 				BufferedWriter bw = new BufferedWriter(new FileWriter(logFile, true));
 				PrintWriter pw = new PrintWriter(bw, true);
 				
-				pw.println(TAG + msg.toString());
+				pw.println(TAG + msg);
 			}
 		}catch (IOException e){
 			System.out.println(TAG + " Logging error occured in function info():: original logging message: " + msg);
 			System.out.println(TAG + " IOException: " + e.getMessage());
-		}catch(Exception e) {
-			System.out.println(TAG + " MKLogger::function " + caller + " has occured some errors!");
-			e.printStackTrace();
 		}
 	}
 	
-	public static void info(Object msg)  {
+	public static void info(String msg)  {
 		switch(log_configs.get("log_level").toString())
 		{
 		case "info":
-			Log("[INFO]" + msg, "info");
+			Log("[INFO]" + msg);
 			break;
 		}
 	}
 	
-	public static void warn(Object msg)  {
+	public static void warn(String msg)  {
 		switch(log_configs.get("log_level").toString())
 		{
 		case "info": case "warn":
-			Log("[*WARN*]" + msg, "warn");
+			Log("[*WARN*]" + msg);
 			break;
 		}
 	}
 	
-	public static void error(Object msg) {
+	public static void error(String msg) {
 		switch(log_configs.get("log_level").toString())
 		{
 		case "info": case "warn": case "error":
-			Log("[**ERROR**]" + msg, "error");
+			Log("[**ERROR**]" + msg);
 			break;
 		}
 	}

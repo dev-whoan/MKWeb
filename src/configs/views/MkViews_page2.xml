@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<views dir="/views/root">
+	<view name="page2.jsp" debug="error">
+		<Control>
+			<sql id="selectAlpha" obj="list">
+				<parameter>
+					<value1>
+					
+					</value1>
+				</parameter>
+			</sql>
+		</Control>
+	</view>
+</views>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<MkSQL xmlid="sql">
+	<sql id="selectAlpha" db="mkweb">
+		SELECT user.name, user.address
+		FROM USER
+		WHERE user.id = #value1;
+	</sql>
+	
+	<sql id="deleteBeta" db="mkweb">
+		DELETE FROM #value1
+		WHERE #value2;
+	</sql>
+	
+	<sql id="selectTest" db="mkweb">
+		SELECT *
+		FROM Test;
+	</sql>
+	
+	<sql id="selectUser" db="mkweb">
+		SELECT *
+		FROM User;
+	</sql>
+</MkSQL>
