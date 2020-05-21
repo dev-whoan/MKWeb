@@ -2,14 +2,14 @@
 
 <MkSQL xmlid="sql">
 	<sql id="selectAlpha" db="mkweb">
-		SELECT user.name, user.address
+		SELECT name, address
 		FROM USER
-		WHERE user.id = #value1;
+		WHERE user_SEQ = @user_SEQ@;
 	</sql>
 	
 	<sql id="deleteBeta" db="mkweb">
-		DELETE FROM #value1
-		WHERE #value2;
+		DELETE FROM @del_TABLE@
+		WHERE @del_COND@;
 	</sql>
 	
 	<sql id="selectTest" db="mkweb">

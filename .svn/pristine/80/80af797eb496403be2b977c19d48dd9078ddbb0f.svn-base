@@ -1,0 +1,86 @@
+package com.mkweb.dispatcher;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.mkweb.logger.MkLogger;
+import com.mkweb.abst.PageXmlData;
+import com.mkweb.config.PageConfigs;
+/**
+ * Servlet implementation class MkDispatcher
+ */
+public class MkDispatcher extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public MkDispatcher() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		doPost(request, response);
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+	//	doGet(request, response);
+		String viewPageName = request.getRequestURI();
+		String[] requestURI = viewPageName.split("/");
+		String requestViewPage = requestURI[requestURI.length - 1];
+		String viewExtention = ".mkw";
+		
+		int position = viewPageName.lastIndexOf('.');
+		String viewName = "";
+		if(position == -1)
+		{
+			MkLogger.debug("INVALID PAGE" + viewPageName);
+			redirectPage(request, response, "600.html");
+			return;
+		}else {
+			viewName = requestViewPage.substring(0, position - 1);
+			viewExtention = requestViewPage.substring(position, requestViewPage.length());
+		}
+		
+		ArrayList<PageXmlData> resultXmlData = PageConfigs.getControl(viewName);
+		
+		if(resultXmlData == null || resultXmlData.size() < 1)
+		{
+			request.setAttribute("pagePass", "FAIL");
+			RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/600.html");	//404
+			dispatcher.forward(request, response);
+			return;
+		}
+		
+		request.setAttribute("pagePass", "OK");
+		
+	}
+	
+	private void redirectPage(HttpServletRequest request, HttpServletResponse response, String uri) throws ServletException, IOException {
+		RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/" + uri);
+		dispatcher.forward(request, response);
+	}
+	
+	private int isErrorPage(Object o) {
+		
+		return 1;
+	}
+}

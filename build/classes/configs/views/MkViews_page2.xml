@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<views dir="/views/root">
-	<view name="page2.jsp" debug="error">
-		<Control>
-			<sql id="selectAlpha" obj="list">
-				<parameter>
-					<value1>
-					
-					</value1>
-				</parameter>
-			</sql>
-		</Control>
-	</view>
+<views>
+	<Control name="page2" debug="error" dir="/views/root/alpha" dir_key="/second" page="index1.jsp">
+		<Service type="sql">
+			<Sql id="selectAlpha" obj="list" rst="charlie" />
+			<Parameter name="param" />
+			<Value>
+				@set(${param.user_SEQ = '1'})
+			</Value>
+		</Service>
+	</Control>
 </views>
