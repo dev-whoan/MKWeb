@@ -1,4 +1,4 @@
-package com.mkweb.abst;
+package com.mkweb.data;
 
 import java.io.File;
 
@@ -48,5 +48,5 @@ public class AbsXmlData implements XmlData {
 	public void setData(String data) {	this.data = data;	}
 	public String getData() {	return this.data;	}
 	
-	public String Me() {	return "Control: " + (this.controlName) + " | Service: " + (this.serviceName) + " | Tag: " + (getTag());	}   
+	public String getMyInfo() {	return "Control: " + (this.controlName) + " | Service: " + (this.serviceName) + " | Tag: " + (getTag());	}   
 }

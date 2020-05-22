@@ -3,22 +3,12 @@
 <MkSQL xmlid="sql">
 	<sql id="selectAlpha" db="mkweb">
 		SELECT name, address
-		FROM USER
-		WHERE user_SEQ = @user_SEQ@;
+		FROM User
+		WHERE name = @user_name@;
 	</sql>
 	
 	<sql id="deleteBeta" db="mkweb">
 		DELETE FROM @del_TABLE@
 		WHERE @del_COND@;
-	</sql>
-	
-	<sql id="selectTest" db="mkweb">
-		SELECT *
-		FROM Test;
-	</sql>
-	
-	<sql id="selectUser" db="mkweb">
-		SELECT *
-		FROM User;
 	</sql>
 </MkSQL>
