@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<MkSQL xmlid="sql">
+	<sql id="selectAlpha" db="mkweb">
+		SELECT name, address
+		FROM User
+		WHERE name = @user_name@;
+	</sql>
+	
+	<sql id="deleteBeta" db="mkweb">
+		DELETE FROM @del_TABLE@
+		WHERE @del_COND@;
+	</sql>
+</MkSQL>

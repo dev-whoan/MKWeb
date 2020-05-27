@@ -6,15 +6,15 @@
 			<Sql id="selectAlpha" obj="list" rst="alpha" />
 			<Parameter name="param" />
 			<Value>
-				@set(${param.user_name = '최기현'})
+				@set(${param.user_name = '김민환'})
 			</Value>
 		</Service>
 		
 		<Service type="sql">
-			<Sql id="selectBeta" obj="list" rst="beta" />
-			<Parameter name="parameter" />
+			<Sql id="selectAlpha" obj="list" rst="beta" />
+			<Parameter name="param2" />
 			<Value>
-				@set(${param.user_SEQ = '2'})
+				@set(${param2.user_name = '최기현'})
 			</Value>
 		</Service>
 		

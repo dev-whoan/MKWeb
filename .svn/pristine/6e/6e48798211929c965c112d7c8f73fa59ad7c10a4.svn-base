@@ -1,7 +1,0 @@
-package com.mkweb.config;
-
-import com.mkweb.abst.AbsXmlData;
-
-public class PageConfigs extends AbsXmlData{
-
-}

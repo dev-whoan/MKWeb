@@ -11,4 +11,11 @@
 		DELETE FROM @del_TABLE@
 		WHERE @del_COND@;
 	</sql>
+	
+	<sql id="insertUser" db="mkweb">
+		INSERT INTO User
+		(name, address)
+		VALUES
+		(@user_name@, @user_address@);
+	</sql>
 </MkSQL>
