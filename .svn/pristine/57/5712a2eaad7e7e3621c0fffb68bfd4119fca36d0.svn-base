@@ -22,7 +22,7 @@ import com.mkweb.database.MkDbAccessor;
 import com.mkweb.logger.MkLogger;
 import com.mkweb.web.PageInfo;
 
-public class tagSEL extends SimpleTagSupport {
+public class tagSEL2 extends SimpleTagSupport {
 	private String obj;
 	private String rst = "get";
 	private String TAG = "[tagSEL]";
@@ -108,33 +108,28 @@ public class tagSEL extends SimpleTagSupport {
 		
 		String befQuery = resultXmlData.getData();
 		
+		//Request == pageParameter ? 
+		
 		String query = null;
-		query = setQuery(befQuery);
+		if(requestParams.size() <= 0 || paramID == -1) {
+			query = getQueryValue(befQuery, pageParameter.get(rstID), pageValue.get(rstID), null);
+		}
+		else {
+			query = getQueryValue(befQuery, pageParameter.get(rstID), pageValue.get(rstID), request.getParameter(requestParams.get(paramID)));
+		}
 		
 		if(query == null)
+		{
 			query = befQuery;
-		ArrayList<String> preQueryParameter = null;
-		if(paramID != -1) {
-			
-			preQueryParameter = prepareQueryParameter(pageValue.get(rstID), pageParameter.get(rstID), request.getParameter(requestParams.get(paramID)), 1);
-			
-			if(preQueryParameter == null) {
-				if(!query.equals(befQuery)) {
-					mklogger.error(TAG + "파라미터랑 쿼리 파라미터랑 다름.");
-					
-				}
-			}
-		}else {
-			preQueryParameter = prepareQueryParameter(pageValue.get(rstID), pageParameter.get(rstID), null, 2);
 		}
+		
+		mklogger.debug(TAG + "final query: " + query);
 		
 		if(this.obj == "list")
 		{
 			DA = new MkDbAccessor();
-			DA.setPreparedStatement(query);
-			if(preQueryParameter != null)
-				DA.setRequestValue(preQueryParameter);
-			dbResult = DA.executeSEL();
+			
+			dbResult = DA.executeSEL(query);
 			HashMap<String, Object> result = new HashMap<String, Object>();
 			
 			if(dbResult != null && dbResult.size() > 0)
@@ -143,7 +138,7 @@ public class tagSEL extends SimpleTagSupport {
 				{
 					
 					result = (HashMap<String, Object>) dbResult.get(i);
-					
+					mklogger.debug(TAG + " name: " + result.get("name") + " || rst : " + rst);
 					((PageContext)getJspContext()).getRequest().setAttribute(this.rst, result);
 					getJspBody().invoke(null);
 				}
@@ -154,75 +149,96 @@ public class tagSEL extends SimpleTagSupport {
 		}else if(this.obj =="map") {
 			DA = new MkDbAccessor();
 		}
-		
 	}
 	
-	private String setQuery(String query) {
+	private String getQueryValue(String query, String pageParam, String pageValue, String reqValue) {
 		String befQuery = query;
 		String[] testQueryList = befQuery.split("@");
+		String testQuery = "";
 		String[] replaceTarget = null;
 		
 		if(testQueryList.length == 1)
 			testQueryList = null;
 		
+		if(reqValue != null) {
+			pageValue = "@set(${" + pageParam + ".user_name = '"+reqValue+"'})";
+		}
 		if(testQueryList != null) {
 			if(testQueryList.length > 0)
 			{
 				replaceTarget = new String[(testQueryList.length-1)/2];
-				for(int i = 0; i < replaceTarget.length; i++) {
+				for(int i = 0; i < replaceTarget.length; i++)
 					replaceTarget[i] = testQueryList[(i*2)+1];
-				}
 			}else {	return null;	}
 		}
 		
-		if(replaceTarget != null) {
-			for(int i = 0; i < replaceTarget.length; i++) {
-				befQuery = befQuery.replaceFirst(("@" + replaceTarget[i]+ "@"), "?");
+		String[] pvSetList = null;
+		
+		if(pageValue != null)
+		{
+			if(pageValue.length() > 0)
+			{
+				pvSetList = new String[pageValue.split("@set").length - 1]; 
+				
+				if(pvSetList.length > 0)
+				{
+					for(int i = 0; i < pvSetList.length; i++) {
+						pvSetList[i] = pageValue.split("@set")[i+1].trim(); 
+						pvSetList[i] = pvSetList[i].split("}")[0];
+					}
+				}
 			}
 		}else {
+			mklogger.error(TAG + " Cannot find <Value> on Page config. ");
 			return null;
 		}
-	
+		if(pvSetList != null && replaceTarget != null) {
+			if(pvSetList.length == replaceTarget.length) {
+				for(int i = 0; i < pvSetList.length; i++){
+			//		(${param.user_name = '최기현'
+					String pp = pageParam + ".";
+			//		user_name = '최기현'
+					String[] alpha = pvSetList[i].split(pp); //[1].split("=")[0];
+					
+					if(alpha == null || alpha.length != 2) {
+						mklogger.error(TAG + "Page Parameter setting is invalid. Please Check <Page Parameter> and <Page Value> :: " + pageParam + " || " + pageValue);
+						return null;
+					}
+			//		user_name
+					String[] beta = alpha[1].split("=");
+					if(beta == null || beta.length != 2) {
+						mklogger.error(TAG + "<Page Value> syntax error. Cannot find equal character(\"=\").");
+						return null;
+					}
+					String charlie = beta[0].trim();
+					
+					if(!charlie.equals(replaceTarget[i])) {
+						mklogger.temp(TAG + " Page config is not matched with Sql config.", false);
+						mklogger.temp("================================Page Value(" + charlie + ") != Sql Value(" + replaceTarget[i] + ")", false);
+						mklogger.flush("error");
+						
+						return null;
+					}
+					
+					String pvSetValue = pvSetList[i].split("=")[1];
+					befQuery = befQuery.replaceFirst(("@" + replaceTarget[i]+ "@"), pvSetValue);
+				}
+			}else {
+				mklogger.error(TAG + " Page config is not matched with Sql config. 1 ");
+				return null;
+			}
+		}else {
+			if( (pvSetList == null && replaceTarget != null) || (pvSetList != null && replaceTarget == null) )
+			{
+				mklogger.debug(TAG + "pvSetLIst : " +pvSetList);
+				mklogger.debug(TAG + "replaceTarget: " +replaceTarget);
+				mklogger.error(TAG + " Page config is not matched with Sql config. 2 ");
+				return null;
+			}else if(pvSetList == null && replaceTarget == null) {
+				befQuery = query;
+			}
+		}
+		
 		return befQuery;
-	}
-	
-	private ArrayList<String> prepareQueryParameter(String pageValue, String pageParam, String reqValue, int type){
-		ArrayList<String> result = null;
-		
-		if(type == 1)
-			pageValue = "@set(" + pageParam + pageValue.split("=")[0].split(pageParam)[1] +" = '"+reqValue+"')";
-
-		result = new ArrayList<String>();
-
-		String[] pvSetList = pageValue.split("@set");
-		
-		if(pvSetList.length <= 1) {
-			mklogger.error(TAG + "잘못된 설정");
-			return null;
-		}
-		
-		for(int i = 1; i < pvSetList.length; i++)
-		{
-			String[] equalSplit = pvSetList[i].split("="); 
-			
-			if(equalSplit.length <= 1){
-				mklogger.error(TAG + "잘못된 설정 =가 없음");
-				return null;
-			}
-
-			String[] lastSplit = equalSplit[i].split("\\)");
-
-			if(lastSplit.length != 1) {
-				mklogger.error(TAG + "잘못된 설정 끝 문자 인식 불가능 ");
-				return null;
-			}
-
-			String value = lastSplit[0].trim();
-
-			value = value.substring(1, value.length()-1);
-			result.add(value);
-		}
-		
-		return result;
 	}
 }

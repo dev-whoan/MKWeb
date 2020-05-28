@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <MkSQL xmlid="sql">
-	<sql id="selectAlpha" db="mkweb">
+	<sql id="selectUser" db="mkweb">
 		SELECT name, address
-		FROM User
-		WHERE name = @user_name@;
+		FROM User;
 	</sql>
 	
-	<sql id="deleteBeta" db="mkweb">
-		DELETE FROM @del_TABLE@
-		WHERE @del_COND@;
+	<sql id="selectName" db="mkweb">
+		SELECT name, address
+		FROM User
+		WHERE name LIKE @user_name@;
 	</sql>
 	
 	<sql id="insertUser" db="mkweb">
