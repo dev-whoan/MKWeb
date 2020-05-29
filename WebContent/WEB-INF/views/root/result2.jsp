@@ -58,13 +58,13 @@ This is page1.jsp
                 </table>
 
                 <div id="search_name">
-                    <form action="/main" method="post">
+                    <form action="/main2" method="post">
                         <!-- <label>이름 : </label> -->
                         <input type="text" name="param.user_name">
-                        <input type="text" name="param.user_info">
                         <input type="submit" value="찾기">
                     </form>
                 </div>
+                    
             </div>
         </div>
 

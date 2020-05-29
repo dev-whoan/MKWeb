@@ -21,15 +21,9 @@
 			<required>true</required>
 			<rtexprvalue>false</rtexprvalue>
 		</attribute>
-	</tag>
-	
-	<tag>
-		<name>insert</name>
-		<tagclass>com.mkweb.tag.tagInsert</tagclass>
-		<bodycontent>scriptless</bodycontent>
 		<attribute>
-			<name>param</name>
-			<required>true</required>
+			<name>like</name>
+			<required>false</required>
 			<rtexprvalue>false</rtexprvalue>
 		</attribute>
 	</tag>

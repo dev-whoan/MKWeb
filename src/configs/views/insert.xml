@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <views>
-	<Control name="main" debug="error" dir="/views/root" dir_key="/" page="result.jsp" >
+	<Control name="insert" debug="error" dir="/views/root" dir_key="/" page="insert.jsp" >
 		
 		<Service type="sql">
-			<Sql id="selectName" obj="list" rst="alpha" />
+			<Sql id="insertUser" method="post" />
 			<Parameter name="param" />
 			<Value>
 				@set(param.user_name = '%')
-				<!-- 
-				n개짜리 안됨 ㅋㅋ
-				 -->
+				@set(param.user_info = '%')
 			</Value>
 		</Service>
 				

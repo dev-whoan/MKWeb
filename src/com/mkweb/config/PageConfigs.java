@@ -25,6 +25,12 @@ public class PageConfigs extends PageXmlData{
 			pc = new PageConfigs();
 		return pc;
 	}
+	private String[] sl_list = {
+		"id",
+		"obj",
+		"rst",
+		"method"	
+	};
 	
 	public void setPageConfigs(File[] pageConfigs) {
 		page_configs.clear();
@@ -68,7 +74,7 @@ public class PageConfigs extends PageXmlData{
 								
 								if(service.getNodeType() == Node.ELEMENT_NODE)
 								{
-									String[] SQL_INFO = new String[3];
+									String[] SQL_INFO = new String[sl_list.length];
 									String PRM_NAME = null;
 									String VAL_INFO = null;
 									for(int k = 0; k < service_param.getLength(); k++) {
@@ -80,9 +86,10 @@ public class PageConfigs extends PageXmlData{
 											
 											switch(service_info.getNodeName()) {
 											case "Sql":
-												SQL_INFO[0] = attributes.getNamedItem("id").getNodeValue();
-												SQL_INFO[1] = attributes.getNamedItem("obj").getNodeValue();
-												SQL_INFO[2] = attributes.getNamedItem("rst").getNodeValue();
+												for(int sli = 0; sli < sl_list.length; sli++) {
+													Node tN = attributes.getNamedItem(sl_list[sli]);
+													SQL_INFO[sli] = (tN != null ? tN.getNodeValue() : null);
+												}
 												break;
 											case "Parameter":
 												PRM_NAME = attributes.getNamedItem("name").getNodeValue();
@@ -149,6 +156,13 @@ public class PageConfigs extends PageXmlData{
 		String debugLevel = xmlData.getDebug();
 		
 		String[] SQL_INFO = xmlData.getSql();
+		String sql_info = "SQL:\t";
+		for(int i = 0; i < SQL_INFO.length; i++) {
+			if(i != SQL_INFO.length-1)
+				sql_info += SQL_INFO[i] + "\t";
+			else
+				sql_info += SQL_INFO[i];
+		}
 		String PRM_NAME = xmlData.getParameter();
 		String VAL_INFO = xmlData.getData();
 		
@@ -167,7 +181,7 @@ public class PageConfigs extends PageXmlData{
 				 + "\n弛Service Name:\t" + serviceName + "\tParameter:\t" + PRM_NAME;
 		
 		if(type == "info") {
-			tempMsg += "\n弛SQL:\t" + SQL_INFO[0] + "\t" + SQL_INFO[1]+ "\t" + SQL_INFO[2]
+			tempMsg += "\n弛SQL:\t" + sql_info
 					 + "\n弛Value:\t" + valMsg
 					 + "\n戌式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式";
 		}else {

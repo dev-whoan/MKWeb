@@ -6,16 +6,22 @@
 		FROM User;
 	</sql>
 	
-	<sql id="selectName" db="mkweb">
+	<sql id="selectOnlyName" db="mkweb">
 		SELECT name, address
 		FROM User
 		WHERE name LIKE @user_name@;
+	</sql>
+	
+	<sql id="selectName" db="mkweb">
+		SELECT name, address
+		FROM User
+		WHERE name LIKE @user_name@ and address LIKE @user_info@;
 	</sql>
 	
 	<sql id="insertUser" db="mkweb">
 		INSERT INTO User
 		(name, address)
 		VALUES
-		(@user_name@, @user_address@);
+		(@user_name@, @user_info@);
 	</sql>
 </MkSQL>

@@ -21,6 +21,7 @@ public class MkDbAccessor {
 	private String psmt = null;
 	private MkLogger mklogger = MkLogger.Me();
 	private ArrayList<String> reqValue = null;
+	private String[] reqValueArr = null;
 	private String TAG = "[MkDbAccessor]";
 	
 	public MkDbAccessor() {
@@ -41,6 +42,12 @@ public class MkDbAccessor {
 			reqValue.add(arr.get(i));
 	}
 	
+	public void setRequestValue(String[] arr) {
+		reqValueArr = new String[arr.length];
+		for(int i = 0; i < reqValueArr.length; i++) 
+			reqValueArr[i] = arr[i];
+	}
+	
 	private Connection connectDB() throws SQLException{
 		Connection conn = null;
 		
@@ -48,13 +55,13 @@ public class MkDbAccessor {
 			try {
 				Class.forName("com.mysql.cj.jdbc.Driver");
 			} catch (ClassNotFoundException e) {
-				mklogger.error("(line: 40) ClassNotFoundException: " + e.getMessage());
+				mklogger.error("(connectDB) ClassNotFoundException: " + e.getMessage());
 			}
 			
 			String url = "jdbc:mysql://" + MkConfigReader.Me().get("mkweb.db.hostname") + ":" + MkConfigReader.Me().get("mkweb.db.port") + "/" + MkConfigReader.Me().get("mkweb.db.database")+ "?" + "characterEncoding=UTF-8&serverTimezone=UTC";
 			conn = DriverManager.getConnection(url, MkConfigReader.Me().get("mkweb.db.id"), MkConfigReader.Me().get("mkweb.db.pw"));
 		}catch(SQLException e){
-			mklogger.error("(line: 47) SQLException : " + e.getMessage());
+			mklogger.error("(connectDB) SQLException : " + e.getMessage());
 		}catch(Exception e){ 
 			mklogger.error(" " + e.getMessage());
 		}
@@ -93,9 +100,12 @@ public class MkDbAccessor {
 						for(int i = 0; i < reqValue.size(); i++) {
 							prestmt.setString((i+1), reqValue.get(i));
 						}
+					}else {
+						if(reqValueArr != null) {
+							for(int i = 0; i < reqValueArr.length; i++)
+								prestmt.setString((i+1), reqValueArr[i]);
+						}
 					}
-					queryLog(this.psmt);
-					
 					rs = prestmt.executeQuery(); 
 					
 					ResultSetMetaData rsmd; 
@@ -131,10 +141,76 @@ public class MkDbAccessor {
 					if(rs != null)
 						rs.close();
 				} catch (SQLException e) {
-					mklogger.error( "(line: 96~105) psmt = this.dbCon.prepareStatement(" + this.psmt + ") :" + e.getMessage());
+					mklogger.error( "(executeSEL) psmt = this.dbCon.prepareStatement(" + this.psmt + ") :" + e.getMessage());
 				}
 			}
 		}
 		return rst;
 	}
+	
+	public ArrayList<Object> executeSELLike(){
+		ArrayList<Object> rst = new ArrayList<Object>();
+		ResultSet rs = null;
+		
+		if(dbCon != null)
+		{
+			if(this.psmt != null)
+			{
+				try {
+					PreparedStatement prestmt;
+					prestmt = dbCon.prepareStatement(this.psmt);
+					
+					if(reqValue != null) {
+						for(int i = 0; i < reqValue.size(); i++) 
+							prestmt.setString((i+1), reqValue.get(i));
+					}else {
+						if(reqValueArr != null) {
+							for(int i = 0; i < reqValueArr.length; i++)
+								prestmt.setString((i+1), "%" + reqValueArr[i] + "%");
+						}
+					}
+					
+					rs = prestmt.executeQuery(); 
+					
+					ResultSetMetaData rsmd; 
+					int columnCount;
+					String columnNames[];
+					
+					if(!rs.next()) {
+						return null;
+					}else {
+						rsmd = rs.getMetaData();
+					    columnCount = rsmd.getColumnCount();
+					    columnNames = new String[columnCount];
+					    for(int i=0; i < columnCount; i++) {
+					        columnNames[i] = rsmd.getColumnName(i+1); 
+					    }
+					}
+					HashMap<String, Object> result = null;
+					rs.beforeFirst();
+					
+					while(rs.next()) {
+						result = new HashMap<String, Object>();
+						for( String name : columnNames )
+						{
+							result.put(name, rs.getObject(name));
+						}
+						
+						rst.add(result);
+					}
+					
+					if(dbCon != null)
+						dbCon.close();
+					if(prestmt != null)
+						prestmt.close();
+					if(rs != null)
+						rs.close();
+				} catch (SQLException e) {
+					mklogger.error( "(executeSELLike) psmt = this.dbCon.prepareStatement(" + this.psmt + ") :" + e.getMessage());
+				}
+			}
+		}
+		return rst;
+	}
+	
 }
