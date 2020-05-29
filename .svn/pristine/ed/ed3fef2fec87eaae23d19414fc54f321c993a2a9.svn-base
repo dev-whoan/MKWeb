@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<views>
+	<Control name="main" debug="error" dir="/views/root" dir_key="/" page="result.jsp" >
+		
+		<Service type="sql">
+			<Sql id="selectName" obj="list" rst="alpha" />
+			<Parameter name="param" />
+			<Value>
+				@set(param.user_name = '%')
+				@set(param.user_password = '%')
+			
+				<!-- 
+				n개짜리 안됨 ㅋㅋ
+				 -->
+			</Value>
+		</Service>
+				
+		<!-- 
+		<Service type="browser">
+			<Parameter name="param" />
+			<Value>
+				@set(${browser.LAN="ko"})
+				@set(${browser.agent="chrome"})
+				@set(${browser.mob="N")
+			</Value>
+		</Service>
+		 -->
+		
+	</Control>
+</views>
