@@ -1,12 +1,9 @@
 package com.mkweb.config;
 
 import java.io.File;
+
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Properties;
 
 import com.mkweb.logger.MkLogger;
@@ -34,12 +31,6 @@ public class MkConfigReader {
 			properties.load(reader);
 			reader.close();
 			
-			mklogger.debug("property info");
-			mklogger.debug(properties.getProperty("mkweb.db.hostname").toString());
-			mklogger.debug(properties.getProperty("mkweb.db.port").toString());
-			mklogger.debug(properties.getProperty("mkweb.db.id").toString());
-			mklogger.debug(properties.getProperty("mkweb.db.pw").toString());
-			mklogger.debug(properties.getProperty("mkweb.db.database").toString());
 		}catch( IOException e) {
 			mklogger.error("ERROR OCCURED" + e);
 		}

@@ -1,26 +1,26 @@
 package com.mkweb.dispatcher;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
+
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
+
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.mkweb.config.PageConfigs;
-import com.mkweb.data.PageXmlData;
+import com.mkweb.config.MkConfigReader;
+
 import com.mkweb.logger.MkLogger;
+import com.mkweb.security.CheckPageInfo;
 
 /**
  * Servlet implementation class testDefDispatcher
  */
 public class defaultDispatcher extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
+    private MkLogger mklogger = MkLogger.Me();
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -43,10 +43,22 @@ public class defaultDispatcher extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		String requestURI = request.getRequestURI();	// /main
-		String[] reqPage = requestURI.split("/");
-		String mkPage = reqPage[reqPage.length - 1];
+		String[] reqPage = null;
+		String mkPage = null;
 		
-		if(!isValidPageConnection(mkPage, reqPage, mkPage)) {
+		String hostcheck = request.getRequestURL().toString().split("://")[1];
+		String host = MkConfigReader.Me().get("mkweb.web.hostname") + "/";
+
+		if(!hostcheck.equals(host))
+		{
+			reqPage = requestURI.split("/");
+			mkPage = reqPage[reqPage.length - 1];
+		}else {
+			reqPage = null;
+			mkPage = "";
+		}
+
+		if(!(new CheckPageInfo()).isValidPageConnection(mkPage, reqPage)) {
 			//에러페이지
 			RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/404.jsp");
 			dispatcher.forward(request, response);
@@ -57,35 +69,4 @@ public class defaultDispatcher extends HttpServlet {
 		RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher(requestURI + ".mkw");
 		dispatcher.forward(request, response);
 	}
-	
-	private boolean isValidPageConnection(String requestControlName, String[] requestDir, String mkPage) {
-		ArrayList<PageXmlData> resultXmlData = PageConfigs.Me().getControl(requestControlName);
-		
-		if(resultXmlData == null || resultXmlData.size() < 1)
-			return false;
-		PageXmlData xmlData = resultXmlData.get(0);
-		/*
-		 * 오직허용: log_dir + page control name
-		 * requestDir = URI / 자른거.
-		 * mkPage = request page control name
-		 */
-		String AllowPath = xmlData.getLogicalDir();
-		String userLogicalDir = "";
-		
-		for(int i = 1; i < requestDir.length-1; i++) 
-			userLogicalDir += "/" + requestDir[i];
-		
-		if(userLogicalDir.equals(""))
-			userLogicalDir = "/";
-		
-		String c1 = userLogicalDir + mkPage;
-		String c2 = AllowPath + xmlData.getControlName();
-		
-		if(!c1.equals(c2)){
-			return false;
-		}
-		
-		return true;
-	}
-
 }

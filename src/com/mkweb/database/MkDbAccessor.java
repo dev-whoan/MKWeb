@@ -213,4 +213,41 @@ public class MkDbAccessor {
 		return rst;
 	}
 	
+	public int executeInsert() {
+		int result = 0;
+		
+		if(dbCon != null)
+		{
+			if(this.psmt != null)
+			{
+				try {
+					PreparedStatement prestmt;
+					prestmt = dbCon.prepareStatement(this.psmt);
+					
+					if(reqValue != null) {
+						for(int i = 0; i < reqValue.size(); i++) {
+							prestmt.setString((i+1), reqValue.get(i));
+						}
+					}else {
+						if(reqValueArr != null) {
+							for(int i = 0; i < reqValueArr.length; i++)
+								prestmt.setString((i+1), reqValueArr[i]);
+						}
+					}
+					
+					result = prestmt.executeUpdate();
+					
+					if(dbCon != null)
+						dbCon.close();
+					if(prestmt != null)
+						prestmt.close();
+					
+				} catch (SQLException e) {
+					mklogger.error( "(executeInsert) psmt = this.dbCon.prepareStatement(" + this.psmt + ") :" + e.getMessage());
+				}
+			}
+		}
+		
+		return result;
+	}
 }

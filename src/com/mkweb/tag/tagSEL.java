@@ -1,24 +1,18 @@
 package com.mkweb.tag;
 
 import java.io.IOException;
-import java.io.PrintWriter;
+
+
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
+
 import java.util.HashMap;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
 
-import com.mkweb.config.PageConfigs;
-import com.mkweb.config.SQLXmlConfigs;
-import com.mkweb.data.AbsXmlData;
-import com.mkweb.data.PageXmlData;
 import com.mkweb.database.MkDbAccessor;
 import com.mkweb.logger.MkLogger;
 import com.mkweb.security.CheckPageInfo;
@@ -69,17 +63,8 @@ public class tagSEL extends SimpleTagSupport {
 		String requestParams = null;
 		ArrayList<String> requestValues = new ArrayList<String>();
 		
-		Enumeration params = request.getParameterNames();
-		while(params.hasMoreElements()) {
-			String name = params.nextElement().toString().trim();
-			if(name.contains(".")) {
-				requestParams = name.split("\\.")[0]; 
-				requestValues.add(name.split("\\.")[1]);
-			}else {
-				mklogger.error(TAG + " 잘못된 요청 형식");
-				return;
-			}
-		}
+		requestParams = cpi.getRequestPageParameterName(request);
+		requestValues = cpi.getRequestParameterValues(request);
 		
 		PageInfo pageInfo = getPageControl(request);
 		
@@ -111,14 +96,7 @@ public class tagSEL extends SimpleTagSupport {
 			return;
 		}
 		
-		AbsXmlData resultXmlData = SQLXmlConfigs.Me().getControlService(pageSqlInfo.get(rstID)[0]);
-		
-		if(resultXmlData == null) {
-			mklogger.error(TAG + "There is no sql service named : " + pageSqlInfo.get(rstID)[0]);
-			return;
-		}
-		
-		String befQuery = resultXmlData.getData();
+		String befQuery = cpi.regularQuery(pageSqlInfo.get(rstID)[0]);
 		
 		String query = null;
 		query = cpi.setQuery(befQuery);
@@ -165,7 +143,6 @@ public class tagSEL extends SimpleTagSupport {
 			{
 				for(int i = 0; i < dbResult.size(); i++)
 				{
-					
 					result = (HashMap<String, Object>) dbResult.get(i);
 					
 					((PageContext)getJspContext()).getRequest().setAttribute(this.rst, result);

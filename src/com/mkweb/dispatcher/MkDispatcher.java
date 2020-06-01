@@ -37,7 +37,6 @@ public class MkDispatcher extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String requestURI = request.getRequestURI();
 		Object o = request.getAttribute("mkPage");
-		
 		if(o == null) {
 			mklogger.error("Request URI is invalid. ( Unauthorzied connection [" + requestURI + "] )");
 			dispatch(request, response, "/600.html");

@@ -17,6 +17,7 @@ public class AbsXmlData implements XmlData {
 	protected String controlName = null;
 	protected String data = null;
 	protected String Tag = null;
+	protected static String absPath = "/WEB-INF";
 	
 	public String getTag() { return this.Tag; }
 	
@@ -33,6 +34,9 @@ public class AbsXmlData implements XmlData {
 			e.getStackTrace();
 		}
 		
+		if(doc == null)
+			return null;
+		
 		Node root = doc.getFirstChild();
 		NodeList nodeList = root.getChildNodes();
 		
@@ -48,5 +52,6 @@ public class AbsXmlData implements XmlData {
 	public void setData(String data) {	this.data = data;	}
 	public String getData() {	return this.data;	}
 	
+	public static String getAbsPath()	{	return absPath;	}
 	public String getMyInfo() {	return "Control: " + (this.controlName) + " | Service: " + (this.serviceName) + " | Tag: " + (getTag());	}   
 }

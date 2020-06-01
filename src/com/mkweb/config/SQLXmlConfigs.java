@@ -1,29 +1,31 @@
 package com.mkweb.config;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
+
 import java.util.HashMap;
-import java.util.stream.Stream;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-import org.w3c.dom.Element;
+
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.NodeList;
-
-import com.mkweb.data.AbsXmlData;
+import com.mkweb.data.SqlXmlData;
 import com.mkweb.logger.MkLogger;
 
-public class SQLXmlConfigs extends AbsXmlData {
-	private HashMap<String, AbsXmlData> sql_configs = new HashMap<String, AbsXmlData>();
+public class SQLXmlConfigs extends SqlXmlData {
+	private HashMap<String, SqlXmlData> sql_configs = new HashMap<String, SqlXmlData>();
 	private File defaultFile = null;
 	private static SQLXmlConfigs sxc = null;
 	private long lastModified = 0L;
 	private MkLogger mklogger = MkLogger.Me();
+	private String TAG = "[SQLXmlConfigs]";
+	
+	
+	private String[] sl_list = {
+			"id",
+			"db"
+	};
+	private String[] sl_info = new String[sl_list.length];
+	
 	public static SQLXmlConfigs Me() {
 		if(sxc == null)
 			sxc = new SQLXmlConfigs();
@@ -35,6 +37,7 @@ public class SQLXmlConfigs extends AbsXmlData {
 		defaultFile = sqlConfigs;
 		
 		mklogger.info("=*=*=*=*=*=*=* MkWeb Sql  Configs Start*=*=*=*=*=*=*=*=");
+		mklogger.info(TAG + "File: " + defaultFile.getAbsolutePath());
 		if(defaultFile == null || !defaultFile.exists())
 		{
 			mklogger.error("Config file is not exists or null");
@@ -42,47 +45,59 @@ public class SQLXmlConfigs extends AbsXmlData {
 		}
 		
 		NodeList nodeList = setNodeList(defaultFile);
-		lastModified = defaultFile.lastModified();
 		
-		for(int i = 0; i < nodeList.getLength(); i++)
-		{
-			Node node = nodeList.item(i);
-			if(node.getNodeType() == Node.ELEMENT_NODE) {
-				NamedNodeMap attributes = node.getAttributes();
-				String ID = attributes.getNamedItem("id").getNodeValue();
-				String DB = attributes.getNamedItem("db").getNodeValue();
-				String query = node.getTextContent();
-				
-				AbsXmlData xmlData = new AbsXmlData();
-				
-				xmlData.setControlName("MkSQL");
-				xmlData.setServiceName(ID);
-				xmlData.setData(query);
+		if(nodeList != null) {
+			lastModified = defaultFile.lastModified();
+			
+			for(int i = 0; i < nodeList.getLength(); i++)
+			{
+				Node node = nodeList.item(i);
+				if(node.getNodeType() == Node.ELEMENT_NODE) {
+					NamedNodeMap attributes = node.getAttributes();
+					
+					for(int sli = 0; sli < sl_list.length; sli++) {
+						Node tN = attributes.getNamedItem(sl_list[sli]);
+						sl_info[sli] = (tN != null ? tN.getNodeValue() : null);
+					}
+					
+					String query = node.getTextContent();
+					
+					SqlXmlData xmlData = new SqlXmlData();
+					
+					xmlData.setControlName("MkSQL");
+					//ID = 0, DB = 1
+					xmlData.setServiceName(sl_info[0]);
+					xmlData.setDB(sl_info[1]);
+					xmlData.setData(query);
 
-				sql_configs.put(ID, xmlData);
-				
-				mklogger.info("SQL ID :\t\t\t" + ID);
-				mklogger.info("SQL DB :\t\t\t" + DB);
+					sql_configs.put(sl_info[0], xmlData);
+					
+					mklogger.info("SQL ID :\t\t\t" + sl_info[0]);
+					mklogger.info("SQL DB :\t\t\t" + sl_info[1]);
 
-				query = query.trim();
-				String queryMsg = "";
-				
-				String[] queryBuffer = query.split("\n");
-				
-				for (int j = 0; j < queryBuffer.length; j++) {
-					String tempQuery = queryBuffer[j].trim();
-					queryMsg += "\t\t\t\t\t\t\t\t" + tempQuery + "\n";
+					query = query.trim();
+					String queryMsg = "";
+					
+					String[] queryBuffer = query.split("\n");
+					
+					for (int j = 0; j < queryBuffer.length; j++) {
+						String tempQuery = queryBuffer[j].trim();
+						queryMsg += "\t\t\t\t\t\t\t\t" + tempQuery + "\n";
+					}
+					
+					mklogger.info("query  :\n" + queryMsg + "\n");
+					
 				}
-				
-				mklogger.info("query  :\n" + queryMsg + "\n");
-				
 			}
+		}else {
+			mklogger.info(TAG + " No SQL Service has found. If you set SQL service, please check SQL config and web.xml.");
 		}
+		
 		
 		mklogger.info("=*=*=*=*=*=*=* MkWeb Sql  Configs  Done*=*=*=*=*=*=*=*=");
 	}
 	
-	public AbsXmlData getControlService(String serviceName) {
+	public SqlXmlData getControlService(String serviceName) {
 		if(lastModified != defaultFile.lastModified()) {
 			setSqlConfigs(defaultFile);
 			mklogger.info("==============Reload SQL Config files==============");

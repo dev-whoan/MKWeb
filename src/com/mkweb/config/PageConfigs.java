@@ -1,6 +1,7 @@
 package com.mkweb.config;
 
 import java.io.File;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -19,6 +20,8 @@ public class PageConfigs extends PageXmlData{
 	private static PageConfigs pc = null;
 	private long lastModified[]; 
 	private MkLogger mklogger = MkLogger.Me();
+	
+	private String TAG = "[PageConfigs]";
 	
 	public static PageConfigs Me() {
 		if(pc == null)
@@ -42,6 +45,7 @@ public class PageConfigs extends PageXmlData{
 		{
 			lastModified[lmi++] = defaultFile.lastModified();
 			mklogger.info("=*=*=*=*=*=*=* MkWeb Page Configs Start*=*=*=*=*=*=*=*=");
+			mklogger.info(TAG + "File: " + defaultFile.getAbsolutePath());
 			mklogger.info("=            " + defaultFile.getName() +"              =");
 			if(defaultFile == null || !defaultFile.exists())
 			{
@@ -50,96 +54,101 @@ public class PageConfigs extends PageXmlData{
 			}
 			NodeList nodeList = setNodeList(defaultFile);
 			
-			for(int i = 0; i < nodeList.getLength(); i++)
-			{
-				Node node = nodeList.item(i);
-				
-				if(node.getNodeName().equals("Control"))
+			if(nodeList != null) {
+				for(int i = 0; i < nodeList.getLength(); i++)
 				{
-					if(node.getNodeType() == Node.ELEMENT_NODE) {
-						String controlName = node.getAttributes().getNamedItem("name").getNodeValue();
-						String logicalDir = node.getAttributes().getNamedItem("dir_key").getNodeValue();
-						String pageName = node.getAttributes().getNamedItem("page").getNodeValue();
-						String pageDir = node.getAttributes().getNamedItem("dir").getNodeValue();
-						String debug = node.getAttributes().getNamedItem("debug").getNodeValue();
-						
-						xmlData = new ArrayList<PageXmlData>();
-						Element elem = (Element) node;
-						NodeList services = elem.getElementsByTagName("Service");
-						mklogger.debug(services.item(0));
-						if(services.item(0) != null) {
-							for(int j = 0; j < services.getLength(); j++) {
-								Node service = services.item(j);
-								NodeList service_param = service.getChildNodes();
-								
-								if(service.getNodeType() == Node.ELEMENT_NODE)
-								{
-									String[] SQL_INFO = new String[sl_list.length];
-									String PRM_NAME = null;
-									String VAL_INFO = null;
-									for(int k = 0; k < service_param.getLength(); k++) {
-										Node service_info = service_param.item(k);
-										
-										if(service_info.getNodeType() == Node.ELEMENT_NODE)
-										{
-											NamedNodeMap attributes = service_info.getAttributes();
+					Node node = nodeList.item(i);
+					
+					if(node.getNodeName().equals("Control"))
+					{
+						if(node.getNodeType() == Node.ELEMENT_NODE) {
+							String controlName = node.getAttributes().getNamedItem("name").getNodeValue();
+							String logicalDir = node.getAttributes().getNamedItem("dir_key").getNodeValue();
+							String pageName = node.getAttributes().getNamedItem("page").getNodeValue();
+							String pageDir = node.getAttributes().getNamedItem("dir").getNodeValue();
+							String debug = node.getAttributes().getNamedItem("debug").getNodeValue();
+							
+							xmlData = new ArrayList<PageXmlData>();
+							Element elem = (Element) node;
+							NodeList services = elem.getElementsByTagName("Service");
+							mklogger.debug(services.item(0));
+							if(services.item(0) != null) {
+								for(int j = 0; j < services.getLength(); j++) {
+									Node service = services.item(j);
+									NodeList service_param = service.getChildNodes();
+									
+									if(service.getNodeType() == Node.ELEMENT_NODE)
+									{
+										String[] SQL_INFO = new String[sl_list.length];
+										String PRM_NAME = null;
+										String VAL_INFO = null;
+										for(int k = 0; k < service_param.getLength(); k++) {
+											Node service_info = service_param.item(k);
 											
-											switch(service_info.getNodeName()) {
-											case "Sql":
-												for(int sli = 0; sli < sl_list.length; sli++) {
-													Node tN = attributes.getNamedItem(sl_list[sli]);
-													SQL_INFO[sli] = (tN != null ? tN.getNodeValue() : null);
+											if(service_info.getNodeType() == Node.ELEMENT_NODE)
+											{
+												NamedNodeMap attributes = service_info.getAttributes();
+												
+												switch(service_info.getNodeName()) {
+												case "Sql":
+													for(int sli = 0; sli < sl_list.length; sli++) {
+														Node tN = attributes.getNamedItem(sl_list[sli]);
+														SQL_INFO[sli] = (tN != null ? tN.getNodeValue() : null);
+													}
+													break;
+												case "Parameter":
+													PRM_NAME = attributes.getNamedItem("name").getNodeValue();
+													break;
+												case "Value":
+													VAL_INFO = service_info.getTextContent();
+													VAL_INFO = VAL_INFO.trim();
+													break;
 												}
-												break;
-											case "Parameter":
-												PRM_NAME = attributes.getNamedItem("name").getNodeValue();
-												break;
-											case "Value":
-												VAL_INFO = service_info.getTextContent();
-												VAL_INFO = VAL_INFO.trim();
-												break;
 											}
 										}
-									}
-									
-									String serviceName = service.getAttributes().getNamedItem("type").getNodeValue() + "." + SQL_INFO[0];
+										
+										String serviceName = service.getAttributes().getNamedItem("type").getNodeValue() + "." + SQL_INFO[0];
 
-									PageXmlData curData = new PageXmlData();
-									curData.setControlName(controlName);
-									curData.setServiceName(serviceName);
-									curData.setLogicalDir(logicalDir);
-									curData.setDir(pageDir);
-									
-									curData.setPageName(pageName);
-									curData.setDebug(debug);
-									
-									curData.setSql(SQL_INFO);
-									curData.setParameter(PRM_NAME);
-									curData.setData(VAL_INFO);
-									printPageInfo(curData, "info");
-									xmlData.add(curData);
+										PageXmlData curData = new PageXmlData();
+										curData.setControlName(controlName);
+										curData.setServiceName(serviceName);
+										curData.setLogicalDir(logicalDir);
+										curData.setDir(pageDir);
+										
+										curData.setPageName(pageName);
+										curData.setDebug(debug);
+										
+										curData.setSql(SQL_INFO);
+										curData.setParameter(PRM_NAME);
+										curData.setData(VAL_INFO);
+										printPageInfo(curData, "info");
+										xmlData.add(curData);
+									}
 								}
+							}else {
+								PageXmlData curData = new PageXmlData();
+								curData.setControlName(controlName);
+								curData.setServiceName("No Service");
+								curData.setLogicalDir(logicalDir);
+								curData.setDir(pageDir);
+								
+								curData.setPageName(pageName);
+								curData.setDebug(debug);
+								String[] sqlInfo = {"no", "-sql-", "data"};
+								curData.setSql(sqlInfo);
+								curData.setParameter("No Parameter");
+								curData.setData("No Value");
+								printPageInfo(curData, "info");
+								xmlData.add(curData);
 							}
-						}else {
-							PageXmlData curData = new PageXmlData();
-							curData.setControlName(controlName);
-							curData.setServiceName("No Service");
-							curData.setLogicalDir(logicalDir);
-							curData.setDir(pageDir);
-							
-							curData.setPageName(pageName);
-							curData.setDebug(debug);
-							String[] sqlInfo = {"no", "-sql-", "data"};
-							curData.setSql(sqlInfo);
-							curData.setParameter("No Parameter");
-							curData.setData("No Value");
-							printPageInfo(curData, "info");
-							xmlData.add(curData);
+							page_configs.put(controlName, xmlData);
 						}
-						page_configs.put(controlName, xmlData);
 					}
 				}
+			}else {
+				mklogger.info(TAG + " No Page Control has found. If you set Page configs, please check Page config files and web.xml.");
 			}
+			
 			
 			mklogger.info("=*=*=*=*=*=*=* MkWeb Page Configs  Done*=*=*=*=*=*=*=*=");
 		}
