@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<MkSQL xmlid="sql">
+	<sql id="api_selectUser" db="mkweb" allow_single="yes">
+		<columns>
+			@user_SEQ
+			@name
+			@address
+		</columns>
+		
+		<query>
+			SELECT user_SEQ, name, address
+			FROM User
+			@CONDITION@;
+		</query>
+	</sql>
+</MkSQL>

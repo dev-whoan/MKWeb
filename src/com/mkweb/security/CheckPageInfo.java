@@ -7,8 +7,9 @@ import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.mkweb.config.PageConfigs;
-import com.mkweb.config.SQLXmlConfigs;
+import com.mkweb.config.MkPageConfigs;
+import com.mkweb.config.MkRestApiPageConfigs;
+import com.mkweb.config.MkSQLXmlConfigs;
 import com.mkweb.data.PageXmlData;
 import com.mkweb.data.SqlXmlData;
 import com.mkweb.logger.MkLogger;
@@ -18,7 +19,7 @@ public class CheckPageInfo {
 	private MkLogger mklogger = MkLogger.Me();
 	
 	public String regularQuery(String serviceName) {
-		SqlXmlData resultXmlData = SQLXmlConfigs.Me().getControlService(serviceName);
+		SqlXmlData resultXmlData = MkSQLXmlConfigs.Me().getControlService(serviceName);
 		
 		if(resultXmlData == null) {
 			mklogger.error(TAG + "There is no sql service named : " + serviceName);
@@ -128,13 +129,13 @@ public class CheckPageInfo {
 		pv = String.valueOf(pvArray);
 		rv = String.valueOf(rvArray);
 		
-		mklogger.debug(TAG + " Compare: PV(" + pv + ") vs RV(" + rv + ")");
+		mklogger.info(TAG + " Compare: PV(" + pv + ") vs RV(" + rv + ")");
 		
 		return (pv.equals(rv));
 	}
 	
     public boolean isValidPageConnection(String requestControlName, String[] requestDir) {
-		ArrayList<PageXmlData> resultXmlData = PageConfigs.Me().getControl(requestControlName);
+		ArrayList<PageXmlData> resultXmlData = MkPageConfigs.Me().getControl(requestControlName);
 		
 		if(resultXmlData == null || resultXmlData.size() < 1)
 			return false;
@@ -157,6 +158,41 @@ public class CheckPageInfo {
 		
 		String c1 = userLogicalDir + requestControlName;
 		String c2 = AllowPath + xmlData.getControlName();
+		
+		if(!c1.equals(c2)){
+			return false;
+		}
+		
+		return true;
+	}
+    
+    public boolean isValidApiPageConnection(String requestControlName, String[] requestDir) {
+		ArrayList<PageXmlData> resultXmlData = MkRestApiPageConfigs.Me().getControl(requestControlName);
+		
+		if(resultXmlData == null || resultXmlData.size() < 1)
+			return false;
+		PageXmlData xmlData = resultXmlData.get(0);
+		/*
+		 * 오직허용: log_dir + page control name
+		 * requestDir = URI / 자른거.
+		 * mkPage = request page control name
+		 */
+		String AllowPath = xmlData.getLogicalDir();
+		String userLogicalDir = "";
+		
+		if(requestDir != null) {
+			for(int i = 1; i < requestDir.length-1; i++) 
+				userLogicalDir += "/" + requestDir[i];
+		}
+		
+		if(userLogicalDir.equals(""))
+			userLogicalDir = "/";
+		
+		String c1 = userLogicalDir + requestControlName;
+		String c2 = AllowPath + xmlData.getControlName();
+		
+		mklogger.debug(TAG + c1);
+		mklogger.debug(TAG + c2);
 		
 		if(!c1.equals(c2)){
 			return false;

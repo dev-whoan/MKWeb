@@ -47,7 +47,7 @@ public class tagSEL extends SimpleTagSupport {
 		
 		String controlName = o.toString();
 		
-		return new PageInfo(controlName);
+		return new PageInfo(controlName, false);
 	}
 	
 	public void doTag() throws JspException, IOException{

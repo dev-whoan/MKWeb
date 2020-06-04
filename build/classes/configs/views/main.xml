@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <views>
-	<Control name="" debug="error" dir="/views/root" dir_key="/" page="result.jsp" >
+	<Control name="" debug="error" dir="/views/root" dir_key="/" page="main.jsp" >
 		
 		<Service type="sql">
 			<Sql id="selectName" obj="list" rst="alpha" method="post" />
@@ -28,7 +28,31 @@
 				 -->
 			</Value>
 		</Service>
-				
+		
+		<Service type="sql">
+			<Sql id="updateUser" method="post" />
+			<Parameter name="upd" />
+			<Value>
+				@set(upd.user_name = '%')
+				@set(upd.user_info = '%')
+				@set(upd.user_SEQ = '%')
+				<!-- 
+				n개짜리 안됨 ㅋㅋ
+				 -->
+			</Value>
+		</Service>
+		
+		<Service type="sql">
+			<Sql id="deleteUser" method="post" />
+			<Parameter name="del" />
+			<Value>
+				@set(upd.user_SEQ = '%')
+				<!-- 
+				n개짜리 안됨 ㅋㅋ
+				 -->
+			</Value>
+		</Service>
+		
 		<!-- 
 		<Service type="browser">
 			<Parameter name="param" />

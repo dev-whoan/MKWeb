@@ -2,6 +2,7 @@ package com.mkweb.dispatcher;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -11,13 +12,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.mkweb.config.MkConfigReader;
-import com.mkweb.config.PageConfigs;
+import com.mkweb.config.MkPageConfigs;
 import com.mkweb.data.PageXmlData;
 import com.mkweb.logger.MkLogger;
+import com.mkweb.restapi.MkRestApiGetKey;
 
 /**
  * Servlet implementation class testMkDispatcher
  */
+@WebServlet(
+	name="MkWebDispatcher",
+	loadOnStartup=1,
+	urlPatterns="*.mkw"
+)
 public class MkDispatcher extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private String TAG = "[MkDispatcher]";
@@ -43,7 +50,7 @@ public class MkDispatcher extends HttpServlet {
 			return;
 		}
 		String mkPage = request.getAttribute("mkPage").toString();
-		ArrayList<PageXmlData> resultXmlData = PageConfigs.Me().getControl(mkPage);
+		ArrayList<PageXmlData> resultXmlData = MkPageConfigs.Me().getControl(mkPage);
 		
 		if(resultXmlData == null || resultXmlData.size() < 1) {
 			mklogger.error("requested URI : " + requestURI);
@@ -52,12 +59,11 @@ public class MkDispatcher extends HttpServlet {
 		}
 		
 		String targetURI = PageXmlData.getAbsPath() + resultXmlData.get(0).getDir() + "/" + resultXmlData.get(0).getPageName();
-		
 		request.setAttribute("mkPage", mkPage);
 		dispatch(request, response, targetURI);
 		
 		mklogger.info(TAG + "Page Called");
-		PageConfigs.Me().printPageInfo(resultXmlData.get(0), "no-sql");
+		MkPageConfigs.Me().printPageInfo(resultXmlData.get(0), "no-sql");
 	}
 	
 	private void dispatch(HttpServletRequest request, HttpServletResponse response, String URI) throws ServletException, IOException {

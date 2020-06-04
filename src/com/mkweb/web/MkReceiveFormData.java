@@ -6,12 +6,13 @@ import java.util.ArrayList;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.mkweb.config.MkConfigReader;
-import com.mkweb.config.PageConfigs;
+import com.mkweb.config.MkPageConfigs;
 import com.mkweb.data.PageXmlData;
 import com.mkweb.database.MkDbAccessor;
 import com.mkweb.logger.MkLogger;
@@ -21,6 +22,10 @@ import com.mkweb.security.CheckPageInfo;
  * Servlet implementation class MkReceiveFormData
  */
 
+@WebServlet(
+	name = "MkReceiveFormData",
+	loadOnStartup=1
+)
 public class MkReceiveFormData extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private MkLogger mklogger = MkLogger.Me();
@@ -43,7 +48,7 @@ public class MkReceiveFormData extends HttpServlet {
 			mkPage = "";
 		}
 		
-		return new PageInfo(mkPage);
+		return new PageInfo(mkPage, false);
 	}
     
     private boolean checkMethod(HttpServletRequest request, String rqMethod, String rqPageURL) {
@@ -62,9 +67,6 @@ public class MkReceiveFormData extends HttpServlet {
     	String requestURI = rqPageURL.split(MkConfigReader.Me().get("mkweb.web.hostname"))[1];
 		String[] reqPage = null;
 		String mkPage = null;
-
-		mklogger.debug(rqPageURL);
-		mklogger.debug(host);
 	
 		if(!hostCheck.equals(host))
 		{
@@ -88,7 +90,7 @@ public class MkReceiveFormData extends HttpServlet {
 		requestParams = cpi.getRequestPageParameterName(request);
 		requestValues = cpi.getRequestParameterValues(request);
 		
-		ArrayList<PageXmlData> pal = PageConfigs.Me().getControl(mkPage);
+		ArrayList<PageXmlData> pal = MkPageConfigs.Me().getControl(mkPage);
 		for(PageXmlData px : pal) {
 			if(px.getParameter().equals(requestParams)) {
 				pxData = px;
@@ -102,8 +104,6 @@ public class MkReceiveFormData extends HttpServlet {
     private void doTask(HttpServletRequest request, HttpServletResponse response) {
     	MkDbAccessor DA = new MkDbAccessor();
 		
-		mklogger.debug(pxData.getData());
-	
 		if(!cpi.comparePageValueWithRequest(pxData.getData(), requestValues)) {
 			mklogger.error(TAG + " Request Value is not authorized. Please check page config.");
 			return;
@@ -113,9 +113,6 @@ public class MkReceiveFormData extends HttpServlet {
 		
 		String befQuery = cpi.regularQuery(service); 
 		String query = cpi.setQuery(befQuery);
-		
-		mklogger.debug(befQuery);
-		mklogger.debug(query);
 		
 		if(requestValues != null) {
 			DA.setPreparedStatement(query);
@@ -130,15 +127,15 @@ public class MkReceiveFormData extends HttpServlet {
 			DA.setRequestValue(reqs);
 			reqs = null;
 			
-			DA.executeInsert();
+			DA.executeDML();
 		}
     }
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String refURL = request.getHeader("Referer");
 		pi = getPageControl(refURL);
-		if(!checkMethod(request, "get", request.getHeader("Referer"))) {
-			mklogger.error("»ç¶Ç¹ä");
+		if(!checkMethod(request, "get", refURL)) {
+			mklogger.error(TAG + " Request method is not authorized. [Tried: GET]");
 			RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/500.jsp");
 			dispatcher.forward(request, response);
 			return;
@@ -151,8 +148,10 @@ public class MkReceiveFormData extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String refURL = request.getHeader("Referer");
 		pi = getPageControl(refURL);
-		if(!checkMethod(request, "post", request.getHeader("Referer"))) {
-			
+		if(!checkMethod(request, "post", refURL)) {
+			mklogger.error(TAG + " Request method is not authorized. [Tried: POST]");
+			RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/500.jsp");
+			dispatcher.forward(request, response);
 			return;
 		}
 		doTask(request, response);

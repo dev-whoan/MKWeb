@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<views>
+	<Control name="userapi" debug="error" dir_key="/" authorized="yes" post="y" get="y" put="y" delete="y" options="y" head="y">
+		<Service type="sql">
+			<Sql id="api_selectUser" method="post" />
+			<Parameter name="api_sel_user" />
+			<Value>
+				@set(api_sel_user.user_name = '%')
+				@set(api_sel_user.user_info = '%')
+				@set(api_sel_user.user_phone = '%')
+				@set(api_sel_user.user_location = '%')
+			</Value>
+		</Service>
+		
+		<Service type="sql">
+			<Sql id="api_insertUser" method="post" />
+			<Parameter name="api_ins_user_post" />
+			<Value>
+				@set(api_ins_user_post.user_name = '%')
+				@set(api_ins_user_post.user_info = '%')
+				@set(api_ins_user_post.user_phone = '%')
+				@set(api_ins_user_post.user_location = '%')
+			</Value>
+		</Service>
+				
+		<Service type="sql">
+			<Sql id="api_insertUser" method="get" />
+			<Parameter name="api_ins_user_get" />
+			<Value>
+				@set(api_ins_user_get.user_name = '%')
+				@set(api_ins_user_get.user_info = '%')
+				@set(api_ins_user_get.user_phone = '%')
+				@set(api_ins_user_get.user_location = '%')
+			</Value>
+		</Service>
+		
+	</Control>
+</views>

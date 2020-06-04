@@ -6,6 +6,19 @@
 	<display-name>MkWeb</display-name>
 	
 	<!-- MkWeb Dispatcher Settings -->
+	<!-- 
+	<servlet>
+		<servlet-name>DefaultDispatcher</servlet-name>
+		<servlet-class>com.mkweb.dispatcher.defaultDispatcher</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>DefaultDispatcher</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+	-->
+	<!--
 	<servlet>
 		<servlet-name>MkWebDispatcher</servlet-name>
 		<servlet-class>com.mkweb.dispatcher.MkDispatcher</servlet-class>
@@ -16,7 +29,8 @@
 		<servlet-name>MkWebDispatcher</servlet-name>
 		<url-pattern>*.mkw</url-pattern>
 	</servlet-mapping>
-	
+	-->
+	 
 	<servlet>
 		<servlet-name>MkReceiveFormData</servlet-name>
 		<servlet-class>com.mkweb.web.MkReceiveFormData</servlet-class>
@@ -29,14 +43,14 @@
 	</servlet-mapping>
 	
 	<servlet>
-		<servlet-name>DefaultDispatcher</servlet-name>
-		<servlet-class>com.mkweb.dispatcher.defaultDispatcher</servlet-class>
+		<servlet-name>MkWebRestApi</servlet-name>
+		<servlet-class>com.mkweb.restapi.MkRestApi</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	
 	<servlet-mapping>
-		<servlet-name>DefaultDispatcher</servlet-name>
-		<url-pattern>/</url-pattern>
+		<servlet-name>MkWebRestApi</servlet-name>
+		<url-pattern>/mk_api_key/*</url-pattern>
 	</servlet-mapping>
 	
 	<servlet-mapping>
@@ -65,7 +79,7 @@
 	
 	<context-param>
 		<param-name>MKWeb.SqlConfigs</param-name>
-		<param-value>/WEB-INF/classes/configs/MkSql_config.xml</param-value>
+		<param-value>/WEB-INF/classes/configs/MkSql.xml</param-value>
 	</context-param>
 
 	<context-param>
@@ -76,6 +90,16 @@
 	<context-param>
 		<param-name>MKWeb.PageConfigs</param-name>
 		<param-value>/WEB-INF/classes/configs/views</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>MkWeb.ApiSqlConfigs</param-name>
+		<param-value>/WEB-INF/classes/configs/MkApiSql.xml</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>MkWeb.ApiPageConfigs</param-name>
+		<param-value>/WEB-INF/classes/configs/api</param-value>
 	</context-param>
 	<!-- MkWeb Setting Configs -->
 </web-app>

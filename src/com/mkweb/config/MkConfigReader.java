@@ -13,7 +13,6 @@ public class MkConfigReader {
 	private Properties properties = null;
 	private File configFile = null;
 	private long lastModified = 0L;
-	
 	private MkLogger mklogger = MkLogger.Me();
 	
 	public static MkConfigReader Me() {
@@ -29,6 +28,7 @@ public class MkConfigReader {
 			FileInputStream reader = new FileInputStream(configFile);
 			properties = new Properties();
 			properties.load(reader);
+			
 			reader.close();
 			
 		}catch( IOException e) {

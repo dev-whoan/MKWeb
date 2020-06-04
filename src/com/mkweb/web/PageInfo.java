@@ -2,7 +2,7 @@ package com.mkweb.web;
 
 import java.util.ArrayList;
 
-import com.mkweb.config.PageConfigs;
+import com.mkweb.config.MkPageConfigs;
 import com.mkweb.data.PageXmlData;
 import com.mkweb.logger.MkLogger;
 
@@ -16,15 +16,17 @@ public class PageInfo {
 	private String TAG = "[PageInfo]";
 	private MkLogger mklogger = MkLogger.Me();
 	private boolean set = false;
+	private boolean isApi = false;
 	
-	public PageInfo(String requestPageName) {
+	public PageInfo(String requestPageName, boolean isApi) {
 		this.pageControlName = requestPageName;
+		this.isApi = isApi;
 		set = false;
 		setPageInfo();
 	}
 	
 	private void setPageInfo() {
-		ArrayList<PageXmlData> pxd = PageConfigs.Me().getControl(this.pageControlName);
+		ArrayList<PageXmlData> pxd = MkPageConfigs.Me().getControl(this.pageControlName);
 		pageServiceName = new ArrayList<String>();
 		pageParameter = new ArrayList<String>();
 		pageSqlInfo = new ArrayList<String[]>();
@@ -44,6 +46,7 @@ public class PageInfo {
 		set = true;
 	}
 	public boolean isSet()	{	return this.set;	}
+	public boolean isApiPage() {	return this.isApi;	}
 
 	public String getPageControlName(){	return this.pageControlName;	}
 	public ArrayList<String> getPageServiceName() {	return this.pageServiceName;	}

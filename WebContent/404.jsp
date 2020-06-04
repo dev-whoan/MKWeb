@@ -44,6 +44,12 @@
             border: 1px solid #ccc;
             box-shadow: 3px 3px 3px #aaa;
         }
+        
+        h4{
+			text-align: center;
+			color: #8282FF;
+			font-size: 36px;
+		}
 
         .footer_element {
             display: inline-block;
@@ -64,6 +70,7 @@
                 <h1 class="title">404 Not Found</h1>
                 <p class="">페이지가 존재하지 않거나, 사용할 수 없는 페이지 입니다. </p>
                 <p>입력하신 주소를 다시 한번 화인해 주시기 바랍니다. </p>
+                <h4>つ ◕_◕ ༽つ</h4>
             </div>
         </div>
 

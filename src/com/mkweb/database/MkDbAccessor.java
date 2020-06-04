@@ -3,6 +3,7 @@ package com.mkweb.database;
 import java.sql.Connection;
 
 import java.sql.DriverManager;
+import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -16,12 +17,12 @@ import com.mkweb.logger.MkLogger;
 
 public class MkDbAccessor {
 	//로그 만들기
-	
 	private Connection dbCon = null;
 	private String psmt = null;
 	private MkLogger mklogger = MkLogger.Me();
 	private ArrayList<String> reqValue = null;
 	private String[] reqValueArr = null;
+	
 	private String TAG = "[MkDbAccessor]";
 	
 	public MkDbAccessor() {
@@ -32,6 +33,7 @@ public class MkDbAccessor {
 		}
 	}
 	
+	protected Connection getDbCon() {	return this.dbCon;	}
 	public void setPreparedStatement(String qr) {
 		this.psmt = qr;
 	}
@@ -55,15 +57,15 @@ public class MkDbAccessor {
 			try {
 				Class.forName("com.mysql.cj.jdbc.Driver");
 			} catch (ClassNotFoundException e) {
-				mklogger.error("(connectDB) ClassNotFoundException: " + e.getMessage());
+				mklogger.error(TAG + "(connectDB) ClassNotFoundException: " + e.getMessage());
 			}
 			
 			String url = "jdbc:mysql://" + MkConfigReader.Me().get("mkweb.db.hostname") + ":" + MkConfigReader.Me().get("mkweb.db.port") + "/" + MkConfigReader.Me().get("mkweb.db.database")+ "?" + "characterEncoding=UTF-8&serverTimezone=UTC";
 			conn = DriverManager.getConnection(url, MkConfigReader.Me().get("mkweb.db.id"), MkConfigReader.Me().get("mkweb.db.pw"));
 		}catch(SQLException e){
-			mklogger.error("(connectDB) SQLException : " + e.getMessage());
+			mklogger.error(TAG + "(connectDB) SQLException : " + e.getMessage());
 		}catch(Exception e){ 
-			mklogger.error(" " + e.getMessage());
+			mklogger.error(TAG + " " + e.getMessage());
 		}
 		
 		return conn;
@@ -72,7 +74,6 @@ public class MkDbAccessor {
 	private void queryLog(String query) {
 		query = query.trim();
 		String queryMsg = "";
-		
 		String[] queryBuffer = query.split("\n");
 		
 		for (int i = 0; i < queryBuffer.length; i++) {
@@ -141,7 +142,7 @@ public class MkDbAccessor {
 					if(rs != null)
 						rs.close();
 				} catch (SQLException e) {
-					mklogger.error( "(executeSEL) psmt = this.dbCon.prepareStatement(" + this.psmt + ") :" + e.getMessage());
+					mklogger.error(TAG + "(executeSEL) psmt = this.dbCon.prepareStatement(" + this.psmt + ") :" + e.getMessage());
 				}
 			}
 		}
@@ -206,14 +207,14 @@ public class MkDbAccessor {
 					if(rs != null)
 						rs.close();
 				} catch (SQLException e) {
-					mklogger.error( "(executeSELLike) psmt = this.dbCon.prepareStatement(" + this.psmt + ") :" + e.getMessage());
+					mklogger.error(TAG + "(executeSELLike) psmt = this.dbCon.prepareStatement(" + this.psmt + ") :" + e.getMessage());
 				}
 			}
 		}
 		return rst;
 	}
 	
-	public int executeInsert() {
+	public int executeDML() {
 		int result = 0;
 		
 		if(dbCon != null)
@@ -230,7 +231,7 @@ public class MkDbAccessor {
 						}
 					}else {
 						if(reqValueArr != null) {
-							for(int i = 0; i < reqValueArr.length; i++)
+							for(int i = 0; i < reqValueArr.length; i++) 
 								prestmt.setString((i+1), reqValueArr[i]);
 						}
 					}
@@ -243,7 +244,7 @@ public class MkDbAccessor {
 						prestmt.close();
 					
 				} catch (SQLException e) {
-					mklogger.error( "(executeInsert) psmt = this.dbCon.prepareStatement(" + this.psmt + ") :" + e.getMessage());
+					mklogger.error(TAG + "(executeDML) psmt = this.dbCon.prepareStatement(" + this.psmt + ") :" + e.getMessage());
 				}
 			}
 		}

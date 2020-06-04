@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <views>
-	<Control name="insert" debug="error" dir="/views/root" dir_key="/" page="insert.jsp" >
+	<Control name="insert" debug="error" dir="/views/root" dir_key="/" page="insert.jsp">
 		
 		<Service type="sql">
 			<Sql id="insertUser" method="post" />
