@@ -2,6 +2,7 @@
 
 <MkSQL xmlid="sql">
 	<sql id="api_selectUser" db="mkweb" allow_single="yes">
+		<!-- columns which can be @CONDITION@ -->
 		<columns>
 			@user_SEQ
 			@name

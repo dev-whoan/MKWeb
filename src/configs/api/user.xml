@@ -1,18 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <views>
-	<Control name="userapi" debug="error" dir_key="/" authorized="yes" post="y" get="y" put="y" delete="y" options="y" head="y">
+	<Control name="users" debug="error" dir_key="/" authorized="yes" post="yes" get="yes" put="yes" delete="yes" options="yes" head="yes">
+		<returnStructure value="user:location:name" />
+		<Service type="sql">
+			<Sql id="api_selectUser" method="get" />
+			<Parameter name="api_sel_user" />
+			<Value>
+				@set(api_sel_user.user_name = '%')
+				@set(api_sel_user.user_location = '%')		
+			</Value>
+		</Service>
 		<Service type="sql">
 			<Sql id="api_selectUser" method="post" />
 			<Parameter name="api_sel_user" />
 			<Value>
 				@set(api_sel_user.user_name = '%')
-				@set(api_sel_user.user_info = '%')
-				@set(api_sel_user.user_phone = '%')
-				@set(api_sel_user.user_location = '%')
+				@set(api_sel_user.user_location = '%')		
 			</Value>
 		</Service>
-		
+		<!-- 
 		<Service type="sql">
 			<Sql id="api_insertUser" method="post" />
 			<Parameter name="api_ins_user_post" />
@@ -25,7 +32,7 @@
 		</Service>
 				
 		<Service type="sql">
-			<Sql id="api_insertUser" method="get" />
+			<Sql id="api_insertUser" method="put" />
 			<Parameter name="api_ins_user_get" />
 			<Value>
 				@set(api_ins_user_get.user_name = '%')
@@ -34,6 +41,73 @@
 				@set(api_ins_user_get.user_location = '%')
 			</Value>
 		</Service>
-		
+		-->
 	</Control>
 </views>
+
+<!-- 
+{
+	"users" : {
+	    "user":
+	    {
+			"location" : {
+				"value" : "부천"
+				"name" : {
+					"value" : "홍길동"
+					"user_SEQ" : ... db상에서 가져올 정보들
+					"info" : >..
+					"phone" :{
+						
+					}
+				}
+			} 
+	}
+		
+}
+
+name info phone location family birthday
+example.com/userapi/name 
+example.com/userapi/name/{} post
+example.com/userapi/name/{}/location/{}
+example.com/userapi/location/{}
+"result"
+{
+	"user": { ...,
+		...
+		"user_location" : [{ ...
+			"user_name" : {
+				"user_phone" : {
+					...
+				},
+				"user_info" : {
+					...
+				}
+			}
+		}],
+		
+		"user_location" : [{ ...
+			"user_name" : {
+				"user_phone" : {
+					...
+				},
+				"user_info" : {
+					...
+				}
+			}
+		}],
+		
+		"user_location" : [{ ...
+			"user_name" : {
+				"user_phone" : {
+					...
+				},
+				"user_info" : {
+					...
+				}
+			}
+		}]
+	}]
+}
+-->
+
+

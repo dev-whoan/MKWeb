@@ -32,6 +32,6 @@ public abstract class MkPageConfigCan extends PageXmlData {
 	public abstract ArrayList<PageXmlData> getControl(String k);
 	public abstract void setPageConfigs(File[] pageConfigs);
 	public abstract void printPageInfo(PageXmlData xmlData, String type);
-	protected abstract PageXmlData setPageXmlData(String serviceName, String[] cl_info, String[] sqlInfo, String PRM_NAME, String VAL_INFO);
+	protected abstract PageXmlData setPageXmlData(String serviceName, String[] cl_info, String[] sqlInfo, String PRM_NAME, String VAL_INFO, String STRUCTURE);
 	
 }

@@ -1,5 +1,9 @@
 package com.mkweb.data;
 
+import java.util.HashMap;
+
+import com.mkweb.logger.MkLogger;
+
 public class PageXmlData extends AbsXmlData {
 	private String logicalDir = null;
 	private String pageDir = null;
@@ -14,6 +18,7 @@ public class PageXmlData extends AbsXmlData {
 	private boolean delete = false;
 	private boolean options = false;
 	private boolean head = false;
+	private String structure = null;
 	
 	public void setPageName(String pageName) {	this.pageName = pageName;	}
 	public void setDebug(String debug) {	this.debug = debug;	}
@@ -28,6 +33,7 @@ public class PageXmlData extends AbsXmlData {
 	public void setDelete(String delete) {	this.delete = (delete == null || delete.equals("no") ? false : ( delete.equals("yes") ? true : false) );	}
 	public void setOptions(String options) {	this.options = (options == null || options.equals("no") ? false : ( options.equals("yes") ? true : false) );	}
 	public void setHead(String head) {	this.head = (head == null || head.equals("no") ? false : ( head.equals("yes") ? true : false) );	}
+	public void setStructure(String str) {	this.structure = str;	}
 
 	public String getPageName() {	return this.pageName;	}
 	public String getDebug() {	return this.debug;	}
@@ -42,6 +48,18 @@ public class PageXmlData extends AbsXmlData {
 	public boolean getDelete() {	return this.delete;	}
 	public boolean getOptions() {	return this.options;	}
 	public boolean getHead() {	return this.head;	}
+	public boolean isMethodAllowed(String method) {
+		HashMap<String, Boolean> map = new HashMap<>();
+		map.put("post", getPost());
+		map.put("get", getGet());
+		map.put("put", getPut());
+		map.put("delete", getDelete());
+		map.put("options", getOptions());
+		map.put("head", getHead());
+		
+		return map.get(method);
+	}
+	public String getStructure() {	return this.structure;	}
 	
 	public String getMyInfo() {	return "Control: " + (this.controlName) + " | Service: " + (this.serviceName) + " | Tag: " + (getTag());	}
 }

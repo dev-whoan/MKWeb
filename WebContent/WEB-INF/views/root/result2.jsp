@@ -71,10 +71,9 @@ This is page1.jsp
                         </tr>
                     </thead>
                     <tbody id="table-wrapper">
-                    	<mkw:get obj="list" rst="alpha" like="no">
+                    	<mkw:get obj="list" rst="alpha" like="yes">
                     		<tr class="one-item">
                     			<td> ${alpha.name}</td>
-                    			<td> ${alpha.address}</td>
                     		</tr>
                     	</mkw:get>
                     </tbody>

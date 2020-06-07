@@ -49,40 +49,36 @@ public class MkRestApi extends HttpServlet {
     }
     
     private boolean checkMethod(HttpServletRequest request, String rqMethod, String mkPage) {
-    	/*
-    	//Control단 method가 허영되늕 ㅣ확ㅇ니 하고 통과되면
-    	PageXmlData apiPageInfo = null;
+    	
+    	ArrayList<PageXmlData> apiPageInfo = null;
     	if(MkRestApiPageConfigs.Me().getControl(mkPage) != null) {
-    		apiPageInfo = MkRestApiPageConfigs.Me().getControl(mkPage).get(0);
+    		apiPageInfo = MkRestApiPageConfigs.Me().getControl(mkPage);
     	}
+    	
     	if(apiPageInfo == null) {
     		mklogger.error(TAG + " api page info null");
-    		return false;
+    		return false; 
     	}
     	
-    	boolean[] allowMethods = {
-    			apiPageInfo.getPost(),
-    			apiPageInfo.getGet(),
-    	    	apiPageInfo.getPut(),
-    	    	apiPageInfo.getDelete(),
-    	    	apiPageInfo.getOptions(),
-    	    	apiPageInfo.getHead()
-    	};
+    	if(!apiPageInfo.get(0).isMethodAllowed(rqMethod)) { 
+    		mklogger.error(TAG + " The request method is not allowed : " + rqMethod);
+			return false;
+		}
     	
-    	int id = -1;
-    	for(int i = 0; i < methods.length; i++) {
-    		if(methods[i].equals(rqMethod)) {
-    			id = i;
+    	PageXmlData pageInfo = null;
+    	for(int i = 0; i < apiPageInfo.size(); i++) {
+    		if(apiPageInfo.get(i).getSql()[3].equals(rqMethod)) {
+    			pageInfo = apiPageInfo.get(i);
     			break;
     		}
     	}
     	
-    	if(!allowMethods[id]) {
-    		mklogger.error(TAG + " The Method is not allowed : " + rqMethod);
+    	if(pageInfo == null) {
+    		mklogger.error(TAG + " No Service is allowed for request method : " + rqMethod);
     		return false;
     	}
-    	//Control Sql단에서 확인
-    	String[] sqlInfo = apiPageInfo.getSql();
+    	return true;
+    	
     	//get일때는 ? 이후는 모두 요청 파라미터
     	//에 대하여 최초의 .으로 좌측이 파라미터로 요청 SQL ID 확인.
     	//해당 SQL ID가 METHOD를 지원하는가?
@@ -93,10 +89,8 @@ public class MkRestApi extends HttpServlet {
     	//그냥 Parameter 자르면 됨.
     	
 		
-		requestParams = cpi.getRequestPageParameterName(request);
-		requestValues = cpi.getRequestParameterValues(request);
-		*/
-    	
+	//	requestParams = cpi.getRequestPageParameterName(request);
+	//	requestValues = cpi.getRequestParameterValues(request);
     }
     
     private boolean isKeyValid(String key, String mkPage) {
@@ -136,27 +130,31 @@ public class MkRestApi extends HttpServlet {
     }
 
     protected void doHead(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
-    	mklogger.debug(TAG + "HEAD Method");
+    	doTask(request, response);
     }
 
     protected void doOptions(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
-    	mklogger.debug(TAG + "OPTIONS Method");
+    	doTask(request, response);
     }
     
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
-    	mklogger.debug(TAG + "PUT Method");
+    	doTask(request, response);
     }
     
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
-    	mklogger.debug(TAG + "DEL Method");
+    	doTask(request, response);
     }
     
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		String reqApiKey = request.getParameter(MkConfigReader.Me().get("mkweb.restapi.searchkey.exp"));
+		doTask(request, response);
+	}
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doTask(request, response);
+	}
+
+	private void doTask(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
+    	String reqApiKey = request.getParameter(MkConfigReader.Me().get("mkweb.restapi.searchkey.exp"));
 		
 		//페이지 유효성 검사
 		String requestURI = request.getRequestURI();
@@ -183,80 +181,16 @@ public class MkRestApi extends HttpServlet {
 			return;
 		}
 		
-		PrintWriter out = response.getWriter();
-
-		response.setStatus(200);
-		
-		response.setHeader("Content-Location", "gimojji");
-		response.setHeader("Content-Type", "ko-kr");
-		response.setHeader("Retry-After", "5");
-		//method 검사 
-		/*
-	//	MkDbAccessor DA = new MkDbAccessor();
-		
-		MkDbAccessor DA = new MkDbAccessor();
-		
-		if(!cpi.comparePageValueWithRequest(pxData.getData(), requestValues)) {
-			mklogger.error(TAG + " Request Value is not authorized. Please check page config.");
-			return;
-		}
-		
-		String service = pxData.getServiceName().split("\\.")[1];
-		
-		String befQuery = cpi.regularQuery(service); 
-		String query = cpi.setQuery(befQuery);
-		
-		if(requestValues != null) {
-			DA.setPreparedStatement(query);
-			
-			String[] reqs = new String[requestValues.size()];
-			String tempValue = "";
-			for(int i = 0; i < reqs.length; i++) {
-				tempValue = request.getParameter(requestParams + "." + requestValues.get(i));
-				reqs[i] = tempValue;
-			}
-			tempValue = null;
-			DA.setRequestValue(reqs);
-			reqs = null;
-			
-			DA.executeDML();
-		}
-		
-		MkJsonData jo = new MkJsonData();
-		PrintWriter out = response.getWriter();
-		
-		out.write("<html><head></head><body>");
-		out.write("<br>");
-		
-		
-		
-		out.write("</body></html>");
-		*/
-	}
-
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		String reqApiKey = request.getParameter(MkConfigReader.Me().get("mkweb.restapi.searchkey.exp"));
-		
-		String requestURI = request.getRequestURI();
-		String[] reqPage = null;
-		String mkPage = null;
-		reqPage = requestURI.split("/");
-		mkPage = reqPage[reqPage.length - 1];
-		
-		String[] noUrlPattern = new String[reqPage.length-1];
-		for(int i = 1; i < reqPage.length; i++) {
-			noUrlPattern[i-1] = reqPage[i];
-		}
-		
-		if(!isKeyValid(reqApiKey, mkPage)) {
+		if(!checkMethod(request, "get", mkPage)) {
 			RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/600.jsp");
 			dispatcher.forward(request, response);
 			return;
 		}
-	}
-
+		
+		if(!request.getHeader("Content-Type").toLowerCase().contentEquals("application/json")) {
+			response.setStatus(415);
+			return;
+		}
+		//application/json 이 아니면 거절
+    }
 }

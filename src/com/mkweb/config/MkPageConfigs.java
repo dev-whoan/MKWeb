@@ -124,7 +124,7 @@ public class MkPageConfigs extends MkPageConfigCan{
 										}
 
 										String serviceName = service.getAttributes().getNamedItem("type").getNodeValue() + "." + SQL_INFO[0];
-										PageXmlData curData = setPageXmlData(serviceName, cl_info, SQL_INFO, PRM_NAME, VAL_INFO);
+										PageXmlData curData = setPageXmlData(serviceName, cl_info, SQL_INFO, PRM_NAME, VAL_INFO, null);
 										printPageInfo(curData, "info");
 										xmlData.add(curData);
 										page_configs.put(cl_info[0], xmlData);
@@ -138,7 +138,7 @@ public class MkPageConfigs extends MkPageConfigCan{
 								for(String s : temp_sql) {	s = "no data";	}
 								
 								temp_cl[0] = node.getAttributes().getNamedItem("name").getNodeValue();
-								PageXmlData curData = setPageXmlData("No Service", temp_cl, temp_sql, "No Parameter", "No Value");
+								PageXmlData curData = setPageXmlData("No Service", temp_cl, temp_sql, "No Parameter", "No Value", null);
 								printPageInfo(curData, "info");
 								xmlData.add(curData);
 								page_configs.put(temp_cl[0], xmlData);
@@ -183,7 +183,7 @@ public class MkPageConfigs extends MkPageConfigCan{
 	}
 	
 	@Override
-	protected PageXmlData setPageXmlData(String serviceName, String[] cl_info, String[] sqlInfo, String PRM_NAME, String VAL_INFO) {
+	protected PageXmlData setPageXmlData(String serviceName, String[] cl_info, String[] sqlInfo, String PRM_NAME, String VAL_INFO, String STRUCTURE) {
 		PageXmlData result = new PageXmlData();
 		result.setControlName(cl_info[0]);
 		result.setServiceName(serviceName);

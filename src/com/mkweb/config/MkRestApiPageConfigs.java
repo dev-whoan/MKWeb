@@ -109,6 +109,7 @@ public class MkRestApiPageConfigs extends MkPageConfigCan{
 										String[] SQL_INFO = new String[sl_list.length];
 										String PRM_NAME = null;
 										String VAL_INFO = null;
+										String STRUCTURE = null;
 										for(int k = 0; k < service_param.getLength(); k++) {
 											Node service_info = service_param.item(k);
 
@@ -122,6 +123,9 @@ public class MkRestApiPageConfigs extends MkPageConfigCan{
 														Node tN = attributes.getNamedItem(sl_list[sli]);
 														SQL_INFO[sli] = (tN != null ? tN.getNodeValue() : null);
 													}
+													break;
+												case "returnStructure":
+													STRUCTURE = attributes.getNamedItem("value").getNodeValue();
 													break;
 												case "Parameter":
 													PRM_NAME = attributes.getNamedItem("name").getNodeValue();
@@ -137,7 +141,7 @@ public class MkRestApiPageConfigs extends MkPageConfigCan{
 										String serviceName = service.getAttributes().getNamedItem("type").getNodeValue() + "." + SQL_INFO[0];
 
 										//RestApiPageXmlData
-										PageXmlData rapData = setPageXmlData(serviceName, cl_info, SQL_INFO, PRM_NAME, VAL_INFO);
+										PageXmlData rapData = setPageXmlData(serviceName, cl_info, SQL_INFO, PRM_NAME, VAL_INFO, STRUCTURE);
 										printPageInfo(rapData, "info");
 										xmlData.add(rapData);
 										page_configs.put(cl_info[0], xmlData);
@@ -146,13 +150,14 @@ public class MkRestApiPageConfigs extends MkPageConfigCan{
 							}else {
 								String PRM_NAME = "No Parameter";
 								String VAL_INFO = "No Value";
+								String STRUCTURE = "No Structure";
 								
 								String[] temp_sql = new String[sl_list.length];
 								for(String s : temp_sql) {	s = "no data";	}
 								
 								cl_info[0] = node.getAttributes().getNamedItem("name").getNodeValue();
 								
-								PageXmlData rapData = setPageXmlData("No Service", cl_info, temp_sql, PRM_NAME, VAL_INFO);
+								PageXmlData rapData = setPageXmlData("No Service", cl_info, temp_sql, PRM_NAME, VAL_INFO, STRUCTURE);
 								printPageInfo(rapData, "info");
 								xmlData.add(rapData);
 								page_configs.put(cl_info[0], xmlData);
@@ -169,7 +174,7 @@ public class MkRestApiPageConfigs extends MkPageConfigCan{
 		}
 	}
 	@Override
-	protected PageXmlData setPageXmlData(String serviceName, String[] cl_info, String[] sqlInfo, String PRM_NAME, String VAL_INFO) {
+	protected PageXmlData setPageXmlData(String serviceName, String[] cl_info, String[] sqlInfo, String PRM_NAME, String VAL_INFO, String STRUCTURE) {
 		PageXmlData result = new PageXmlData();
 		result.setControlName(cl_info[0]);
 		result.setServiceName(serviceName);
@@ -189,6 +194,8 @@ public class MkRestApiPageConfigs extends MkPageConfigCan{
 		result.setSql(sqlInfo);
 		result.setParameter(PRM_NAME);
 		result.setData(VAL_INFO);
+		
+		result.setStructure(STRUCTURE);
 		return result;
 		
 	}
@@ -214,6 +221,16 @@ public class MkRestApiPageConfigs extends MkPageConfigCan{
 		String PRM_NAME = xmlData.getParameter();
 		String VAL_INFO = xmlData.getData();
 
+		boolean authorized = xmlData.getAuthorizedRequire();
+		boolean[] methods = {
+				xmlData.getPost(),
+				xmlData.getGet(),
+				xmlData.getPut(),
+				xmlData.getDelete(),
+				xmlData.getOptions(),
+				xmlData.getHead()
+		};
+		
 		String valMsg = "";
 		String[] valBuffer = VAL_INFO.split("\n");
 		for (int ab = 0; ab < valBuffer.length; ab++) {
@@ -223,10 +240,26 @@ public class MkRestApiPageConfigs extends MkPageConfigCan{
 			else
 				valMsg += ("\n\t" + tempVal);
 		}
+		/*
+		 		"name",
+		"debug",
+		"dir_key",
+		"authorized",
+		"post",
+		"get",
+		"put",
+		"delete",
+		"options",
+		"head"
+		 * 
+		 */
 		String tempMsg = "\n忙式式式式式式式式式式式式式式式式式式式式式式式式式式Page Control  :  " + controlName + "式式式式式式式式式式式式式式式式式式式式式式式式式式式式"
 				+ "\n弛View Dir:\t" + pageDir + "\t\tView Page:\t" + pageName + "\n弛Logical Dir:\t" + logicalDir
 				+ "\t\tDebug Level:\t" + debugLevel
-				+ "\n弛Service Name:\t" + serviceName + "\tParameter:\t" + PRM_NAME;
+				+ "\n弛Service Name:\t" + serviceName + "\tParameter:\t" + PRM_NAME
+				+ "\n|Authorized  :\t" + authorized + "\tPost:\t" + methods[0] + "\tGet:\t" + methods[1]
+				+ "\n|Put         :\t" + methods[2] + "\tDelete:\t" + methods[3]
+						+ "\tOptions:\t" + methods[4] + "\tHead:\t"+ methods[5];
 
 		if(type == "info") {
 			tempMsg += "\n弛SQL:\t" + sql_info
