@@ -7,6 +7,7 @@ import org.json.simple.parser.ParseException;
 
 import com.mkweb.logger.MkLogger;
 
+
 public class MkJsonData {
 	private JSONObject jsonObject = null;
 	private JSONArray jsonArray = null;
@@ -27,35 +28,33 @@ public class MkJsonData {
 		jsonArray = null;
 	}
 
-	private boolean isValidDataForJson(String data) {
+	private JSONObject isValidDataForJson(String data) {
 		try {
-			return (JSONObject) new JSONParser().parse(data) != null;
+			mklogger.debug(TAG + data);
+
+			JSONObject jo = new JSONObject();
+			JSONParser parser = new JSONParser();
+			Object obj = parser.parse(data);
+			jo = (JSONObject) obj;
+			
+			return jo;
 		} catch (ParseException e) {
-			mklogger.error(TAG + " Given data is not valid for JSONObject.\n" + data);
+			mklogger.error(TAG + " ParseException:: " + e + " Given data is not valid for JSONObject.\n" + data);
+		} catch(NullPointerException e2) {
+			mklogger.error(TAG + " NullPoitnerException:: " + e2 + "\nGiven data is not valid for JSONObject.\n" + data);
 		}
-		return false;
+		return null;
 	}
 
 	public boolean setJsonObject() {
-		boolean isDone = false;
 		if(this.data == null) {
 			mklogger.error(TAG + " No given data.");
 			return false;
 		}
 
-		if(!isValidDataForJson(data)) 
+		if((jsonObject = isValidDataForJson(this.data)) == null)
 			return false;
-		
-		  
-		JSONParser parser = new JSONParser();
-		Object obj;
-		try {
-			obj = parser.parse(data);
-		} catch (ParseException e) {
-			mklogger.error(TAG + " Given data is not valid for JSONObject." + e);
-			return false;
-		}
-		jsonObject = (JSONObject) obj;
+
 		return true;
 	}
 	public JSONObject getJsonObject() {	return this.jsonObject;	}

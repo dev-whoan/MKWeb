@@ -159,9 +159,8 @@ public class CheckPageInfo {
 		String c1 = userLogicalDir + requestControlName;
 		String c2 = AllowPath + xmlData.getControlName();
 		
-		if(!c1.equals(c2)){
+		if(!c1.equals(c2))
 			return false;
-		}
 		
 		return true;
 	}

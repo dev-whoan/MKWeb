@@ -131,17 +131,13 @@ public class MkPageConfigs extends MkPageConfigCan{
 									}
 								}
 							}else {
-								String[] temp_cl = new String[cl_list.length];
-								for(String c : temp_cl) {	c = "no data";	}
-								
 								String[] temp_sql = new String[sl_list.length];
 								for(String s : temp_sql) {	s = "no data";	}
 								
-								temp_cl[0] = node.getAttributes().getNamedItem("name").getNodeValue();
-								PageXmlData curData = setPageXmlData("No Service", temp_cl, temp_sql, "No Parameter", "No Value", null);
+								PageXmlData curData = setPageXmlData("No Service", cl_info, temp_sql, "No Parameter", "No Value", null);
 								printPageInfo(curData, "info");
 								xmlData.add(curData);
-								page_configs.put(temp_cl[0], xmlData);
+								page_configs.put(cl_info[0], xmlData);
 							}
 							
 						}
