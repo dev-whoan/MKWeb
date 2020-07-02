@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.json.simple.JSONObject;
+
 import com.mkweb.config.MkConfigReader;
 import com.mkweb.logger.MkLogger;
 
@@ -49,6 +51,12 @@ public class MkDbAccessor {
 		for(int i = 0; i < reqValueArr.length; i++) 
 			reqValueArr[i] = arr[i];
 	}
+
+	public void setRequestValue(ArrayList<String> arr, JSONObject jsonObject) {
+		reqValue = new ArrayList<>();
+		for(int i = 0; i < arr.size(); i++) 
+			reqValue.add( jsonObject.get(arr.get(i)).toString() );
+	}
 	
 	private Connection connectDB() throws SQLException{
 		Connection conn = null;
@@ -85,7 +93,7 @@ public class MkDbAccessor {
 	}
 	
 	//DML
-	public ArrayList<Object> executeSEL(){
+	public ArrayList<Object> executeSEL(boolean asJson){
 		ArrayList<Object> rst = new ArrayList<Object>();
 		ResultSet rs = null;
 		
@@ -129,7 +137,10 @@ public class MkDbAccessor {
 						result = new HashMap<String, Object>();
 						for( String name : columnNames )
 						{
-							result.put(name, rs.getObject(name));
+							if(asJson)
+								result.put("\""+name+"\"", "\""+rs.getObject(name)+"\"");
+							else
+								result.put(name, rs.getObject(name));
 						}
 						
 						rst.add(result);
@@ -149,7 +160,7 @@ public class MkDbAccessor {
 		return rst;
 	}
 	
-	public ArrayList<Object> executeSELLike(){
+	public ArrayList<Object> executeSELLike(boolean asJson){
 		ArrayList<Object> rst = new ArrayList<Object>();
 		ResultSet rs = null;
 		
@@ -163,7 +174,7 @@ public class MkDbAccessor {
 					
 					if(reqValue != null) {
 						for(int i = 0; i < reqValue.size(); i++) 
-							prestmt.setString((i+1), reqValue.get(i));
+							prestmt.setString((i+1), "%" + reqValue.get(i) + "%");
 					}else {
 						if(reqValueArr != null) {
 							for(int i = 0; i < reqValueArr.length; i++)
@@ -194,7 +205,10 @@ public class MkDbAccessor {
 						result = new HashMap<String, Object>();
 						for( String name : columnNames )
 						{
-							result.put(name, rs.getObject(name));
+							if(asJson)
+								result.put("\""+name+"\"", "\""+rs.getObject(name)+"\"");
+							else 
+								result.put(name, rs.getObject(name));
 						}
 						
 						rst.add(result);

@@ -31,22 +31,22 @@ $(document).ready(function(){
 
 	$("#testapi").click(function(){
 	//	var jsonInfo = '{"search_key":"apple", "data" : "민환"}';
-		var jsonInfo = '{"search_key":"apple", "person":{"name":"민환","age":24}}';
-		console.log(jsonInfo);
+		var jsonInfo = '{"search_key":"apple", "name":"김", "user_SEQ":"1"}';
+		var reqInfo = "search_key=apple&name=김민환&user_SEQ=1";
+		
 		var testApi = $.ajax({
-			type : "POST", //전송방식을 지정한다 (POST,GET)
+			type : "GET", //전송방식을 지정한다 (POST,GET)
 	        url : "/mk_api_key/users",//호출 URL을 설정한다. GET방식일경우 뒤에 파라티터를 붙여서 사용해도된다.
 	        dataType : "json",//호출한 페이지의 형식이다. xml,json,html,text등의 여러 방식을 사용할 수 있다.
 	        data : {
-	        	"apiData" : jsonInfo
-	        }
-	    //    contentType : "application/json; charset=utf-8"
+	    //    	"apiData" : jsonInfo
+	        	"apiData" : reqInfo
+	        },
+	        contentType : "application/json; charset=utf-8"
 		})
 		.done(function(data, status){
 			console.log("성공!" + status);
 		});
-			
-		
 	});
 });
 
@@ -98,19 +98,7 @@ This is apicheck.jsp
                             <th>비고</th>
                         </tr>
                     </thead>
-                    <tbody id="table-wrapper">
-                    	<mkw:get obj="list" rst="alpha" like="no">
-                    		<tr class="one-item">
-                    			<td> ${alpha.name}</td>
-                    			<td> ${alpha.address}</td>
-                    			<td>
-                    			<button onclick="modifyUser('${alpha.user_SEQ}')">수정</button>
-                    			<button onclick="removeUser('${alpha.user_SEQ}')">삭제</button>
-                    			</td>
-                    		</tr>
-                    	</mkw:get>
-                        
-                    </tbody>
+                    
                 </table>
 
                 <div id="modify-user">

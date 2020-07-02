@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <MkSQL xmlid="sql">
-	<sql id="api_selectUser" db="mkweb" allow_single="yes">
+	<sql id="api_selectUser" db="mkweb" allow_single="yes" allow_like="yes">
 		<!-- columns which can be @CONDITION@ -->
 		<columns>
-			@user_SEQ
+			@user_SEQ  
 			@name
 			@address
 		</columns>
@@ -12,7 +12,7 @@
 		<query>
 			SELECT user_SEQ, name, address
 			FROM User
-			@CONDITION@;
+			WHERE @CONDITION@;
 		</query>
 	</sql>
 </MkSQL>

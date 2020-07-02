@@ -2,6 +2,8 @@ package com.mkweb.security;
 
 import java.nio.ByteBuffer;
 import java.security.AlgorithmParameters;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
 
@@ -15,6 +17,25 @@ import javax.crypto.spec.SecretKeySpec;
 public class MyCrypto {
 	
 	public MyCrypto() {
+	}
+	
+	public String MD5(String str){
+		String MD5 = ""; 
+		try{
+			MessageDigest md = MessageDigest.getInstance("MD5"); 
+			md.update(str.getBytes()); 
+			byte byteData[] = md.digest();
+			StringBuffer sb = new StringBuffer(); 
+			for(int i = 0 ; i < byteData.length ; i++){
+				sb.append(Integer.toString((byteData[i]&0xff) + 0x100, 16).substring(1));
+			}
+			MD5 = sb.toString();
+
+		}catch(NoSuchAlgorithmException e){
+			e.printStackTrace(); 
+			MD5 = null; 
+		}
+		return MD5;
 	}
 	
 	public String encAES256(String msg, String key) throws Exception {
@@ -72,4 +93,6 @@ public class MyCrypto {
 		
 		return new String(decryptedTextBytes);
 	}
+	
+	
 }

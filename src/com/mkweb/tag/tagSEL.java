@@ -133,9 +133,9 @@ public class tagSEL extends SimpleTagSupport {
 				reqs = null;
 			}
 			if(this.like.equals("no"))
-				dbResult = DA.executeSEL();
+				dbResult = DA.executeSEL(false);
 			else
-				dbResult = DA.executeSELLike();
+				dbResult = DA.executeSELLike(false);
 			
 			HashMap<String, Object> result = new HashMap<String, Object>();
 			

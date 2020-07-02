@@ -1,7 +1,8 @@
 package com.mkweb.config;
 
 import java.io.File;
-
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import org.w3c.dom.NamedNodeMap;
@@ -32,7 +33,8 @@ public class MkRestApiSqlConfigs extends MkSqlConfigCan {
 	private String[] sl_list = {
 			"id",
 			"db",
-			"allow_single"
+			"allow_single",
+			"allow_like"
 	};
 	private String[] sl_info = new String[sl_list.length];
 
@@ -63,9 +65,30 @@ public class MkRestApiSqlConfigs extends MkSqlConfigCan {
 						Node tN = attributes.getNamedItem(sl_list[sli]);
 						sl_info[sli] = (tN != null ? tN.getNodeValue() : null);
 					}
-
-					String query = node.getTextContent();
-
+					NodeList queryNodes = node.getChildNodes();
+					ArrayList<String> sqlColumns = null;
+					
+					String sqlQuerys = null;
+					if(queryNodes != null) {
+						for(int qn = 0; qn < queryNodes.getLength(); qn++) {
+							Node sqlInfo = queryNodes.item(qn);
+							if(sqlInfo.getNodeType() == Node.ELEMENT_NODE) {
+								if(sqlInfo.getNodeName().contentEquals("columns")) {
+									String col = sqlInfo.getTextContent();
+									String[] colSplits = col.split("@");
+									sqlColumns = new ArrayList<>();
+									for(int k = 1; k < colSplits.length; k++) {
+										sqlColumns.add(colSplits[k].trim());
+									}
+						//			sqlColumns = (ArrayList<String>) Arrays.asList(colSplit
+								}else if(sqlInfo.getNodeName().contentEquals("query")) {
+									sqlQuerys = sqlInfo.getTextContent();
+								}
+							}
+						}
+					}
+					
+					
 					SqlXmlData xmlData = new SqlXmlData();
 
 					xmlData.setControlName(this.controlName);
@@ -73,7 +96,9 @@ public class MkRestApiSqlConfigs extends MkSqlConfigCan {
 					xmlData.setServiceName(sl_info[0]);
 					xmlData.setDB(sl_info[1]);
 					xmlData.setAllowSingle(sl_info[2]);
-					xmlData.setData(query);
+					xmlData.setAllowLike(sl_info[3]);
+					xmlData.setData(sqlQuerys);
+					xmlData.setColumnData(sqlColumns);
 
 					api_sql_configs.put(sl_info[0], xmlData);
 
@@ -82,10 +107,10 @@ public class MkRestApiSqlConfigs extends MkSqlConfigCan {
 					mklogger.info("Allow  :\t\t\t" + sl_info[2]);
 					mklogger.info("");
 
-					query = query.trim();
+					sqlQuerys = sqlQuerys.trim();
 					String queryMsg = "";
 
-					String[] queryBuffer = query.split("\n");
+					String[] queryBuffer = sqlQuerys.split("\n");
 
 					for (int j = 0; j < queryBuffer.length; j++) {
 						String tempQuery = queryBuffer[j].trim();
@@ -101,7 +126,7 @@ public class MkRestApiSqlConfigs extends MkSqlConfigCan {
 		}
 
 
-		mklogger.info("=*=*=*=*=* MkWeb Rest Api Sql Configs Start*=*=*=*=*=*=");
+		mklogger.info("=*=*=*=*=* MkWeb Rest Api Sql Configs Done*=*=*=*=*=*=");
 	}
 
 	public SqlXmlData getControlService(String serviceName) {

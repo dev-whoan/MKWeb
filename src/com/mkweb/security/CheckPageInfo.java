@@ -60,6 +60,42 @@ public class CheckPageInfo {
 		return requestValues;
 	}
 	
+	public String setApiQuery(String query, ArrayList<String> key) {
+		String befQuery = query;
+		String[] testQueryList = befQuery.split("@CONDITION@");
+		if(testQueryList.length == 1)
+			return befQuery;
+
+		String condition = " WHERE ";
+		for(int i = 0; i < key.size(); i++) {
+			condition += key.get(i) + "=" + "?";
+			
+			if(i < key.size() -1)
+				condition += " AND ";
+		}
+		befQuery = befQuery.replace("@CONDITION@", condition);
+
+		return befQuery;
+	}
+	
+	public String setApiQueryLike(String query, ArrayList<String> key) {
+		String befQuery = query;
+		String[] testQueryList = befQuery.split("@CONDITION@");
+		if(testQueryList.length == 1)
+			return befQuery;
+		
+		String condition = " WHERE ";
+		for(int i = 0; i < key.size(); i++) {
+			condition += key.get(i) + " LIKE " + "?";
+			
+			if(i < key.size() -1)
+				condition += " AND ";
+		}
+		befQuery = befQuery.replace("@CONDITION@", condition);
+		
+		return befQuery;
+	}
+	
 	public String setQuery(String query) {
 		String befQuery = query;
 		String[] testQueryList = befQuery.split("@");
@@ -189,9 +225,6 @@ public class CheckPageInfo {
 		
 		String c1 = userLogicalDir + requestControlName;
 		String c2 = AllowPath + xmlData.getControlName();
-		
-		mklogger.debug(TAG + c1);
-		mklogger.debug(TAG + c2);
 		
 		if(!c1.equals(c2)){
 			return false;
