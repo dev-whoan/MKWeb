@@ -42,25 +42,54 @@ public class MkDbAccessor {
 	
 	public void setRequestValue(ArrayList<String> arr) {
 		reqValue = new ArrayList<>();
-		for(int i = 0; i < arr.size(); i++) 
+		mklogger.temp(TAG + "=====RequestValue=====", false);
+		mklogger.temp(this.psmt, false);
+		String s = "Values : (";
+		for(int i = 0; i < arr.size(); i++) {
 			reqValue.add(arr.get(i));
+			s += arr.get(i);
+			if(i < arr.size() - 1)
+				s += ", ";
+		}
+		s += ")";
+		mklogger.temp(s, false);
+		mklogger.flush("info");
 	}
 	
 	public void setRequestValue(String[] arr) {
 		reqValueArr = new String[arr.length];
-		for(int i = 0; i < reqValueArr.length; i++) 
+		mklogger.temp(TAG + "=====RequestValue=====", false);
+		mklogger.temp(this.psmt, false);
+		String s = "Values : (";
+		for(int i = 0; i < reqValueArr.length; i++) {
 			reqValueArr[i] = arr[i];
+			s += arr[i];
+			if(i < reqValueArr.length - 1)
+				s += ", ";
+		}
+		s += ")";
+		mklogger.temp(s, false);
+		mklogger.flush("info");
 	}
 
 	public void setRequestValue(ArrayList<String> arr, JSONObject jsonObject) {
 		reqValue = new ArrayList<>();
-		for(int i = 0; i < arr.size(); i++) 
+		mklogger.temp(TAG + "=====RequestValue=====", false);
+		mklogger.temp(this.psmt, false);
+		String s = "Values : (";
+		for(int i = 0; i < arr.size(); i++) {
 			reqValue.add( jsonObject.get(arr.get(i)).toString() );
+			s += jsonObject.get(arr.get(i)).toString();
+			if(i < arr.size() - 1)
+				s += ", ";
+		}
+		s += ")";
+		mklogger.temp(s, false);
+		mklogger.flush("info");
 	}
 	
 	private Connection connectDB() throws SQLException{
 		Connection conn = null;
-		
 		try {
 			try {
 				Class.forName("com.mysql.cj.jdbc.Driver");

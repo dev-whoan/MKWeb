@@ -98,30 +98,31 @@ public class CheckPageInfo {
 	
 	public String setQuery(String query) {
 		String befQuery = query;
-		String[] testQueryList = befQuery.split("@");
-		String[] replaceTarget = null;
-		
-		if(testQueryList.length == 1)
-			testQueryList = null;
-		
-		if(testQueryList != null) {
-			if(testQueryList.length > 0)
-			{
-				replaceTarget = new String[(testQueryList.length-1)/2];
-				for(int i = 0; i < replaceTarget.length; i++) {
-					replaceTarget[i] = testQueryList[(i*2)+1];
-				}
-			}else {	return null;	}
-		}
-		
-		if(replaceTarget != null) {
-			for(int i = 0; i < replaceTarget.length; i++) {
-				befQuery = befQuery.replaceFirst(("@" + replaceTarget[i]+ "@"), "?");
+		if(befQuery != null) {
+			String[] testQueryList = befQuery.split("@");
+			String[] replaceTarget = null;
+			
+			if(testQueryList.length == 1)
+				testQueryList = null;
+			
+			if(testQueryList != null) {
+				if(testQueryList.length > 0)
+				{
+					replaceTarget = new String[(testQueryList.length-1)/2];
+					for(int i = 0; i < replaceTarget.length; i++) {
+						replaceTarget[i] = testQueryList[(i*2)+1];
+					}
+				}else {	return null;	}
 			}
-		}else {
-			return null;
+			
+			if(replaceTarget != null) {
+				for(int i = 0; i < replaceTarget.length; i++) {
+					befQuery = befQuery.replaceFirst(("@" + replaceTarget[i]+ "@"), "?");
+				}
+			}else {
+				return null;
+			}
 		}
-	
 		return befQuery;
 	}
 	

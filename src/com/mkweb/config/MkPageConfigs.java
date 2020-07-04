@@ -77,13 +77,6 @@ public class MkPageConfigs extends MkPageConfigCan{
 									cl_info[cl] = node.getAttributes().getNamedItem(cl_list[cl]).getNodeValue();
 								}
 							}
-							/*
-							String controlName = node.getAttributes().getNamedItem("name").getNodeValue();
-							String logicalDir = node.getAttributes().getNamedItem("dir_key").getNodeValue();
-							String pageName = node.getAttributes().getNamedItem("page").getNodeValue();
-							String pageDir = node.getAttributes().getNamedItem("dir").getNodeValue();
-							String debug = node.getAttributes().getNamedItem("debug").getNodeValue();
-							 */
 							xmlData = new ArrayList<PageXmlData>();
 							Element elem = (Element) node;
 							NodeList services = elem.getElementsByTagName("Service");
@@ -113,7 +106,9 @@ public class MkPageConfigs extends MkPageConfigCan{
 													}
 													break;
 												case "Parameter":
-													PRM_NAME = attributes.getNamedItem("name").getNodeValue();
+													PRM_NAME = attributes.getNamedItem("name") != null ?
+															   attributes.getNamedItem("name").getNodeValue() :
+															   null;
 													break;
 												case "Value":
 													VAL_INFO = service_info.getTextContent();

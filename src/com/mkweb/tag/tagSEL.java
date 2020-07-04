@@ -104,10 +104,19 @@ public class tagSEL extends SimpleTagSupport {
 		if(query == null)
 			query = befQuery;
 		
-		if(!requestParams.equals(pageParameter.get(rstID))) {
-			mklogger.error(TAG + " Request parameter is invalid. Please check page config. (" + requestParams + ")");
-			return;
+		if(requestParams != null && pageParameter.get(rstID) != null) {
+			if(!requestParams.equals(pageParameter.get(rstID))) {
+				mklogger.error(TAG + " Request parameter is invalid. Please check page config. (" + requestParams + ")");
+				return;
+			}
+		}else {
+			if( (requestParams != null && pageParameter.get(rstID) == null) || (requestParams == null && pageParameter.get(rstID) != null))
+			{
+				mklogger.error(TAG + " Request parameter is invalid. Please check page config. (" + requestParams + ")");
+				return;
+			}
 		}
+		
 
 		if(this.obj == "list")
 		{
@@ -144,7 +153,7 @@ public class tagSEL extends SimpleTagSupport {
 				for(int i = 0; i < dbResult.size(); i++)
 				{
 					result = (HashMap<String, Object>) dbResult.get(i);
-					
+					mklogger.debug(TAG + "°á°ú\n" + result);
 					((PageContext)getJspContext()).getRequest().setAttribute(this.rst, result);
 					getJspBody().invoke(null);
 				}
