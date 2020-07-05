@@ -63,10 +63,10 @@ public class tagSEL extends SimpleTagSupport {
 		String requestParams = null;
 		ArrayList<String> requestValues = new ArrayList<String>();
 		
-		requestParams = cpi.getRequestPageParameterName(request);
-		requestValues = cpi.getRequestParameterValues(request);
-		
 		PageInfo pageInfo = getPageControl(request);
+		
+		requestParams = cpi.getRequestPageParameterName(request, pageInfo.getPageStaticParams(), pageInfo.getPageStaticParamsName());
+		requestValues = cpi.getRequestParameterValues(request, pageInfo.getPageStaticParams(), pageInfo.getPageStaticParamsName());
 		
 		if(!pageInfo.isSet()) {
 			mklogger.error(TAG + " PageInfo is not set!");
@@ -77,6 +77,12 @@ public class tagSEL extends SimpleTagSupport {
 		ArrayList<String> pageParameter = pageInfo.getPageParameter();
 		ArrayList<String[]> pageSqlInfo = pageInfo.getPageSqlInfo();
 		ArrayList<String> pageValue = pageInfo.getPageValue();
+		
+		if(pageValue != null) {
+			for(String s : pageValue) {
+				mklogger.debug(TAG + " pageValue : " + s );
+			}
+		}
 		
 		int rstID = -1;
 		for(int i = 0; i < pageSqlInfo.size(); i++) {
@@ -91,7 +97,7 @@ public class tagSEL extends SimpleTagSupport {
 			return;
 		}
 		
-		if(!cpi.comparePageValueWithRequest(pageValue.get(rstID), requestValues)) {
+		if(!cpi.comparePageValueWithRequest(pageValue.get(rstID), requestValues, pageInfo.getPageStaticParams())) {
 			mklogger.error(TAG + " Request Value is not authorized. Please check page config.");
 			return;
 		}
@@ -101,23 +107,29 @@ public class tagSEL extends SimpleTagSupport {
 		String query = null;
 		query = cpi.setQuery(befQuery);
 		
+		mklogger.debug(TAG + "requestValues");
+		for(int i = 0; i < requestValues.size(); i++) {
+			mklogger.debug(requestValues.get(i));
+		}
+		
 		if(query == null)
 			query = befQuery;
-		
+		mklogger.debug(TAG + " requestParams : " +requestParams + " || rstID : " + pageParameter.get(rstID));
 		if(requestParams != null && pageParameter.get(rstID) != null) {
 			if(!requestParams.equals(pageParameter.get(rstID))) {
+				
 				mklogger.error(TAG + " Request parameter is invalid. Please check page config. (" + requestParams + ")");
 				return;
 			}
 		}else {
 			if( (requestParams != null && pageParameter.get(rstID) == null) || (requestParams == null && pageParameter.get(rstID) != null))
 			{
+				
 				mklogger.error(TAG + " Request parameter is invalid. Please check page config. (" + requestParams + ")");
 				return;
 			}
 		}
 		
-
 		if(this.obj == "list")
 		{
 			DA = new MkDbAccessor();
@@ -136,6 +148,7 @@ public class tagSEL extends SimpleTagSupport {
 					}else {
 						reqs[i] = tempValue;
 					}
+					mklogger.debug(TAG + "reqs : " + reqs[i]);
 				}
 				tempValue = null;
 				DA.setRequestValue(reqs);

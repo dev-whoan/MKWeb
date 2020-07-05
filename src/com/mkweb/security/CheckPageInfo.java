@@ -18,6 +18,7 @@ public class CheckPageInfo {
 	private String TAG = "[CheckPageInfo]";
 	private MkLogger mklogger = MkLogger.Me();
 	
+	
 	public String regularQuery(String serviceName) {
 		SqlXmlData resultXmlData = MkSQLXmlConfigs.Me().getControlService(serviceName);
 		
@@ -29,31 +30,75 @@ public class CheckPageInfo {
 		return resultXmlData.getData();
 	}
 	
-	public String getRequestPageParameterName(HttpServletRequest request) {
+	private boolean isPageParamValid(ArrayList<String> pageStaticParams, String reqParams) {
+		if(pageStaticParams == null || pageStaticParams.size() == 0) {
+			return false;
+		}
+		for(int i = 0; i < pageStaticParams.size(); i++) {
+			if(reqParams.contentEquals(pageStaticParams.get(i)))
+				return true;
+		}
+		
+		return false;
+	}
+	
+	private String getPageStaticParameter(ArrayList<String> pageStaticParams, String comparison){
+		String result = null;
+		
+		for(String s : pageStaticParams) {
+			if(s.contentEquals(comparison)) {
+				result = s;
+				mklogger.debug(TAG + " (getPageStaticParameter) result : " +result);
+				break;
+			}
+		}
+		
+		return result;
+	}
+	
+	public String getRequestPageParameterName(HttpServletRequest request, ArrayList<String> pageStaticParams, String pageStaticParamsName) {
 		Enumeration params = request.getParameterNames();
 		String requestParams = null;
 		while(params.hasMoreElements()) {
 			String name = params.nextElement().toString().trim();
+			mklogger.debug(TAG + " (getRequestPageParameterName) pageParams : " + pageStaticParams + " || reqParams : " + name);
 			if(name.contains(".")) {
-				requestParams = name.split("\\.")[0]; 
+				String nname = name.split("\\.")[0];
+				if( (!requestParams.contentEquals("") && requestParams != null) && !requestParams.contentEquals(nname)) {
+					mklogger.error(TAG + " (getRequestPageParameterName) The service parameter is not same as previous parameter name(" + requestParams + " :: " + nname);
+					return null;
+				}
+				if(!nname.contentEquals(pageStaticParamsName))
+					requestParams = nname; 
 			}else {
-				mklogger.error(TAG + " Invalid request type.");
-				return null;
+				if(!isPageParamValid(pageStaticParams, name)) {
+					mklogger.error(TAG + " (getRequestPageParameterName) Invalid request parameter : " + name);
+					return null;
+				}
 			}
 		}
+		
 		return requestParams;
 	}
 	
-	public ArrayList<String> getRequestParameterValues(HttpServletRequest request){
+	public ArrayList<String> getRequestParameterValues(HttpServletRequest request, ArrayList<String> pageParams, String pageStaticParamsName){
 		ArrayList<String> requestValues = new ArrayList<String>();
 		Enumeration params = request.getParameterNames();
 		while(params.hasMoreElements()) {
 			String name = params.nextElement().toString().trim();
+			String[] nname = name.split("\\.");
+			mklogger.debug(TAG + " (getRequestParameterValues) pageParams : " + pageParams + " || reqParams : " + name);
 			if(name.contains(".")) {
-				requestValues.add(name.split("\\.")[1]);
+				
+				if(!nname[0].contentEquals(pageStaticParamsName))
+					requestValues.add(nname[1]);
 			}else {
-				mklogger.error(TAG + " Invalid request type.");
-				return null;
+				if(!isPageParamValid(pageParams, name)) {
+					mklogger.error(TAG + " (getRequestParameterValues) Invalid request parameter : " + name );
+					return null;
+				}
+				mklogger.debug(TAG + " \n\nCALL GET PAGE STATIC PARAMETER");
+				requestValues.add(getPageStaticParameter(pageParams, name));
 			}
 		}
 		
@@ -126,34 +171,66 @@ public class CheckPageInfo {
 		return befQuery;
 	}
 	
-	public boolean comparePageValueWithRequest(String pageValue, ArrayList<String> reqValue) {
+	public boolean comparePageValueWithRequest(String pageValue, ArrayList<String> reqValue, ArrayList<String> staticParams) {
 		String pv = "";
+		ArrayList<String> passValues = new ArrayList<>();
 		pageValue = pageValue.trim();
 		
+		if(staticParams != null) {
+			mklogger.debug("\n\n\n");
+			for(int i = 0; i < staticParams.size(); i++) {
+				mklogger.debug(TAG + " staticParams : " + staticParams.get(i));
+				passValues.add(staticParams.get(i));
+			}
+		}
+		
+		
 		String[] pvSetList = pageValue.split("=");
+		
 		try {
+			boolean passExists = false;
+			if(passValues.size() != 0)
+				passExists = true;
 			for(int i = 0; i < (pvSetList.length-1); i++) {
-				pv += pvSetList[i].split("\\.")[1].trim();
+				if(passExists) {
+					for(String passValue : passValues) {
+						if(!pvSetList[i].contentEquals(passValue)) {
+							pv += pvSetList[i].split("\\.")[1];
+							break;
+						}
+					}
+				}
+			//	pv += pvSetList[i].split("\\.")[1].trim();
 			}
 		}catch(java.lang.NullPointerException e) {
-			mklogger.error(TAG + " Wrong split tried on Page value. Please check pageValue. You need to follow MKWeb parameter rule." + e.getMessage());
+			mklogger.error(TAG + " Wrong split tried on Page value(PageValue). Please check pageValue. You need to follow MKWeb parameter rule." + e.getMessage());
 			return false;
 		}catch(java.lang.ArrayIndexOutOfBoundsException e1) {
-			mklogger.error(TAG + " Wrong index on Page value. " + e1.getMessage());
+			mklogger.error(TAG + " Wrong index on Page value(PageValue). " + e1.getMessage());
 			return false;
 		}
 		pv = pv.trim();
 		String rv = "";
 		try {
+			boolean passExists = false;
+			if(passValues.size() != 0)
+				passExists = true;
 			for(int i = 0; i < reqValue.size(); i++) {
-				rv += reqValue.get(i).trim();
+				if(passExists) {
+					for(String passValue : passValues) {
+						if(!reqValue.get(i).contentEquals(passValue)) {
+							rv += reqValue.get(i).trim();
+							break;
+						}
+					}
+				}
 			}
 		}catch(java.lang.NullPointerException e) {
-			mklogger.error(TAG + " Wrong split tried on Request value. Please check what user requested. You need to follow MKWeb parameter rule." + e.getMessage());
+			mklogger.error(TAG + " Wrong split tried on Request value(RealValue). Please check what user requested. You need to follow MKWeb parameter rule." + e.getMessage());
 			mklogger.error(TAG + " User Request: " + rv);
 			return false;
 		}catch(java.lang.ArrayIndexOutOfBoundsException e1) {
-			mklogger.error(TAG + " Wrong index on Request value. " + e1.getMessage());
+			mklogger.error(TAG + " Wrong index on Request value(RealValue). " + e1.getMessage());
 			return false;
 		}
 		

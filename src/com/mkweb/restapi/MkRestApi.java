@@ -387,7 +387,7 @@ public class MkRestApi extends HttpServlet {
 			}
 		}
 
-		if(!cpi.comparePageValueWithRequest(pxData.getData(), sqlKey)) {
+		if(!cpi.comparePageValueWithRequest(pxData.getData(), sqlKey, pxData.getPageStaticParams())) {
 			//¿¹¿Ü
 			mklogger.error(TAG + " Request Value is not authorized. Please check page config.");
 			return;

@@ -55,7 +55,29 @@ public class MkRestApiPageConfigs extends MkPageConfigCan{
 		"rst",
 		"method"
 	};
-
+	private ArrayList<String> setPageParamToStrig(String pageParam) {
+		if(pageParam == null)
+			return null;
+		String[] tempPageParam = pageParam.split("@set" + "\\(");
+		String[] tempPageParam2 = new String[tempPageParam.length];
+		if(tempPageParam.length == 1) 
+			return null;
+		
+		for(int i = 0; i < tempPageParam.length; i++) {
+			tempPageParam2[i] = tempPageParam[i].split("=")[0];
+		}
+		
+		if(tempPageParam2.length == 1)
+			return null;
+		
+		ArrayList<String> result = new ArrayList<String>();
+		
+		for(int i = 1; i < tempPageParam2.length; i++) {
+			result.add(tempPageParam2[i].trim());
+		}
+		
+		return result;
+	}
 	@Override
 	public void setPageConfigs(File[] pageConfigs) {
 		isSet = false;
@@ -98,7 +120,21 @@ public class MkRestApiPageConfigs extends MkPageConfigCan{
 							xmlData = new ArrayList<PageXmlData>();
 							Element elem = (Element) node;
 							NodeList services = elem.getElementsByTagName("Service");
-					//		mklogger.debug(services.item(0));
+							
+							//새로 추가하는 부분
+							NodeList pageParamNodes = elem.getElementsByTagName("PageParams");
+							String pageParamsName = null;
+							ArrayList<String> pageParam = null;
+							if(pageParamNodes.item(0) != null) {
+								Node pageParamNode = pageParamNodes.item(0);
+								pageParamsName = pageParamNode.getAttributes().getNamedItem("name") != null ?
+										pageParamNode.getAttributes().getNamedItem("name").getNodeValue():
+											null;
+								pageParam = setPageParamToStrig(pageParamNode.getTextContent());
+							}else {
+								pageParam = null;
+							}
+							
 							if(services.item(0) != null) {
 								for(int j = 0; j < services.getLength(); j++) {
 									Node service = services.item(j);
@@ -141,7 +177,7 @@ public class MkRestApiPageConfigs extends MkPageConfigCan{
 										String serviceName = service.getAttributes().getNamedItem("type").getNodeValue() + "." + SQL_INFO[0];
 
 										//RestApiPageXmlData
-										PageXmlData rapData = setPageXmlData(serviceName, cl_info, SQL_INFO, PRM_NAME, VAL_INFO, STRUCTURE);
+										PageXmlData rapData = setPageXmlData(pageParamsName, pageParam, serviceName, cl_info, SQL_INFO, PRM_NAME, VAL_INFO, STRUCTURE);
 										printPageInfo(rapData, "info");
 										xmlData.add(rapData);
 										page_configs.put(cl_info[0], xmlData);
@@ -157,7 +193,7 @@ public class MkRestApiPageConfigs extends MkPageConfigCan{
 								
 								cl_info[0] = node.getAttributes().getNamedItem("name").getNodeValue();
 								
-								PageXmlData rapData = setPageXmlData("No Service", cl_info, temp_sql, PRM_NAME, VAL_INFO, STRUCTURE);
+								PageXmlData rapData = setPageXmlData(pageParamsName, pageParam, "No Service", cl_info, temp_sql, PRM_NAME, VAL_INFO, STRUCTURE);
 								printPageInfo(rapData, "info");
 								xmlData.add(rapData);
 								page_configs.put(cl_info[0], xmlData);
@@ -174,9 +210,11 @@ public class MkRestApiPageConfigs extends MkPageConfigCan{
 		}
 	}
 	@Override
-	protected PageXmlData setPageXmlData(String serviceName, String[] cl_info, String[] sqlInfo, String PRM_NAME, String VAL_INFO, String STRUCTURE) {
+	protected PageXmlData setPageXmlData(String pageStaticParamName, ArrayList<String> pageStaticParam, String serviceName, String[] cl_info, String[] sqlInfo, String PRM_NAME, String VAL_INFO, String STRUCTURE) {
 		PageXmlData result = new PageXmlData();
 		result.setControlName(cl_info[0]);
+		result.setPageStaticParamName(pageStaticParamName);
+		result.setPageStaticParams(pageStaticParam);
 		result.setServiceName(serviceName);
 		result.setLogicalDir(cl_info[2]);
 
@@ -203,6 +241,8 @@ public class MkRestApiPageConfigs extends MkPageConfigCan{
 	@Override
 	public void printPageInfo(PageXmlData xmlData, String type) {
 		String controlName = xmlData.getControlName();
+		String pageParamName = xmlData.getPageStaticParamsName();
+		ArrayList<String> pageParams = xmlData.getPageStaticParams();
 		String serviceName = xmlData.getServiceName();
 		String logicalDir = xmlData.getLogicalDir();
 
@@ -240,25 +280,21 @@ public class MkRestApiPageConfigs extends MkPageConfigCan{
 			else
 				valMsg += ("\n\t" + tempVal);
 		}
-		/*
-		 		"name",
-		"debug",
-		"dir_key",
-		"authorized",
-		"post",
-		"get",
-		"put",
-		"delete",
-		"options",
-		"head"
-		 * 
-		 */
+		String PRM = "";
+		if(pageParams != null) {
+			for(int pr = 0; pr < pageParams.size(); pr++) {
+				PRM += pageParams.get(pr);
+				if(pr < pageParams.size() - 1)
+					PRM += ", ";
+			}
+		}
 		String tempMsg = "\n┌──────────────────────────Page Control  :  " + controlName + "────────────────────────────"
-				+ "\n│View Dir:\t" + pageDir + "\t\tView Page:\t" + pageName + "\n│Logical Dir:\t" + logicalDir
-				+ "\t\tDebug Level:\t" + debugLevel
+				+ "\n│View Dir:\t" + pageDir + "\t\tView Page:\t" + pageName
+				+ "\n│Logical Dir:\t" + logicalDir + "\t\tDebug Level:\t" + debugLevel
+				+ "\n│Static Param Name:\t" + pageParamName + "\t\tStatic Param Value:\t" + PRM
 				+ "\n│Service Name:\t" + serviceName + "\tParameter:\t" + PRM_NAME
-				+ "\n|Authorized  :\t" + authorized + "\tPost:\t" + methods[0] + "\tGet:\t" + methods[1]
-				+ "\n|Put         :\t" + methods[2] + "\tDelete:\t" + methods[3]
+				+ "\n│Authorized  :\t" + authorized + "\tPost:\t" + methods[0] + "\tGet:\t" + methods[1]
+				+ "\n│Put         :\t" + methods[2] + "\tDelete:\t" + methods[3]
 						+ "\tOptions:\t" + methods[4] + "\tHead:\t"+ methods[5];
 
 		if(type == "info") {

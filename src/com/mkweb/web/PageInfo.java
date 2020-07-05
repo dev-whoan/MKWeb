@@ -8,6 +8,8 @@ import com.mkweb.logger.MkLogger;
 
 public class PageInfo {
 	private String pageControlName = null;
+	private String pageParamsName = null;
+	private ArrayList<String> pageParams = null;
 	private ArrayList<String> pageServiceName = null;
 	private ArrayList<String> pageParameter = null;
 	private ArrayList<String[]> pageSqlInfo = null;
@@ -35,7 +37,7 @@ public class PageInfo {
 			mklogger.error(TAG + " pageControlName is invalid : " + pageControlName);
 			return;
 		}
-		
+		pageParams = pxd.get(0).getPageStaticParams();
 		for(int i = 0; i < pxd.size(); i++) {
 			PageXmlData xmlData = pxd.get(i);
 			pageServiceName.add(i, xmlData.getServiceName());
@@ -47,8 +49,10 @@ public class PageInfo {
 	}
 	public boolean isSet()	{	return this.set;	}
 	public boolean isApiPage() {	return this.isApi;	}
-
+	
 	public String getPageControlName(){	return this.pageControlName;	}
+	public String getPageStaticParamsName() {	return this.pageParamsName;	}
+	public ArrayList<String> getPageStaticParams(){	return this.pageParams;	}
 	public ArrayList<String> getPageServiceName() {	return this.pageServiceName;	}
 	public ArrayList<String> getPageParameter() {	return this.pageParameter;	}
 	public ArrayList<String[]> getPageSqlInfo()	{	return this.pageSqlInfo;	}

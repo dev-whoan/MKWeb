@@ -43,6 +43,29 @@ public class MkPageConfigs extends MkPageConfigCan{
 			"rst",
 			"method"	
 	};
+	private ArrayList<String> setPageParamToStrig(String pageParam) {
+		if(pageParam == null)
+			return null;
+		String[] tempPageParam = pageParam.split("@set" + "\\(");
+		String[] tempPageParam2 = new String[tempPageParam.length];
+		if(tempPageParam.length == 1) 
+			return null;
+		
+		for(int i = 0; i < tempPageParam.length; i++) {
+			tempPageParam2[i] = tempPageParam[i].split("=")[0];
+		}
+		
+		if(tempPageParam2.length == 1)
+			return null;
+		
+		ArrayList<String> result = new ArrayList<String>();
+		
+		for(int i = 1; i < tempPageParam2.length; i++) {
+			result.add(tempPageParam2[i].trim());
+		}
+		
+		return result;
+	}
 	@Override
 	public void setPageConfigs(File[] pageConfigs) {
 		page_configs.clear();
@@ -80,6 +103,20 @@ public class MkPageConfigs extends MkPageConfigCan{
 							xmlData = new ArrayList<PageXmlData>();
 							Element elem = (Element) node;
 							NodeList services = elem.getElementsByTagName("Service");
+							
+							//새로 추가하는 부분
+							NodeList pageParamNodes = elem.getElementsByTagName("PageParams");
+							String pageParamsName = null;
+							ArrayList<String> pageParam = null;
+							if(pageParamNodes.item(0) != null) {
+								Node pageParamNode = pageParamNodes.item(0);
+								pageParamsName = pageParamNode.getAttributes().getNamedItem("name") != null ?
+										pageParamNode.getAttributes().getNamedItem("name").getNodeValue():
+											null;
+								pageParam = setPageParamToStrig(pageParamNode.getTextContent());
+							}else {
+								pageParam = null;
+							}
 							
 							if(services.item(0) != null) {
 								for(int j = 0; j < services.getLength(); j++) {
@@ -119,7 +156,7 @@ public class MkPageConfigs extends MkPageConfigCan{
 										}
 
 										String serviceName = service.getAttributes().getNamedItem("type").getNodeValue() + "." + SQL_INFO[0];
-										PageXmlData curData = setPageXmlData(serviceName, cl_info, SQL_INFO, PRM_NAME, VAL_INFO, null);
+										PageXmlData curData = setPageXmlData(pageParamsName, pageParam, serviceName, cl_info, SQL_INFO, PRM_NAME, VAL_INFO, null);
 										printPageInfo(curData, "info");
 										xmlData.add(curData);
 										page_configs.put(cl_info[0], xmlData);
@@ -129,7 +166,7 @@ public class MkPageConfigs extends MkPageConfigCan{
 								String[] temp_sql = new String[sl_list.length];
 								for(String s : temp_sql) {	s = "no data";	}
 								
-								PageXmlData curData = setPageXmlData("No Service", cl_info, temp_sql, "No Parameter", "No Value", null);
+								PageXmlData curData = setPageXmlData(pageParamsName, pageParam, "No Service", cl_info, temp_sql, "No Parameter", "No Value", null);
 								printPageInfo(curData, "info");
 								xmlData.add(curData);
 								page_configs.put(cl_info[0], xmlData);
@@ -174,8 +211,10 @@ public class MkPageConfigs extends MkPageConfigCan{
 	}
 	
 	@Override
-	protected PageXmlData setPageXmlData(String serviceName, String[] cl_info, String[] sqlInfo, String PRM_NAME, String VAL_INFO, String STRUCTURE) {
+	protected PageXmlData setPageXmlData(String pageParamName, ArrayList<String> pageParam, String serviceName, String[] cl_info, String[] sqlInfo, String PRM_NAME, String VAL_INFO, String STRUCTURE) {
 		PageXmlData result = new PageXmlData();
+		result.setPageStaticParamName(pageParamName);
+		result.setPageStaticParams(pageParam);
 		result.setControlName(cl_info[0]);
 		result.setServiceName(serviceName);
 		result.setLogicalDir(cl_info[3]);
@@ -193,6 +232,8 @@ public class MkPageConfigs extends MkPageConfigCan{
 	@Override
 	public void printPageInfo(PageXmlData xmlData, String type) {
 		String controlName = xmlData.getControlName();
+		String pageParamName = xmlData.getPageStaticParamsName();
+		ArrayList<String> pageParams = xmlData.getPageStaticParams();
 		String serviceName = xmlData.getServiceName();
 		String logicalDir = xmlData.getLogicalDir();
 
@@ -220,9 +261,20 @@ public class MkPageConfigs extends MkPageConfigCan{
 			else
 				valMsg += ("\n\t" + tempVal);
 		}
+		String PRM = "";
+		if(pageParams != null) {
+			for(int pr = 0; pr < pageParams.size(); pr++) {
+				PRM += pageParams.get(pr);
+				if(pr < pageParams.size() - 1)
+					PRM += ", ";
+			}
+		}else {
+			PRM = null;
+		}
 		String tempMsg = "\n┌──────────────────────────Page Control  :  " + controlName + "────────────────────────────"
-				+ "\n│View Dir:\t" + pageDir + "\t\tView Page:\t" + pageName + "\n│Logical Dir:\t" + logicalDir
-				+ "\t\tDebug Level:\t" + debugLevel
+				+ "\n│View Dir:\t" + pageDir + "\t\tView Page:\t" + pageName
+				+ "\n│Logical Dir:\t" + logicalDir + "\t\tDebug Level:\t" + debugLevel
+				+ "\n│Static Param Name:\t" + pageParamName + "\t\tStatic Param Value:\t" + PRM
 				+ "\n│Service Name:\t" + serviceName + "\tParameter:\t" + PRM_NAME;
 
 		if(type == "info") {

@@ -87,8 +87,8 @@ public class MkReceiveFormData extends HttpServlet {
 			return false;
 		}
 		
-		requestParams = cpi.getRequestPageParameterName(request);
-		requestValues = cpi.getRequestParameterValues(request);
+		requestParams = cpi.getRequestPageParameterName(request, pi.getPageStaticParams(), pi.getPageStaticParamsName());
+		requestValues = cpi.getRequestParameterValues(request, pi.getPageStaticParams(), pi.getPageStaticParamsName());
 		
 		ArrayList<PageXmlData> pal = MkPageConfigs.Me().getControl(mkPage);
 		for(PageXmlData px : pal) {
@@ -104,7 +104,7 @@ public class MkReceiveFormData extends HttpServlet {
     private void doTask(HttpServletRequest request, HttpServletResponse response) {
     	MkDbAccessor DA = new MkDbAccessor();
 		
-		if(!cpi.comparePageValueWithRequest(pxData.getData(), requestValues)) {
+		if(!cpi.comparePageValueWithRequest(pxData.getData(), requestValues, pxData.getPageStaticParams())) {
 			mklogger.error(TAG + " Request Value is not authorized. Please check page config.");
 			return;
 		}
