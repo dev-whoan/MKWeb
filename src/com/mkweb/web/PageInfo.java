@@ -38,6 +38,7 @@ public class PageInfo {
 			return;
 		}
 		pageParams = pxd.get(0).getPageStaticParams();
+		pageParamsName = pxd.get(0).getPageStaticParamsName();
 		for(int i = 0; i < pxd.size(); i++) {
 			PageXmlData xmlData = pxd.get(i);
 			pageServiceName.add(i, xmlData.getServiceName());

@@ -88,7 +88,7 @@ public class MkReceiveFormData extends HttpServlet {
 		}
 		
 		requestParams = cpi.getRequestPageParameterName(request, pi.getPageStaticParams(), pi.getPageStaticParamsName());
-		requestValues = cpi.getRequestParameterValues(request, pi.getPageStaticParams(), pi.getPageStaticParamsName());
+		
 		
 		ArrayList<PageXmlData> pal = MkPageConfigs.Me().getControl(mkPage);
 		for(PageXmlData px : pal) {
@@ -97,7 +97,8 @@ public class MkReceiveFormData extends HttpServlet {
 				break;
 			}
 		}
-		
+		requestValues = cpi.getRequestParameterValues(request, pxData.getParameter(), pi.getPageStaticParams(), pi.getPageStaticParamsName());
+
     	return (pxData != null ? true : false);
     }
     

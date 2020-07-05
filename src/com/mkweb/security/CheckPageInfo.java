@@ -48,7 +48,6 @@ public class CheckPageInfo {
 		for(String s : pageStaticParams) {
 			if(s.contentEquals(comparison)) {
 				result = s;
-				mklogger.debug(TAG + " (getPageStaticParameter) result : " +result);
 				break;
 			}
 		}
@@ -61,12 +60,13 @@ public class CheckPageInfo {
 		String requestParams = null;
 		while(params.hasMoreElements()) {
 			String name = params.nextElement().toString().trim();
-			mklogger.debug(TAG + " (getRequestPageParameterName) pageParams : " + pageStaticParams + " || reqParams : " + name);
 			if(name.contains(".")) {
 				String nname = name.split("\\.")[0];
-				if( (!requestParams.contentEquals("") && requestParams != null) && !requestParams.contentEquals(nname)) {
-					mklogger.error(TAG + " (getRequestPageParameterName) The service parameter is not same as previous parameter name(" + requestParams + " :: " + nname);
-					return null;
+				if(requestParams != null) {
+					if( !requestParams.contentEquals("") && !requestParams.contentEquals(nname)) {
+						mklogger.error(TAG + " (getRequestPageParameterName) The service parameter is not same as previous parameter name(" + requestParams + " :: " + nname);
+						return null;
+					}
 				}
 				if(!nname.contentEquals(pageStaticParamsName))
 					requestParams = nname; 
@@ -81,23 +81,21 @@ public class CheckPageInfo {
 		return requestParams;
 	}
 	
-	public ArrayList<String> getRequestParameterValues(HttpServletRequest request, ArrayList<String> pageParams, String pageStaticParamsName){
+	public ArrayList<String> getRequestParameterValues(HttpServletRequest request, String rstID, ArrayList<String> pageParams, String pageStaticParamsName){
 		ArrayList<String> requestValues = new ArrayList<String>();
 		Enumeration params = request.getParameterNames();
+
 		while(params.hasMoreElements()) {
 			String name = params.nextElement().toString().trim();
 			String[] nname = name.split("\\.");
-			mklogger.debug(TAG + " (getRequestParameterValues) pageParams : " + pageParams + " || reqParams : " + name);
 			if(name.contains(".")) {
-				
-				if(!nname[0].contentEquals(pageStaticParamsName))
+				if(!nname[0].contentEquals(pageStaticParamsName) && nname[0].contentEquals(rstID))
 					requestValues.add(nname[1]);
 			}else {
 				if(!isPageParamValid(pageParams, name)) {
 					mklogger.error(TAG + " (getRequestParameterValues) Invalid request parameter : " + name );
 					return null;
 				}
-				mklogger.debug(TAG + " \n\nCALL GET PAGE STATIC PARAMETER");
 				requestValues.add(getPageStaticParameter(pageParams, name));
 			}
 		}
@@ -177,13 +175,10 @@ public class CheckPageInfo {
 		pageValue = pageValue.trim();
 		
 		if(staticParams != null) {
-			mklogger.debug("\n\n\n");
 			for(int i = 0; i < staticParams.size(); i++) {
-				mklogger.debug(TAG + " staticParams : " + staticParams.get(i));
-				passValues.add(staticParams.get(i));
+				passValues.add(staticParams.get(i).trim());
 			}
 		}
-		
 		
 		String[] pvSetList = pageValue.split("=");
 		
@@ -192,13 +187,17 @@ public class CheckPageInfo {
 			if(passValues.size() != 0)
 				passExists = true;
 			for(int i = 0; i < (pvSetList.length-1); i++) {
+				String t = pvSetList[i].split("\\.")[1].trim();
 				if(passExists) {
 					for(String passValue : passValues) {
-						if(!pvSetList[i].contentEquals(passValue)) {
-							pv += pvSetList[i].split("\\.")[1];
+						
+						if(!t.contentEquals(passValue)) {
+							pv += t;
 							break;
 						}
 					}
+				}else {
+					pv += t;
 				}
 			//	pv += pvSetList[i].split("\\.")[1].trim();
 			}
@@ -223,6 +222,8 @@ public class CheckPageInfo {
 							break;
 						}
 					}
+				}else {
+					rv += reqValue.get(i).trim();
 				}
 			}
 		}catch(java.lang.NullPointerException e) {
