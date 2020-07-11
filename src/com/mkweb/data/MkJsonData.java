@@ -3,6 +3,8 @@ package com.mkweb.data;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -14,7 +16,6 @@ import com.mkweb.logger.MkLogger;
 
 public class MkJsonData {
 	private JSONObject jsonObject = null;
-	private JSONArray jsonArray = null;
 	private String data = null;
 
 	private String TAG = "[MkJsonData]";
@@ -23,13 +24,11 @@ public class MkJsonData {
 	public MkJsonData() {
 		data = null;
 		jsonObject = null;
-		jsonArray = null;
 	}
 
 	public MkJsonData(String data) {
 		this.data = data;
 		jsonObject = null;
-		jsonArray = null;
 	}
 
 	private JSONObject isValidDataForJson(String data) {
@@ -154,6 +153,23 @@ public class MkJsonData {
 		return reqToJson;
 	}
 	
+	public void printObject(JSONObject jsonObject) {
+		if(jsonObject == null) {
+			mklogger.error(TAG + "(func printObject) JSONObject is null");
+			return;
+		}
+	    Set entrySet = jsonObject.keySet();
+	    Iterator iter = entrySet.iterator();
+	    
+		JSONArray jsonArray = new JSONArray();
+		String result = "";
+		while(iter.hasNext()) {
+			String key = (String) iter.next();
+			result += "{'"+key+"':'"+jsonObject.get(key) + "'}";
+		}
+		mklogger.info(TAG + "[JSONObject]: "+result);
+	}
+	
 	public boolean setJsonObject() {
 		if(this.data == null) {
 			mklogger.error(TAG + "(func setJsonObject) No given data.");
@@ -167,7 +183,6 @@ public class MkJsonData {
 		return true;
 	}
 	public JSONObject getJsonObject() {	return this.jsonObject;	}
-	public JSONArray getJsonArray() {	return this.jsonArray;	}
 	public String getData() {	return this.data;	}
 	public void setData(String data) {	this.data = data;	}
 }

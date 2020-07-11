@@ -94,7 +94,7 @@ public class tagSEL extends SimpleTagSupport {
 		requestParams = cpi.getRequestPageParameterName(request, pageStaticParams, pageStaticParamsName);
 		requestValues = cpi.getRequestParameterValues(request, pageInfo.getPageParameter().get(rstID), pageStaticParams, pageStaticParamsName);
 				
-		if(!cpi.comparePageValueWithRequest(pageValue.get(rstID), requestValues, pageStaticParams)) {
+		if(!cpi.comparePageValueWithRequest(pageValue.get(rstID), requestValues, pageStaticParams, false)) {
 			mklogger.error(TAG + " Request Value is not authorized. Please check page config.");
 			return;
 		}
@@ -155,6 +155,7 @@ public class tagSEL extends SimpleTagSupport {
 						tempValue = request.getParameter(requestValues.get(i));
 					if(this.like.equals("no"))
 					{
+						mklogger.debug(TAG + " tempValue : " + tempValue);
 						if(tempValue.contains("%"))
 							tempValue = tempValue.replaceAll("%", " ");
 

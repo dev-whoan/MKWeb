@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <views>
-	<Control name="users" debug="error" dir_key="/" authorized="yes" post="yes" get="yes" put="yes" delete="yes" options="yes" head="yes">
-		<returnStructure value="user:location:name" />
+	<Control name="users" debug="error" authorized="yes" post="yes" get="yes" put="yes" delete="yes" options="yes" head="yes">
+		<returnStructure value="users" />
 		<Service type="sql">
 			<Sql id="api_selectUser" method="get" />
 			<Parameter name="api_sel_user" />
 			<Value>
 				@set(api_sel_user.name = '%')
-				@set(api_sel_user.user_SEQ = '%')
+				@set(api_sel_user.address = '%')
 			</Value>
 		</Service>
 		<Service type="sql">

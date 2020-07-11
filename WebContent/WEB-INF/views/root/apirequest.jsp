@@ -31,16 +31,16 @@ $(document).ready(function(){
 
 	$("#testapi").click(function(){
 	//	var jsonInfo = '{"search_key":"apple", "data" : "민환"}';
-		var jsonInfo = '{"search_key":"apple", "name":"김", "user_SEQ":"1"}';
+		var jsonInfo = '{"name":"김민환"}';
 		var reqInfo = "search_key=apple&name=김민환&user_SEQ=1";
 		
 		var testApi = $.ajax({
-			type : "GET", //전송방식을 지정한다 (POST,GET)
+			type : "POST", //전송방식을 지정한다 (POST,GET)
 	        url : "/mk_api_key/users",//호출 URL을 설정한다. GET방식일경우 뒤에 파라티터를 붙여서 사용해도된다.
 	        dataType : "json",//호출한 페이지의 형식이다. xml,json,html,text등의 여러 방식을 사용할 수 있다.
 	        data : {
-	    //    	"apiData" : jsonInfo
-	        	"apiData" : reqInfo
+	        	"apiData" : jsonInfo
+	    //    	"apiData" : reqInfo
 	        },
 	        contentType : "application/json; charset=utf-8"
 		})

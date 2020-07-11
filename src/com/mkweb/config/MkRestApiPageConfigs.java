@@ -38,7 +38,6 @@ public class MkRestApiPageConfigs extends MkPageConfigCan{
 	private String[] cl_list = {
 		"name",
 		"debug",
-		"dir_key",
 		"authorized",
 		"post",
 		"get",
@@ -216,18 +215,17 @@ public class MkRestApiPageConfigs extends MkPageConfigCan{
 		result.setPageStaticParamName(pageStaticParamName);
 		result.setPageStaticParams(pageStaticParam);
 		result.setServiceName(serviceName);
-		result.setLogicalDir(cl_info[2]);
 
 		result.setPageName(cl_info[0]);
 		result.setDebug(cl_info[1]);
 		
-		result.setAuthorizedRequire(cl_info[3]);
-		result.setPost(cl_info[4]);
-		result.setGet(cl_info[5]);
-		result.setPut(cl_info[6]);
-		result.setDelete(cl_info[7]);
-		result.setOptions(cl_info[8]);
-		result.setHead(cl_info[9]);
+		result.setAuthorizedRequire(cl_info[2]);
+		result.setPost(cl_info[3]);
+		result.setGet(cl_info[4]);
+		result.setPut(cl_info[5]);
+		result.setDelete(cl_info[6]);
+		result.setOptions(cl_info[7]);
+		result.setHead(cl_info[8]);
 		
 		result.setSql(sqlInfo);
 		result.setParameter(PRM_NAME);
@@ -244,7 +242,6 @@ public class MkRestApiPageConfigs extends MkPageConfigCan{
 		String pageParamName = xmlData.getPageStaticParamsName();
 		ArrayList<String> pageParams = xmlData.getPageStaticParams();
 		String serviceName = xmlData.getServiceName();
-		String logicalDir = xmlData.getLogicalDir();
 
 		String pageDir = xmlData.getDir();
 		String pageName = xmlData.getPageName();
@@ -290,7 +287,7 @@ public class MkRestApiPageConfigs extends MkPageConfigCan{
 		}
 		String tempMsg = "\n忙式式式式式式式式式式式式式式式式式式式式式式式式式式Page Control  :  " + controlName + "式式式式式式式式式式式式式式式式式式式式式式式式式式式式"
 				+ "\n弛View Dir:\t" + pageDir + "\t\tView Page:\t" + pageName
-				+ "\n弛Logical Dir:\t" + logicalDir + "\t\tDebug Level:\t" + debugLevel
+				+ "\n弛Debug Level:\t" + debugLevel
 				+ "\n弛Static Param Name:\t" + pageParamName + "\t\tStatic Param Value:\t" + PRM
 				+ "\n弛Service Name:\t" + serviceName + "\tParameter:\t" + PRM_NAME
 				+ "\n弛Authorized  :\t" + authorized + "\tPost:\t" + methods[0] + "\tGet:\t" + methods[1]

@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 
 import javax.servlet.RequestDispatcher;
@@ -31,6 +32,12 @@ import com.mkweb.security.CheckPageInfo;
 
 /**
  * Servlet implementation class MkRestApi
+ */
+
+/*
+1. 순서 정렬
+2. 전체 조회
+3. 응답 정리 ( 코드, 콘텐츠 타입, 실패 사유 등. )
  */
 
 public class MkRestApi extends HttpServlet {
@@ -83,18 +90,7 @@ public class MkRestApi extends HttpServlet {
 			mklogger.error(TAG + " No Service is allowed for request method : " + rqMethod);
 			return false;
 		}
-		return true;
-
-		//get일때는 ? 이후는 모두 요청 파라미터
-		//에 대하여 최초의 .으로 좌측이 파라미터로 요청 SQL ID 확인.
-		//해당 SQL ID가 METHOD를 지원하는가?
-
-		//GET 방식이 아니라면
-		//그냥 Parameter 자르면 됨.
-
-
-		//	requestParams = cpi.getRequestPageParameterName(request);
-		//	requestValues = cpi.getRequestParameterValues(request);
+		return true;	
 	}
 
 	private boolean isKeyValid(String key, String mkPage) {
@@ -155,6 +151,11 @@ public class MkRestApi extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.setAttribute("api-method", "get");
+		
+		//mkweb.restapi.resource.start
+		//mkweb.restapi.resource.end
+		//오늘 할 거 : Get방식 주소 묶기 ( disable query string )
+		
 		doTask(request, response);
 	}
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -164,14 +165,16 @@ public class MkRestApi extends HttpServlet {
 
 	private void doTask(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
 		request.setCharacterEncoding("UTF-8");
-		String reqApiData =  request.getParameter(MkConfigReader.Me().get("mkweb.restapi.request.id"));
 		
+		final String MKWEB_URL_PATTERN = MkConfigReader.Me().get("mkweb.restapi.urlpattern");
+		String reqApiData =  request.getParameter(MkConfigReader.Me().get("mkweb.restapi.request.id"));
 		String searchKey = null;
-
+		boolean requireKey = MkConfigReader.Me().get("mkweb.restapi.usekey").contentEquals("yes") ? true : false;
 		String reqToJson = null;
 		boolean isDataRequestedAsJsonObject = true;
 		MkJsonData mkJsonObject = new MkJsonData();
 		JSONObject jsonObject = null;
+		
 		if(reqApiData != null) {
 			mkJsonObject.setData(reqApiData);
 
@@ -217,99 +220,158 @@ public class MkRestApi extends HttpServlet {
 					}
 				}
 			}
-
+			boolean stringPass = false;
 			if(stringBuilder.length() == 0) {
+				stringPass = true;
+				/*
+				//예외
+				RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/600.jsp");
+				dispatcher.forward(request, response);
+				response.setStatus(401);
+				return;
+				*/
+			}
+			if(!stringPass) {
+				String rbPostData = stringBuilder.toString();
+
+				String rbpds[] = rbPostData.split("&");
+
+				for(int i = 0; i < rbpds.length; i++) {
+					if(rbpds[i].contains(MkConfigReader.Me().get("mkweb.restapi.request.id"))) {
+						reqApiData = URLDecoder.decode(rbpds[i].split("=")[1], "UTF-8");
+						break;
+					}
+				}
+
+				mkJsonObject.setData(reqApiData);
+				if(!mkJsonObject.setJsonObject()) {
+					mklogger.error(TAG + " failed to create JsonObject.");
+					isDataRequestedAsJsonObject = false;
+				}
+
+				if(!isDataRequestedAsJsonObject) {
+					reqToJson = mkJsonObject.stringToJsonString(reqApiData);
+					mkJsonObject.setData(reqToJson);
+					if(mkJsonObject.setJsonObject()) {
+						jsonObject = mkJsonObject.getJsonObject();
+					}else {
+						mklogger.error(TAG + " Failed to create MkJsonObject. :: " + reqToJson);
+						return;
+					}
+				}else {
+					jsonObject = mkJsonObject.getJsonObject();
+				}
+			}
+		}
+		
+		if(requireKey) {
+			if(jsonObject != null) {
+				searchKey = jsonObject.get(MkConfigReader.Me().get("mkweb.restapi.searchkey.exp")).toString();
+			}else {
 				//예외
 				RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/600.jsp");
 				dispatcher.forward(request, response);
 				response.setStatus(401);
 				return;
 			}
-			String rbPostData = stringBuilder.toString();
-
-			String rbpds[] = rbPostData.split("&");
-
-			for(int i = 0; i < rbpds.length; i++) {
-				if(rbpds[i].contains(MkConfigReader.Me().get("mkweb.restapi.request.id"))) {
-					reqApiData = URLDecoder.decode(rbpds[i].split("=")[1], "UTF-8");
-					break;
-				}
+			
+			if(searchKey == null) {
+				//예외
+				RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/600.jsp");
+				dispatcher.forward(request, response);
+				response.setStatus(401);
+				return;
 			}
+		}
+		
+		String requestURI = request.getRequestURI();
+		Object mAttributes = request.getAttribute("api-method");
+		String method = null;
+		
+		//페이지 유효성 검사
+		//String requestURI = request.getRequestURI();
+		String[] reqPage = null;
+		String mkPage = null;
+		reqPage = requestURI.split("/" + MKWEB_URL_PATTERN + "/");
+		
+		if(reqPage.length < 2) {
+			//예외
+			RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/600.jsp");
+			dispatcher.forward(request, response);
+			response.setStatus(401);
+			return;
+		}
+		mkPage = reqPage[1];
+		
+		if(mkPage.contains("/")) {
+			mkPage = mkPage.split("/")[0];
+		}
+		
+		if(mAttributes != null)
+			method = mAttributes.toString().toLowerCase();
 
-			mkJsonObject.setData(reqApiData);
-			if(!mkJsonObject.setJsonObject()) {
-				mklogger.error(TAG + " failed to create JsonObject.");
-				isDataRequestedAsJsonObject = false;
-			}
-
-			if(!isDataRequestedAsJsonObject) {
-				reqToJson = mkJsonObject.stringToJsonString(reqApiData);
-				mkJsonObject.setData(reqToJson);
-				if(mkJsonObject.setJsonObject()) {
-					jsonObject = mkJsonObject.getJsonObject();
-				}else {
-					mklogger.error(TAG + " Failed to create MkJsonObject. :: " + reqToJson);
+		if(method == null) {
+			//예외
+			return;
+		}else {
+			if(method.contentEquals("get")) {
+				requestURI = URLDecoder.decode(requestURI, "UTF-8");
+				String[] splits = requestURI.split(mkPage);
+				
+				if(splits.length != 2) {
+					//예외
+					RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/600.jsp");
+					dispatcher.forward(request, response);
+					response.setStatus(401);
 					return;
 				}
-			}else {
+				reqApiData = splits[1];
+				String[] reqApiDatas = reqApiData.split("/");
+				int size = reqApiDatas.length;
+				mklogger.debug(TAG + " size : " + size);
+				reqApiData = "{";
+				for(int i = 1; i < size; i++) {
+					if(i % 2 == 1)	//키
+						reqApiData += "\"" + reqApiDatas[i] + "\":";
+					else			//밸류
+						reqApiData += "\"" + reqApiDatas[i] + "\"";
+					
+					//마지막이고 홀수면 (URL상 짝수)
+					if( i == size - 1 && size % 2 == 0) {
+						reqApiData += "\"" + "MK_GET_ALL" + "\"";
+					}
+					
+					if( i < size - 1 && i % 2 == 0 )
+						reqApiData += ",";
+				}
+				reqApiData += "}";
+				
+				mkJsonObject.setData(reqApiData);
+
+				if(!mkJsonObject.setJsonObject()) {
+					//예외
+					mklogger.error(TAG + " Failed to create JsonObject.");
+					return;
+				}
 				jsonObject = mkJsonObject.getJsonObject();
 			}
 		}
-
-		if(jsonObject != null) {
-			searchKey = jsonObject.get(MkConfigReader.Me().get("mkweb.restapi.searchkey.exp")).toString();
-		}else {
-			//예외
-			RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/600.jsp");
-			dispatcher.forward(request, response);
-			response.setStatus(401);
-			return;
-		}
-
-		if(searchKey == null) {
-			//예외
-			RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/600.jsp");
-			dispatcher.forward(request, response);
-			response.setStatus(401);
-			return;
-		}
-
-		//페이지 유효성 검사
-		String requestURI = request.getRequestURI();
-		String[] reqPage = null;
-		String mkPage = null;
-		reqPage = requestURI.split("/");
-		mkPage = reqPage[reqPage.length - 1];
-
 		String[] noUrlPattern = new String[reqPage.length-1];
 		for(int i = 1; i < reqPage.length; i++) {
 			noUrlPattern[i-1] = reqPage[i];
 		}
-
 		if(!cpi.isValidApiPageConnection(mkPage, noUrlPattern)) {
 			//예외
 			RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/404.jsp");
 			dispatcher.forward(request, response);
 			return;
 		}
-
-		if(!isKeyValid(searchKey, mkPage)) {
+		if(requireKey && !isKeyValid(searchKey, mkPage)) {
 			//예외
 			RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/600.jsp");
 			dispatcher.forward(request, response);
 			return;
 		}
-
-		Object mAttributes = request.getAttribute("api-method");
-		String method = null;
-		if(mAttributes != null)
-			method = mAttributes.toString();
-
-		if(method == null) {
-			//예외
-			return;
-		}
-
 		if(!checkMethod(request, method, mkPage)) {
 			//예외
 			response.setStatus(400);
@@ -317,7 +379,6 @@ public class MkRestApi extends HttpServlet {
 			dispatcher.forward(request, response);
 			return;
 		}
-
 		if(!method.contentEquals("get")) {
 			if(!request.getHeader("Content-Type").toLowerCase().contains("application/json")) {
 				//예외
@@ -325,7 +386,6 @@ public class MkRestApi extends HttpServlet {
 				return;
 			}
 		}
-
 		//리턴은 무조건 json이다.
 		//ApiSql에서 Allow_Single 확인
 		ArrayList<PageXmlData> apiPageInfo = MkRestApiPageConfigs.Me().getControl(mkPage);
@@ -334,7 +394,6 @@ public class MkRestApi extends HttpServlet {
 			mklogger.error(TAG + " api page info null");
 			return; 
 		}
-
 		int target = -1;
 		for(int i = 0; i < apiPageInfo.size(); i++) {
 
@@ -347,7 +406,6 @@ public class MkRestApi extends HttpServlet {
 			//예외
 			return;
 		}
-
 		if(method.contentEquals("options")) {
 
 		}else if(method.contentEquals("head")) {
@@ -387,12 +445,11 @@ public class MkRestApi extends HttpServlet {
 			}
 		}
 
-		if(!cpi.comparePageValueWithRequest(pxData.getData(), sqlKey, pxData.getPageStaticParams())) {
+		if(!cpi.comparePageValueWithRequest(pxData.getData(), sqlKey, pxData.getPageStaticParams(), true)) {
 			//예외
 			mklogger.error(TAG + " Request Value is not authorized. Please check page config.");
 			return;
 		}
-
 		//여기까지는 모든 메서드 중복되는 행위
 		//조회? 생성? 삭제?
 
@@ -419,27 +476,29 @@ public class MkRestApi extends HttpServlet {
 					}
 				}
 			}
-		}else {
+		} else {
 			lmrap = new ArrayList<>();
 		}
 		
 		if(!isDone) {
 			if(method.contentEquals("get")) {
 				//조회
-				resultObject = doTaskGet(pxData, sqlKey, sqlData, jsonObject);
+				resultObject = doTaskGet(pxData, sqlKey, sqlData, jsonObject, mkPage);
 			}else if(method.contentEquals("post")) {
 				//삽입, 갱신
-				resultObject = doTaskPost(pxData, sqlKey, sqlData, jsonObject);
+				resultObject = doTaskPost(pxData, sqlKey, sqlData, jsonObject, mkPage);
 			}else if(method.contentEquals("put")) {
 				//조회, 삽입
-				resultObject = doTaskPut(pxData, sqlKey, sqlData, jsonObject);
+				resultObject = doTaskPut(pxData, sqlKey, sqlData, jsonObject, mkPage);
 			}else if(method.contentEquals("delete")) {
 				//삭제
-				resultObject = doTaskDelete(pxData, sqlKey, sqlData, jsonObject);
+				resultObject = doTaskDelete(pxData, sqlKey, sqlData, jsonObject, mkPage);
 			}
 			Hash = pxData.getControlName() + sqlData.getServiceName() + method;
 			mrap = new MkRestApiResponse(resultObject, lmrap.size()+1, 1, Hash);
 		}
+		
+		mkJsonObject.printObject(resultObject);
 		
 		if(lmrap.size() == 0)
 			lmrap.add(mrap);
@@ -451,19 +510,18 @@ public class MkRestApi extends HttpServlet {
 				lmrap.add(mrap);
 			}
 		}
-
 		request.setAttribute("mrap", lmrap);
 		request.setAttribute("mraHash", Hash);
 		//리스폰스(최초 응답, 이전, 다음 응답 기록)
-		PrintWriter out = response.getWriter();
 		response.setStatus(200);
-		response.setContentType("application/json;");
-		
+		response.setContentType("application/json;charset=UTF-8");
+        response.setCharacterEncoding("UTF-8");
+		PrintWriter out = response.getWriter();
 		out.print(resultObject.toString());
 		out.flush();
 	}
 
-	private JSONObject doTaskGet(PageXmlData pxData, ArrayList<String> sqlKey, SqlXmlData sqlData, JSONObject jsonObject) {
+	private JSONObject doTaskGet(PageXmlData pxData, ArrayList<String> sqlKey, SqlXmlData sqlData, JSONObject jsonObject, String mkPage) {
 		JSONObject resultObject = null;
 		MkDbAccessor DA = new MkDbAccessor();
 
@@ -490,16 +548,23 @@ public class MkRestApi extends HttpServlet {
 			else
 				resultTest = DA.executeSEL(true);	
 
-
+			String test = "{\"" + mkPage + "\":[";
 			if(resultTest != null) {
 				for(int l = 0; l < resultTest.size(); l++) {
 					String damn = resultTest.get(l).toString();
 					damn = damn.replaceAll("=", ":");
 					MkJsonData tttt = new MkJsonData(damn);
-					if(tttt.setJsonObject())
-					{
-						resultObject = tttt.getJsonObject();
-					}
+					test += damn;
+					
+					if(l < resultTest.size() - 1)
+						test += ", ";
+				}
+				test += "]}";
+				
+				MkJsonData tttt = new MkJsonData(test);
+				
+				if(tttt.setJsonObject()) {
+					resultObject = tttt.getJsonObject();
 				}
 			}else {
 				//조회 데이터 없음
@@ -509,7 +574,7 @@ public class MkRestApi extends HttpServlet {
 		return resultObject;
 	}
 
-	private JSONObject doTaskPost(PageXmlData pxData, ArrayList<String> sqlKey, SqlXmlData sqlData, JSONObject jsonObject) {
+	private JSONObject doTaskPost(PageXmlData pxData, ArrayList<String> sqlKey, SqlXmlData sqlData, JSONObject jsonObject, String mkPage) {
 		JSONObject resultObject = null;
 		MkDbAccessor DA = new MkDbAccessor();
 
@@ -537,15 +602,23 @@ public class MkRestApi extends HttpServlet {
 				resultTest = DA.executeSEL(true);	
 
 
+			String test = "{\"" + mkPage + "\":[";
 			if(resultTest != null) {
 				for(int l = 0; l < resultTest.size(); l++) {
 					String damn = resultTest.get(l).toString();
 					damn = damn.replaceAll("=", ":");
 					MkJsonData tttt = new MkJsonData(damn);
-					if(tttt.setJsonObject())
-					{
-						resultObject = tttt.getJsonObject();
-					}
+					test += damn;
+					
+					if(l < resultTest.size() - 1)
+						test += ", ";
+				}
+				test += "]}";
+				
+				MkJsonData tttt = new MkJsonData(test);
+				
+				if(tttt.setJsonObject()) {
+					resultObject = tttt.getJsonObject();
 				}
 			}else {
 				//조회 데이터 없음
@@ -555,7 +628,7 @@ public class MkRestApi extends HttpServlet {
 		return resultObject;
 	}
 
-	private JSONObject doTaskPut(PageXmlData pxData, ArrayList<String> sqlKey, SqlXmlData sqlData, JSONObject jsonObject) {
+	private JSONObject doTaskPut(PageXmlData pxData, ArrayList<String> sqlKey, SqlXmlData sqlData, JSONObject jsonObject, String mkPage) {
 		JSONObject resultObject = null;
 		MkDbAccessor DA = new MkDbAccessor();
 
@@ -582,16 +655,22 @@ public class MkRestApi extends HttpServlet {
 			else
 				resultTest = DA.executeSEL(true);	
 
-
+			String test = "{\"" + mkPage + "\":[";
 			if(resultTest != null) {
 				for(int l = 0; l < resultTest.size(); l++) {
 					String damn = resultTest.get(l).toString();
 					damn = damn.replaceAll("=", ":");
 					MkJsonData tttt = new MkJsonData(damn);
-					if(tttt.setJsonObject())
-					{
-						resultObject = tttt.getJsonObject();
-					}
+					test += damn;
+					
+					if(l < resultTest.size() - 1)
+						test += ", ";
+				}
+				test += "]}";
+				MkJsonData tttt = new MkJsonData(test);
+				
+				if(tttt.setJsonObject()) {
+					resultObject = tttt.getJsonObject();
 				}
 			}else {
 				//조회 데이터 없음
@@ -601,7 +680,7 @@ public class MkRestApi extends HttpServlet {
 		return resultObject;
 	}
 
-	private JSONObject doTaskDelete(PageXmlData pxData, ArrayList<String> sqlKey, SqlXmlData sqlData, JSONObject jsonObject) {
+	private JSONObject doTaskDelete(PageXmlData pxData, ArrayList<String> sqlKey, SqlXmlData sqlData, JSONObject jsonObject, String mkPage) {
 		JSONObject resultObject = null;
 		MkDbAccessor DA = new MkDbAccessor();
 
@@ -629,15 +708,23 @@ public class MkRestApi extends HttpServlet {
 				resultTest = DA.executeSEL(true);	
 
 
+			String test = "{\"" + mkPage + "\":[";
 			if(resultTest != null) {
 				for(int l = 0; l < resultTest.size(); l++) {
 					String damn = resultTest.get(l).toString();
 					damn = damn.replaceAll("=", ":");
 					MkJsonData tttt = new MkJsonData(damn);
-					if(tttt.setJsonObject())
-					{
-						resultObject = tttt.getJsonObject();
-					}
+					test += damn;
+					
+					if(l < resultTest.size() - 1)
+						test += ", ";
+				}
+				test += "]}";
+				
+				MkJsonData tttt = new MkJsonData(test);
+				
+				if(tttt.setJsonObject()) {
+					resultObject = tttt.getJsonObject();
 				}
 			}else {
 				//조회 데이터 없음

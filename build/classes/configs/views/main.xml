@@ -2,7 +2,11 @@
 
 <views>
 	<Control name="" debug="error" dir="/views/root" dir_key="/" page="main.jsp" >
-		
+		<!-- 
+		<PageParams name="PAGE_STATIC">
+			@set(wrap_post_id = '%')
+		</PageParams>
+		 -->
 		<Service type="sql">
 			<Sql id="selectName" obj="list" rst="alpha" method="post" />
 			<Parameter name="param" />

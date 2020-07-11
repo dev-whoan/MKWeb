@@ -68,8 +68,12 @@ public class CheckPageInfo {
 						return null;
 					}
 				}
-				if(!nname.contentEquals(pageStaticParamsName))
-					requestParams = nname; 
+				if(pageStaticParamsName != null) {
+					if(!nname.contentEquals(pageStaticParamsName))
+						requestParams = nname; 
+				}
+				else
+					requestParams = nname;
 			}else {
 				if(!isPageParamValid(pageStaticParams, name)) {
 					mklogger.error(TAG + " (getRequestPageParameterName) Invalid request parameter : " + name);
@@ -89,8 +93,14 @@ public class CheckPageInfo {
 			String name = params.nextElement().toString().trim();
 			String[] nname = name.split("\\.");
 			if(name.contains(".")) {
-				if(!nname[0].contentEquals(pageStaticParamsName) && nname[0].contentEquals(rstID))
-					requestValues.add(nname[1]);
+				if(pageStaticParamsName != null) {
+					if(!nname[0].contentEquals(pageStaticParamsName) && nname[0].contentEquals(rstID))
+						requestValues.add(nname[1]);
+				}else {
+					if(nname[0].contentEquals(rstID))
+						requestValues.add(nname[1]);
+				}
+				
 			}else {
 				if(!isPageParamValid(pageParams, name)) {
 					mklogger.error(TAG + " (getRequestParameterValues) Invalid request parameter : " + name );
@@ -169,7 +179,7 @@ public class CheckPageInfo {
 		return befQuery;
 	}
 	
-	public boolean comparePageValueWithRequest(String pageValue, ArrayList<String> reqValue, ArrayList<String> staticParams) {
+	public boolean comparePageValueWithRequest(String pageValue, ArrayList<String> reqValue, ArrayList<String> staticParams, boolean isApi) {
 		String pv = "";
 		ArrayList<String> passValues = new ArrayList<>();
 		pageValue = pageValue.trim();
@@ -236,17 +246,21 @@ public class CheckPageInfo {
 		}
 		
 		rv = rv.trim();
-		char[] pvArray = pv.toCharArray();
-		char[] rvArray = rv.toCharArray();
-		Arrays.sort(pvArray);
-		Arrays.sort(rvArray);
-		
-		pv = String.valueOf(pvArray);
-		rv = String.valueOf(rvArray);
-		
-		mklogger.info(TAG + " Compare: PV(" + pv + ") vs RV(" + rv + ")");
-		
-		return (pv.equals(rv));
+		if(isApi)
+			return pv.contains(rv);
+		else {
+			char[] pvArray = pv.toCharArray();
+			char[] rvArray = rv.toCharArray();
+			Arrays.sort(pvArray);
+			Arrays.sort(rvArray);
+			
+			pv = String.valueOf(pvArray);
+			rv = String.valueOf(rvArray);
+			
+			mklogger.info(TAG + " Compare: PV(" + pv + ") vs RV(" + rv + ")");
+			
+			return (pv.equals(rv));
+		}
 	}
 	
     public boolean isValidPageConnection(String requestControlName, String[] requestDir) {
@@ -291,7 +305,6 @@ public class CheckPageInfo {
 		 * requestDir = URI / ÀÚ¸¥°Å.
 		 * mkPage = request page control name
 		 */
-		String AllowPath = xmlData.getLogicalDir();
 		String userLogicalDir = "";
 		
 		if(requestDir != null) {
@@ -303,7 +316,7 @@ public class CheckPageInfo {
 			userLogicalDir = "/";
 		
 		String c1 = userLogicalDir + requestControlName;
-		String c2 = AllowPath + xmlData.getControlName();
+		String c2 = "/" + xmlData.getControlName();
 		
 		if(!c1.equals(c2)){
 			return false;

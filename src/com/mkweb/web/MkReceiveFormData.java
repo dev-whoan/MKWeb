@@ -105,7 +105,7 @@ public class MkReceiveFormData extends HttpServlet {
     private void doTask(HttpServletRequest request, HttpServletResponse response) {
     	MkDbAccessor DA = new MkDbAccessor();
 		
-		if(!cpi.comparePageValueWithRequest(pxData.getData(), requestValues, pxData.getPageStaticParams())) {
+		if(!cpi.comparePageValueWithRequest(pxData.getData(), requestValues, pxData.getPageStaticParams(), false)) {
 			mklogger.error(TAG + " Request Value is not authorized. Please check page config.");
 			return;
 		}
