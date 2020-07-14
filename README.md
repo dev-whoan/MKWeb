@@ -33,7 +33,6 @@ A bridge of Model <---> Views
 
 * Service
 
-
 # XML Configs
 - Definition of Services or Controllers.
 The biggest profit when you use MKWeb.
@@ -56,8 +55,6 @@ If the request is not defined, then response will call error-page.
 
 2. Secure
 
-# Thanks to JCY(Republic of Korea), Working at Sky Love.
-
 # What we want you to do when you use MKWeb or copy and distribute it(convey).
 * MKWeb을 사용하거나 복제, 배포할 때 해줬으면 하는 일
 
@@ -65,3 +62,5 @@ If the request is not defined, then response will call error-page.
 - Minwhoan, Kihyeon. We just wanted to be well known programmers.
 
 2. Please scout us.
+
+# Thanks to JCY(Republic of Korea), Working at Sky Love.
