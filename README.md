@@ -4,9 +4,6 @@
 # MKweb
 Minwhoan - Kihyeon's web repository
 
-# Our Structure, Plan, Idea
-<img src="https://user-images.githubusercontent.com/65178775/81583650-9b94b300-93ec-11ea-8683-c4ffc67215f9.png" width="66%" />
-
 # What is MKWeb?
 
 MkWeb is well created 'Web-Server' framework(even if not created well now, but we are heading to be).
@@ -33,6 +30,7 @@ A bridge of Model <---> Views
 
 * Service
 
+<img src="https://user-images.githubusercontent.com/65178775/81583650-9b94b300-93ec-11ea-8683-c4ffc67215f9.png" width="66%" style="display:block; margin: 0 auto;"/>
 # XML Configs
 - Definition of Services or Controllers.
 The biggest profit when you use MKWeb.
