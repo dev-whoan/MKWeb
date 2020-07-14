@@ -2,10 +2,25 @@
 <img src="https://user-images.githubusercontent.com/65178775/83269009-6a481f80-a201-11ea-8475-0a779375a005.png" width="100%" />
 
 # MKweb
-Minwhoan - Kihyeon's web repository
+Minwhoan - Kihyeon's JSP-Servlet Web Server Framework Repository
 
-# Our Structure, Plan, Idea
-<img src="https://user-images.githubusercontent.com/65178775/81583650-9b94b300-93ec-11ea-8683-c4ffc67215f9.png" width="66%" />
+# What is MKWeb?
+
+MkWeb is well created 'Web-Server' framework.
+
+We considered that developers should consider lots of things when he/she started to create some services; App, WebSite, science experimental, etc. Simply Front-End, and Back-End.
+
+But actually, the simple service idea is about Front-End like: How about creating a food delivery service? People can choose the foods what they want to eat, and the page will show information about the food. Furthermore when they order it, the seller will receive the infor where consumer wants to receive it, and the other things about infor.
+
+So the idea started with 'Developers just need to focus on the Front-End, easily View-side.'
+
+However, there are lots of libraries for creating Web-Server, but when developer use it, he/she needs to construct, code, and test about it. It costs time too much, so we thought that 'What about let we solve the web-server part?'
+
+So MKWeb borned.
+
+We are designing our MKWeb with MVC pattern( however we are students and not pertty good at desining it, but we are working hard on how can we follow the pattern. ), and what MKWeb should offer to let developers focusing into there 'Front-End'.
+
+<img src="https://user-images.githubusercontent.com/65178775/81583650-9b94b300-93ec-11ea-8683-c4ffc67215f9.png" width="66%" style="display:block; margin: 0 auto;"/>
 
 * Model
 
@@ -15,20 +30,36 @@ A server-side resources such as; DbAccessor, FileTransfer, Logger, ...
 
 A bridge of Model <---> Views
 
-a. Config
+* Service
 
-Definition or settings of model's attributes, values, ...
+# XML Configs
+- Definition of Services or Controllers.
+The biggest profit when you use MKWeb.
 
-b. Service
+You can access to Model with service or controller configs.
 
-Management which excuted what View requested, serve the response of the task from Model to View.
+We designed the configs with XML, so developer can easily access to Server resources.
 
-* Views
+Before using MKWeb, you need to design DBA, DBO, and whatever you need to access to DB, but now you just need to set Config files to access DB.
 
-Things, user will interact, see, ...
+For example, you just need to set SQL config, and Page config ( We will introduce about it below part or MKWeb Wiki. )
 
-# To Do List
+The response depends on what view requested, however you just need to define the response for the request on Configs.
 
-1. Define MkWeb's Functions
+If the request is not defined, then response will call error-page.
 
-2. Schedule What To Do.
+# What We Are Preparing
+
+1. RESTful API
+
+2. Secure
+
+# What we want you to do when you use MKWeb or copy and distribute MKWeb(convey).
+* MKWeb을 사용하거나 복제, 배포할 때 해줬으면 하는 일
+
+1. Don't forget who created it.
+- Minwhoan, Kihyeon. We just wanted to be well known programmers.
+
+2. Please scout us.
+
+# Thanks to JCY(Republic of Korea), Working at Sky Love.
