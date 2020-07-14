@@ -7,6 +7,23 @@ Minwhoan - Kihyeon's web repository
 # Our Structure, Plan, Idea
 <img src="https://user-images.githubusercontent.com/65178775/81583650-9b94b300-93ec-11ea-8683-c4ffc67215f9.png" width="66%" />
 
+# What is MKWeb?
+
+MkWeb is well created 'Web-Server' framework(even if not created well now, but we are heading to be).
+
+We considered that developers should think lots of things when he started to create some services; App, WebSite, science experimental, etc...; simply like `Front-End`, `Back-End`.
+
+But actually, the simply service idea is about `Front-End`, like: How about create a food delivery service? People can select the foods what they want to eat, and the page will show information about the food. And they will order it, and seller will receive about the information what consumer ordered, where he wants to receive, ...
+
+So the idea started with 'Developers just need to focus on the 'Front-End', easily `View`-side.'
+
+However, there are lots of libraries for creating Web-Server, but developer need to construct about it. It costs time too much, so we think that how about let we solve the web-server part?
+
+So MKWeb borned.
+
+We are designing our MKWeb with MVC pattern( however we are students, and not having much knowledge about it, but we are working hard on how can we follow the pattern. ),
+and what MKWeb should built to let developers focusing into there 'Front-End'.
+
 * Model
 
 A server-side resources such as; DbAccessor, FileTransfer, Logger, ...
@@ -15,20 +32,27 @@ A server-side resources such as; DbAccessor, FileTransfer, Logger, ...
 
 A bridge of Model <---> Views
 
-a. Config
+* Service
 
-Definition or settings of model's attributes, values, ...
 
-b. Service
+# XML Configs
+- Definition of Services or Controllers.
+The biggest profit when you use MKWeb.
 
-Management which excuted what View requested, serve the response of the task from Model to View.
+You can access to service or controller to use Model with configs.
 
-* Views
+We designed the configs with XML, so developer can easily access to Server resources.
 
-Things, user will interact, see, ...
+Before using MKWeb, you need to design DBA, DBO, and whatever you need to access to DB, but now you just need to set Config files to access DB.
 
-# To Do List
+For example, you just need to set SQL config, and Page config ( We will introduce about it below part or MKWeb Wiki. )
 
-1. Define MkWeb's Functions
+The response is depending on what view requested, however you need to define the request on Configs.
 
-2. Schedule What To Do.
+If the request is not defined, then response will call error-page.
+
+# What We Are Preparing
+
+1. RESTful API
+
+2. Secure
