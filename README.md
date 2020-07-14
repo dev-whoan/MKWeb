@@ -13,7 +13,7 @@ MkWeb is well created 'Web-Server' framework(even if not created well now, but w
 
 We considered that developers should think lots of things when he/she started to create some services; App, WebSite, science experimental, etc... Simply Front-End, and Back-End.
 
-But actually, the simply service idea is about Front-End like: How about create a food delivery service? People can select the foods what they want to eat, and the page will show information about the food. Furthermore they will order it, and seller will receive about the information what consumer ordered, where he wants to receive, and everything about the consumer ordered information.
+But actually, the simply service idea is about Front-End like: How about create a food delivery service? People can select the foods what they want to eat, and the page will show information about the food. Furthermore they will order it, and seller will receive about the information what consumer ordered, where he wants to receive, and everything about the information which is about consumer's order.
 
 So the idea started with 'Developers just need to focus on the Front-End, easily View-side.'
 
