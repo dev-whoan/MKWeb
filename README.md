@@ -44,7 +44,7 @@ Before using MKWeb, you need to design DBA, DBO, and whatever you need to access
 
 For example, you just need to set SQL config, and Page config ( We will introduce about it below part or MKWeb Wiki. )
 
-The response is depending on what view requested, however you need to define the request on Configs.
+The response depends on what view requested, however you just need to define the response for the request on Configs.
 
 If the request is not defined, then response will call error-page.
 
