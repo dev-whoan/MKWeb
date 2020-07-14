@@ -55,3 +55,12 @@ If the request is not defined, then response will call error-page.
 1. RESTful API
 
 2. Secure
+
+# Thanks to JCY(Republic of Korea), Working at Sky Love.
+
+# What you should do when you use it or copy and distribution(convey). - MKWeb을 사용하거나 복제, 배포할 때 해줬으면 하는 일
+
+1. Don't forget who created it.
+- Minwhoan, Kihyeon. We just wanted to be well known programmers.
+
+2. Please scout us.
