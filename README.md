@@ -2,13 +2,13 @@
 <img src="https://user-images.githubusercontent.com/65178775/83269009-6a481f80-a201-11ea-8475-0a779375a005.png" width="100%" />
 
 # MKweb
-Minwhoan - Kihyeon's web repository
+Minwhoan - Kihyeon's JSP-Servlet Web Server Framework Repository
 
 # What is MKWeb?
 
-MkWeb is well created 'Web-Server' framework(even if not created well now, but we are heading to be).
+MkWeb is well created 'Web-Server' framework.
 
-We considered that developers should think lots of things when he/she started to create some services; App, WebSite, science experimental, etc... Simply Front-End, and Back-End.
+We considered that developers should think lots of things when he/she started to create some services; App, WebSite, science experimental, etc. Simply Front-End, and Back-End.
 
 But actually, the simply service idea is about Front-End like: How about create a food delivery service? People can select the foods what they want to eat, and the page will show information about the food. Furthermore they will order it, and seller will receive about the information what consumer ordered, where he wants to receive, and everything about the information which is about consumer's order.
 
