@@ -11,18 +11,17 @@ Minwhoan - Kihyeon's web repository
 
 MkWeb is well created 'Web-Server' framework(even if not created well now, but we are heading to be).
 
-We considered that developers should think lots of things when he started to create some services; App, WebSite, science experimental, etc...; simply like `Front-End`, `Back-End`.
+We considered that developers should think lots of things when he/she started to create some services; App, WebSite, science experimental, etc... Simply Front-End, and Back-End.
 
-But actually, the simply service idea is about `Front-End`, like: How about create a food delivery service? People can select the foods what they want to eat, and the page will show information about the food. And they will order it, and seller will receive about the information what consumer ordered, where he wants to receive, ...
+But actually, the simply service idea is about Front-End like: How about create a food delivery service? People can select the foods what they want to eat, and the page will show information about the food. Furthermore they will order it, and seller will receive about the information what consumer ordered, where he wants to receive, and everything about the consumer ordered information.
 
-So the idea started with 'Developers just need to focus on the 'Front-End', easily `View`-side.'
+So the idea started with 'Developers just need to focus on the Front-End, easily View-side.'
 
-However, there are lots of libraries for creating Web-Server, but developer need to construct about it. It costs time too much, so we think that how about let we solve the web-server part?
+However, there are lots of libraries for creating Web-Server, but when developer use it, he/she needs to construct, code, and test about it. It costs time too much, so we thought that 'What about let we solve the web-server part?'
 
 So MKWeb borned.
 
-We are designing our MKWeb with MVC pattern( however we are students, and not having much knowledge about it, but we are working hard on how can we follow the pattern. ),
-and what MKWeb should built to let developers focusing into there 'Front-End'.
+We are designing our MKWeb with MVC pattern( however we are students and not pertty good at desining it, but we are working hard on how can we follow the pattern. ), and what MKWeb should built to let developers focusing into there 'Front-End'.
 
 * Model
 
@@ -39,7 +38,7 @@ A bridge of Model <---> Views
 - Definition of Services or Controllers.
 The biggest profit when you use MKWeb.
 
-You can access to service or controller to use Model with configs.
+You can access to Model with service or controller configs.
 
 We designed the configs with XML, so developer can easily access to Server resources.
 
