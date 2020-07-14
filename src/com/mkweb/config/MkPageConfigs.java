@@ -252,14 +252,19 @@ public class MkPageConfigs extends MkPageConfigCan{
 		String PRM_NAME = xmlData.getParameter();
 		String VAL_INFO = xmlData.getData();
 
-		String valMsg = "";
-		String[] valBuffer = VAL_INFO.split("\n");
-		for (int ab = 0; ab < valBuffer.length; ab++) {
-			String tempVal = valBuffer[ab].trim();
-			if(valMsg == "")
-				valMsg = tempVal;
-			else
-				valMsg += ("\n\t" + tempVal);
+		String valMsg = "No Page Value";
+		String[] valBuffer = null;
+		if(VAL_INFO != null)
+		{
+			valBuffer = VAL_INFO.split("\n");
+		
+			for (int ab = 0; ab < valBuffer.length; ab++) {
+				String tempVal = valBuffer[ab].trim();
+				if(valMsg == "")
+					valMsg = tempVal;
+				else
+					valMsg += ("\n\t" + tempVal);
+			}
 		}
 		String PRM = "";
 		if(pageParams != null) {

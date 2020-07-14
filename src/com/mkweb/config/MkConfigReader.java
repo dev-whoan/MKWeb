@@ -45,7 +45,7 @@ public class MkConfigReader {
 			mklogger.info("==============Reload Mk Config files==============");
 		}
 		if(properties != null) {
-			return this.properties.getProperty(key).toString();
+			return this.properties.getProperty(key) != null ? this.properties.getProperty(key).toString() : null;
 		}else {
 			mklogger.error("Mk Config didn't set!");
 			return null;
