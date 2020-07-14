@@ -21,7 +21,7 @@ However, there are lots of libraries for creating Web-Server, but when developer
 
 So MKWeb borned.
 
-We are designing our MKWeb with MVC pattern( however we are students and not pertty good at desining it, but we are working hard on how can we follow the pattern. ), and what MKWeb should built to let developers focusing into there 'Front-End'.
+We are designing our MKWeb with MVC pattern( however we are students and not pertty good at desining it, but we are working hard on how can we follow the pattern. ), and what MKWeb should offer to let developers focusing into there 'Front-End'.
 
 * Model
 
