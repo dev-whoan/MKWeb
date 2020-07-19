@@ -119,6 +119,8 @@ public class tagSEL extends SimpleTagSupport {
 		boolean doCheckPageValue = (pvHash != null && pvHash.size() > 0);
 		
 		requestValues.clear();
+		requestValues = null;
+		
 		if(doCheckPageValue) {
 		    Set entrySet = rqvHash.keySet();
 		    Iterator iter = entrySet.iterator();
@@ -133,6 +135,8 @@ public class tagSEL extends SimpleTagSupport {
 				while(pvIter.hasNext()) {
 					String pvKey = (String) pvIter.next();
 					if(key.contentEquals(pvKey)) {
+						if(requestValues == null)
+							requestValues = new ArrayList<>();
 						requestValues.add(key);
 					}
 				}
@@ -147,21 +151,32 @@ public class tagSEL extends SimpleTagSupport {
 			query = befQuery;
 		
 		boolean rvPassed = true;
+		
+		
 		if(requestValues != null && pageStaticParams != null) {
 			if(requestValues.size() > pageStaticParams.size()) {
 				rvPassed = false;
-			}else {
-				boolean isDone = true;
+			} else {
+				boolean isDone = false;
+				int sameCount = 0;
 				for(String rqv : requestValues) {
+					boolean passNow = false;
 					for(String psp : pageStaticParams) {
-						if(!rqv.contentEquals(psp)){
-							isDone = false;
+						if(rqv.contentEquals(psp)) {
+							passNow = true;
+							sameCount++;
+							if(sameCount >= requestValues.size())
+								isDone = true;
 							break;
 						}
 					}
 					if(isDone)
 						break;
+					if(passNow)
+						continue;
+					
 				}
+				mklogger.debug(TAG + " isDone : " + isDone);
 				rvPassed = isDone;
 			}
 		}
@@ -171,7 +186,7 @@ public class tagSEL extends SimpleTagSupport {
 			if(requestParams != null && pageParameter.get(rstID) != null) {
 				if(!requestParams.contentEquals(pageParameter.get(rstID))) {
 					if(!requestParams.contentEquals(pageStaticParamsName)) {
-						mklogger.error(TAG + " Request parameter is invalid. Please check page config. (" + requestParams + ")");
+						mklogger.error(TAG + " Request parameter is invalid(1). Please check page config. (" + requestParams + ")");
 						//	response.sendError(500);
 						return;
 					}
@@ -180,7 +195,7 @@ public class tagSEL extends SimpleTagSupport {
 				if( (requestParams != null && pageParameter.get(rstID) == null) || (requestParams == null && pageParameter.get(rstID) != null))
 				{
 					if(!requestParams.contentEquals(pageStaticParamsName)) {
-						mklogger.error(TAG + " Request parameter is invalid. Please check page config. (" + requestParams + ")");
+						mklogger.error(TAG + " Request parameter is invalid(2). Please check page config. (" + requestParams + ")");
 						//	response.sendError(500);
 						return;	
 					}
