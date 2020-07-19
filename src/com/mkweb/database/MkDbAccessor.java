@@ -286,6 +286,8 @@ public class MkDbAccessor {
 					if(prestmt != null)
 						prestmt.close();
 					
+					mklogger.debug(TAG + " 업로드 끝");
+					
 				} catch (SQLException e) {
 					mklogger.error(TAG + "(executeDML) psmt = this.dbCon.prepareStatement(" + this.psmt + ") :" + e.getMessage());
 				}

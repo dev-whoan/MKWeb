@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -30,16 +31,17 @@ public class CheckPageInfo {
 		return resultXmlData.getData();
 	}
 	
-	private boolean isPageParamValid(ArrayList<String> pageStaticParams, String reqParams) {
+	private String isPageParamValid(ArrayList<String> pageStaticParams, String reqParams) {
 		if(pageStaticParams == null || pageStaticParams.size() == 0) {
-			return false;
+			return null;
 		}
 		for(int i = 0; i < pageStaticParams.size(); i++) {
-			if(reqParams.contentEquals(pageStaticParams.get(i)))
-				return true;
+			if(reqParams.contentEquals(pageStaticParams.get(i))) {
+				mklogger.debug(TAG + " isPageParamValid :: staticParams: " + pageStaticParams.get(i) + " || reqParams: " + reqParams);
+				return reqParams;
+			}
 		}
-		
-		return false;
+		return null;
 	}
 	
 	private String getPageStaticParameter(ArrayList<String> pageStaticParams, String comparison){
@@ -69,17 +71,13 @@ public class CheckPageInfo {
 					}
 				}
 				if(pageStaticParamsName != null) {
-					mklogger.debug(TAG + " func getRequestPageParameterName) pageStaticParamsName: " + pageStaticParamsName + " || nname: " + nname);
 					if(!nname.contentEquals(pageStaticParamsName))
 						requestParams = nname; 
 				}
 				else
 					requestParams = nname;
 			}else {
-				if(!isPageParamValid(pageStaticParams, name)) {
-					mklogger.error(TAG + " (getRequestPageParameterName) Invalid request parameter : " + name);
-					return null;
-				}
+				requestParams = isPageParamValid(pageStaticParams, name);
 			}
 		}
 		
@@ -93,6 +91,7 @@ public class CheckPageInfo {
 		while(params.hasMoreElements()) {
 			String name = params.nextElement().toString().trim();
 			String[] nname = name.split("\\.");
+			mklogger.debug(TAG + " name : " + name + " || pStaticName : " + pageStaticParamsName);
 			if(name.contains(".")) {
 				if(pageStaticParamsName != null) {
 					if(!nname[0].contentEquals(pageStaticParamsName) && nname[0].contentEquals(rstID))
@@ -103,11 +102,12 @@ public class CheckPageInfo {
 				}
 				
 			}else {
-				if(!isPageParamValid(pageParams, name)) {
+				if(isPageParamValid(pageParams, name) != null) {
+					requestValues.add(getPageStaticParameter(pageParams, name));
+				}else {
 					mklogger.error(TAG + " (getRequestParameterValues) Invalid request parameter : " + name );
 					return null;
 				}
-				requestValues.add(getPageStaticParameter(pageParams, name));
 			}
 		}
 		
@@ -182,13 +182,17 @@ public class CheckPageInfo {
 	
 	public boolean comparePageValueWithRequest(String pageValue, ArrayList<String> reqValue, ArrayList<String> staticParams, boolean isApi) {
 		String pv = "";
-		ArrayList<String> passValues = new ArrayList<>();
+		HashMap<String, Boolean> passValues = new HashMap<>();
 		pageValue = pageValue.trim();
 		
 		if(staticParams != null) {
 			for(int i = 0; i < staticParams.size(); i++) {
-				passValues.add(staticParams.get(i).trim());
+				passValues.put(staticParams.get(i).trim(), true);
+				mklogger.debug(TAG + " staticParams: " + staticParams.get(i));
 			}
+		}
+		for(int i = 0; i < reqValue.size(); i++) {
+			mklogger.debug(TAG + " reqValues : " + reqValue.get(i));
 		}
 		
 		String[] pvSetList = pageValue.split("=");
@@ -200,12 +204,9 @@ public class CheckPageInfo {
 			for(int i = 0; i < (pvSetList.length-1); i++) {
 				String t = pvSetList[i].split("\\.")[1].trim();
 				if(passExists) {
-					for(String passValue : passValues) {
-						
-						if(!t.contentEquals(passValue)) {
-							pv += t;
-							break;
-						}
+					if(passValues.get(t) == null) {
+						pv += t;
+						break;
 					}
 				}else {
 					pv += t;
@@ -227,11 +228,9 @@ public class CheckPageInfo {
 				passExists = true;
 			for(int i = 0; i < reqValue.size(); i++) {
 				if(passExists) {
-					for(String passValue : passValues) {
-						if(!reqValue.get(i).contentEquals(passValue)) {
-							rv += reqValue.get(i).trim();
-							break;
-						}
+					if(passValues.get(reqValue.get(i)) == null) {
+						rv += reqValue.get(i).trim();
+						break;
 					}
 				}else {
 					rv += reqValue.get(i).trim();

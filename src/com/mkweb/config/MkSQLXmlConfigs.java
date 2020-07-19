@@ -19,11 +19,11 @@ public class MkSQLXmlConfigs extends MkSqlConfigCan {
 	private MkLogger mklogger = MkLogger.Me();
 	private String TAG = "[SQLXmlConfigs]";
 	
-	private String[] sl_list = {
+	private String[] svc_list = {
 			"id",
 			"db"
 	};
-	private String[] sl_info = new String[sl_list.length];
+	private String[] svc_info = new String[svc_list.length];
 	
 	public static MkSQLXmlConfigs Me() {
 		if(sxc == null)
@@ -54,9 +54,9 @@ public class MkSQLXmlConfigs extends MkSqlConfigCan {
 				if(node.getNodeType() == Node.ELEMENT_NODE) {
 					NamedNodeMap attributes = node.getAttributes();
 					
-					for(int sli = 0; sli < sl_list.length; sli++) {
-						Node tN = attributes.getNamedItem(sl_list[sli]);
-						sl_info[sli] = (tN != null ? tN.getNodeValue() : null);
+					for(int sli = 0; sli < svc_list.length; sli++) {
+						Node tN = attributes.getNamedItem(svc_list[sli]);
+						svc_info[sli] = (tN != null ? tN.getNodeValue() : null);
 					}
 					
 					String query = node.getTextContent();
@@ -65,14 +65,14 @@ public class MkSQLXmlConfigs extends MkSqlConfigCan {
 					
 					xmlData.setControlName("MkSQL");
 					//ID = 0, DB = 1
-					xmlData.setServiceName(sl_info[0]);
-					xmlData.setDB(sl_info[1]);
+					xmlData.setServiceName(svc_info[0]);
+					xmlData.setDB(svc_info[1]);
 					xmlData.setData(query);
 
-					sql_configs.put(sl_info[0], xmlData);
+					sql_configs.put(svc_info[0], xmlData);
 					
-					mklogger.info("SQL ID :\t\t\t" + sl_info[0]);
-					mklogger.info("SQL DB :\t\t\t" + sl_info[1]);
+					mklogger.info("SQL ID :\t\t\t" + svc_info[0]);
+					mklogger.info("SQL DB :\t\t\t" + svc_info[1]);
 
 					query = query.trim();
 					String queryMsg = "";

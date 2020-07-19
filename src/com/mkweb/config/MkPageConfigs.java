@@ -29,15 +29,15 @@ public class MkPageConfigs extends MkPageConfigCan{
 			pc = new MkPageConfigs();
 		return pc;
 	}
-	private String[] cl_list = {
+	private String[] ctr_list = {
 			"name",
 			"debug",
 			"dir",
 			"dir_key",
 			"page"
 	};
-	private String[] cl_info = new String[cl_list.length];
-	private String[] sl_list = {
+	private String[] ctr_info = new String[ctr_list.length];
+	private String[] svc_list = {
 			"id",
 			"obj",
 			"rst",
@@ -94,10 +94,10 @@ public class MkPageConfigs extends MkPageConfigCan{
 					if(node.getNodeName().equals("Control"))
 					{
 						if(node.getNodeType() == Node.ELEMENT_NODE) {
-							for(int cl = 0; cl < cl_list.length; cl++) {
-								if(node.getAttributes().getNamedItem(cl_list[cl]) != null)
+							for(int cl = 0; cl < ctr_list.length; cl++) {
+								if(node.getAttributes().getNamedItem(ctr_list[cl]) != null)
 								{
-									cl_info[cl] = node.getAttributes().getNamedItem(cl_list[cl]).getNodeValue();
+									ctr_info[cl] = node.getAttributes().getNamedItem(ctr_list[cl]).getNodeValue();
 								}
 							}
 							xmlData = new ArrayList<PageXmlData>();
@@ -125,7 +125,7 @@ public class MkPageConfigs extends MkPageConfigCan{
 
 									if(service.getNodeType() == Node.ELEMENT_NODE)
 									{
-										String[] SQL_INFO = new String[sl_list.length];
+										String[] SQL_INFO = new String[svc_list.length];
 										String PRM_NAME = null;
 										String VAL_INFO = null;
 										for(int k = 0; k < service_param.getLength(); k++) {
@@ -137,8 +137,8 @@ public class MkPageConfigs extends MkPageConfigCan{
 
 												switch(service_info.getNodeName()) {
 												case "Sql":
-													for(int sli = 0; sli < sl_list.length; sli++) {
-														Node tN = attributes.getNamedItem(sl_list[sli]);
+													for(int sli = 0; sli < svc_list.length; sli++) {
+														Node tN = attributes.getNamedItem(svc_list[sli]);
 														SQL_INFO[sli] = (tN != null ? tN.getNodeValue() : null);
 													}
 													break;
@@ -156,20 +156,20 @@ public class MkPageConfigs extends MkPageConfigCan{
 										}
 
 										String serviceName = service.getAttributes().getNamedItem("type").getNodeValue() + "." + SQL_INFO[0];
-										PageXmlData curData = setPageXmlData(pageParamsName, pageParam, serviceName, cl_info, SQL_INFO, PRM_NAME, VAL_INFO, null);
+										PageXmlData curData = setPageXmlData(pageParamsName, pageParam, serviceName, ctr_info, SQL_INFO, PRM_NAME, VAL_INFO, null);
 										printPageInfo(curData, "info");
 										xmlData.add(curData);
-										page_configs.put(cl_info[0], xmlData);
+										page_configs.put(ctr_info[0], xmlData);
 									}
 								}
 							}else {
-								String[] temp_sql = new String[sl_list.length];
+								String[] temp_sql = new String[svc_list.length];
 								for(String s : temp_sql) {	s = "no data";	}
 								
-								PageXmlData curData = setPageXmlData(pageParamsName, pageParam, "No Service", cl_info, temp_sql, "No Parameter", "No Value", null);
+								PageXmlData curData = setPageXmlData(pageParamsName, pageParam, "No Service", ctr_info, temp_sql, "No Parameter", "No Value", null);
 								printPageInfo(curData, "info");
 								xmlData.add(curData);
-								page_configs.put(cl_info[0], xmlData);
+								page_configs.put(ctr_info[0], xmlData);
 							}
 							
 						}
@@ -211,17 +211,17 @@ public class MkPageConfigs extends MkPageConfigCan{
 	}
 	
 	@Override
-	protected PageXmlData setPageXmlData(String pageParamName, ArrayList<String> pageParam, String serviceName, String[] cl_info, String[] sqlInfo, String PRM_NAME, String VAL_INFO, String STRUCTURE) {
+	protected PageXmlData setPageXmlData(String pageParamName, ArrayList<String> pageParam, String serviceName, String[] ctr_info, String[] sqlInfo, String PRM_NAME, String VAL_INFO, String STRUCTURE) {
 		PageXmlData result = new PageXmlData();
 		result.setPageStaticParamName(pageParamName);
 		result.setPageStaticParams(pageParam);
-		result.setControlName(cl_info[0]);
+		result.setControlName(ctr_info[0]);
 		result.setServiceName(serviceName);
-		result.setLogicalDir(cl_info[3]);
-		result.setDir(cl_info[2]);
+		result.setLogicalDir(ctr_info[3]);
+		result.setDir(ctr_info[2]);
 		
-		result.setPageName(cl_info[4]);
-		result.setDebug(cl_info[1]);
+		result.setPageName(ctr_info[4]);
+		result.setDebug(ctr_info[1]);
 
 		result.setSql(sqlInfo);
 		result.setParameter(PRM_NAME);

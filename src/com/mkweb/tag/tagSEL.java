@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,6 +19,7 @@ import com.mkweb.database.MkDbAccessor;
 import com.mkweb.logger.MkLogger;
 import com.mkweb.security.CheckPageInfo;
 import com.mkweb.web.PageInfo;
+import com.mysql.cj.jdbc.Blob;
 
 public class tagSEL extends SimpleTagSupport {
 	private String obj;
@@ -95,13 +98,47 @@ public class tagSEL extends SimpleTagSupport {
 
 		requestParams = cpi.getRequestPageParameterName(request, pageStaticParams, pageStaticParamsName);
 		requestValues = cpi.getRequestParameterValues(request, pageInfo.getPageParameter().get(rstID), pageStaticParams, pageStaticParamsName);
-				
+		
 		if(!cpi.comparePageValueWithRequest(pageValue.get(rstID), requestValues, pageStaticParams, false)) {
 			mklogger.error(TAG + " Request Value is not authorized. Please check page config.");
 		//	response.sendError(500);
 			return;
 		}
 
+		HashMap<String, Boolean> rqvHash = new HashMap<>();
+		HashMap<String, Boolean> pvHash = new HashMap<>();
+		
+		if(requestValues != null && requestValues.size() > 0) {
+			for(String s : requestValues) {
+				rqvHash.put(s, true);
+			}
+		}
+		
+		boolean doCheckPageValue = (pageValue != null && pageValue.size() > 0);
+		
+	    Set entrySet = rqvHash.keySet();
+	    Iterator iter = entrySet.iterator();
+	    
+	    while(iter.hasNext()) {
+			String key = (String) iter.next();
+			if(doCheckPageValue) {
+				for(String s : pageValue) {
+					if(key.contentEquals(s)) {
+						pvHash.put(s, true);
+					}
+				}
+			}
+		}
+		
+	    requestValues.clear();
+	    entrySet = pvHash.keySet();
+	    iter = entrySet.iterator();
+	    
+	    while(iter.hasNext()) {
+	    	String key = (String) iter.next();
+	    	requestValues.add(key);
+	    }
+	    
 		String befQuery = cpi.regularQuery(pageSqlInfo.get(rstID)[0]);
 
 		String query = null;
@@ -129,22 +166,24 @@ public class tagSEL extends SimpleTagSupport {
 			}
 		}
 		
-		mklogger.debug(TAG + "requestParams : " + requestParams);
-		mklogger.debug(TAG + "pageParameter : " + pageParameter.get(rstID));
 		if(!rvPassed) {
 			
 			if(requestParams != null && pageParameter.get(rstID) != null) {
-				if(!requestParams.equals(pageParameter.get(rstID))) {
-					mklogger.error(TAG + " Request parameter is invalid. Please check page config. (" + requestParams + ")");
-				//	response.sendError(500);
-					return;
+				if(!requestParams.contentEquals(pageParameter.get(rstID))) {
+					if(!requestParams.contentEquals(pageStaticParamsName)) {
+						mklogger.error(TAG + " Request parameter is invalid. Please check page config. (" + requestParams + ")");
+						//	response.sendError(500);
+						return;
+					}
 				}
 			}else {
 				if( (requestParams != null && pageParameter.get(rstID) == null) || (requestParams == null && pageParameter.get(rstID) != null))
 				{
-					mklogger.error(TAG + " Request parameter is invalid. Please check page config. (" + requestParams + ")");
-				//	response.sendError(500);
-					return;
+					if(!requestParams.contentEquals(pageStaticParamsName)) {
+						mklogger.error(TAG + " Request parameter is invalid. Please check page config. (" + requestParams + ")");
+						//	response.sendError(500);
+						return;	
+					}
 				}
 			}
 		}
@@ -187,7 +226,6 @@ public class tagSEL extends SimpleTagSupport {
 				for(int i = 0; i < dbResult.size(); i++)
 				{
 					result = (HashMap<String, Object>) dbResult.get(i);
-					mklogger.debug(TAG + "°á°ú\n" + result);
 					((PageContext)getJspContext()).getRequest().setAttribute(this.rst, result);
 					getJspBody().invoke(null);
 				}

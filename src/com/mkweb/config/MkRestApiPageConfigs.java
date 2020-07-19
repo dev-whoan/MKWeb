@@ -35,7 +35,7 @@ public class MkRestApiPageConfigs extends MkPageConfigCan{
 		return mrapc;
 	}
 	
-	private String[] cl_list = {
+	private String[] ctr_list = {
 		"name",
 		"debug",
 		"authorized",
@@ -46,9 +46,9 @@ public class MkRestApiPageConfigs extends MkPageConfigCan{
 		"options",
 		"head"
 	};
-	private String[] cl_info = new String[cl_list.length];
+	private String[] ctr_info = new String[ctr_list.length];
 	
-	private String[] sl_list = {
+	private String[] svc_list = {
 		"id",
 		"obj",
 		"rst",
@@ -80,8 +80,8 @@ public class MkRestApiPageConfigs extends MkPageConfigCan{
 	@Override
 	public void setPageConfigs(File[] pageConfigs) {
 		isSet = false;
-		super.setClList(cl_list);
-		super.setSlList(sl_list);
+		super.setClList(ctr_list);
+		super.setSlList(svc_list);
 		page_configs.clear();
 		defaultFiles = pageConfigs;
 		ArrayList<PageXmlData> xmlData = null;
@@ -109,10 +109,10 @@ public class MkRestApiPageConfigs extends MkPageConfigCan{
 					{
 						if(node.getNodeType() == Node.ELEMENT_NODE) {
 							
-							for(int cl = 0; cl < cl_list.length; cl++) {
-								if(node.getAttributes().getNamedItem(cl_list[cl]) != null)
+							for(int cl = 0; cl < ctr_list.length; cl++) {
+								if(node.getAttributes().getNamedItem(ctr_list[cl]) != null)
 								{
-									cl_info[cl] = node.getAttributes().getNamedItem(cl_list[cl]).getNodeValue();
+									ctr_info[cl] = node.getAttributes().getNamedItem(ctr_list[cl]).getNodeValue();
 								}
 							}
 
@@ -141,7 +141,7 @@ public class MkRestApiPageConfigs extends MkPageConfigCan{
 
 									if(service.getNodeType() == Node.ELEMENT_NODE)
 									{
-										String[] SQL_INFO = new String[sl_list.length];
+										String[] SQL_INFO = new String[svc_list.length];
 										String PRM_NAME = null;
 										String VAL_INFO = null;
 										String STRUCTURE = null;
@@ -154,8 +154,8 @@ public class MkRestApiPageConfigs extends MkPageConfigCan{
 
 												switch(service_info.getNodeName()) {
 												case "Sql":
-													for(int sli = 0; sli < sl_list.length; sli++) {
-														Node tN = attributes.getNamedItem(sl_list[sli]);
+													for(int sli = 0; sli < svc_list.length; sli++) {
+														Node tN = attributes.getNamedItem(svc_list[sli]);
 														SQL_INFO[sli] = (tN != null ? tN.getNodeValue() : null);
 													}
 													break;
@@ -176,10 +176,10 @@ public class MkRestApiPageConfigs extends MkPageConfigCan{
 										String serviceName = service.getAttributes().getNamedItem("type").getNodeValue() + "." + SQL_INFO[0];
 
 										//RestApiPageXmlData
-										PageXmlData rapData = setPageXmlData(pageParamsName, pageParam, serviceName, cl_info, SQL_INFO, PRM_NAME, VAL_INFO, STRUCTURE);
+										PageXmlData rapData = setPageXmlData(pageParamsName, pageParam, serviceName, ctr_info, SQL_INFO, PRM_NAME, VAL_INFO, STRUCTURE);
 										printPageInfo(rapData, "info");
 										xmlData.add(rapData);
-										page_configs.put(cl_info[0], xmlData);
+										page_configs.put(ctr_info[0], xmlData);
 									}
 								}
 							}else {
@@ -187,15 +187,15 @@ public class MkRestApiPageConfigs extends MkPageConfigCan{
 								String VAL_INFO = "No Value";
 								String STRUCTURE = "No Structure";
 								
-								String[] temp_sql = new String[sl_list.length];
+								String[] temp_sql = new String[svc_list.length];
 								for(String s : temp_sql) {	s = "no data";	}
 								
-								cl_info[0] = node.getAttributes().getNamedItem("name").getNodeValue();
+								ctr_info[0] = node.getAttributes().getNamedItem("name").getNodeValue();
 								
-								PageXmlData rapData = setPageXmlData(pageParamsName, pageParam, "No Service", cl_info, temp_sql, PRM_NAME, VAL_INFO, STRUCTURE);
+								PageXmlData rapData = setPageXmlData(pageParamsName, pageParam, "No Service", ctr_info, temp_sql, PRM_NAME, VAL_INFO, STRUCTURE);
 								printPageInfo(rapData, "info");
 								xmlData.add(rapData);
-								page_configs.put(cl_info[0], xmlData);
+								page_configs.put(ctr_info[0], xmlData);
 							}
 							
 						}
@@ -209,23 +209,23 @@ public class MkRestApiPageConfigs extends MkPageConfigCan{
 		}
 	}
 	@Override
-	protected PageXmlData setPageXmlData(String pageStaticParamName, ArrayList<String> pageStaticParam, String serviceName, String[] cl_info, String[] sqlInfo, String PRM_NAME, String VAL_INFO, String STRUCTURE) {
+	protected PageXmlData setPageXmlData(String pageStaticParamName, ArrayList<String> pageStaticParam, String serviceName, String[] ctr_info, String[] sqlInfo, String PRM_NAME, String VAL_INFO, String STRUCTURE) {
 		PageXmlData result = new PageXmlData();
-		result.setControlName(cl_info[0]);
+		result.setControlName(ctr_info[0]);
 		result.setPageStaticParamName(pageStaticParamName);
 		result.setPageStaticParams(pageStaticParam);
 		result.setServiceName(serviceName);
 
-		result.setPageName(cl_info[0]);
-		result.setDebug(cl_info[1]);
+		result.setPageName(ctr_info[0]);
+		result.setDebug(ctr_info[1]);
 		
-		result.setAuthorizedRequire(cl_info[2]);
-		result.setPost(cl_info[3]);
-		result.setGet(cl_info[4]);
-		result.setPut(cl_info[5]);
-		result.setDelete(cl_info[6]);
-		result.setOptions(cl_info[7]);
-		result.setHead(cl_info[8]);
+		result.setAuthorizedRequire(ctr_info[2]);
+		result.setPost(ctr_info[3]);
+		result.setGet(ctr_info[4]);
+		result.setPut(ctr_info[5]);
+		result.setDelete(ctr_info[6]);
+		result.setOptions(ctr_info[7]);
+		result.setHead(ctr_info[8]);
 		
 		result.setSql(sqlInfo);
 		result.setParameter(PRM_NAME);

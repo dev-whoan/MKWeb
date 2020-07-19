@@ -30,13 +30,13 @@ public class MkRestApiSqlConfigs extends MkSqlConfigCan {
 			mrasc = new MkRestApiSqlConfigs();
 		return mrasc;
 	}
-	private String[] sl_list = {
+	private String[] svc_list = {
 			"id",
 			"db",
 			"allow_single",
 			"allow_like"
 	};
-	private String[] sl_info = new String[sl_list.length];
+	private String[] svc_info = new String[svc_list.length];
 
 	public void setSqlConfigs(File sqlConfigs) {
 		api_sql_configs.clear();
@@ -61,9 +61,9 @@ public class MkRestApiSqlConfigs extends MkSqlConfigCan {
 				if(node.getNodeType() == Node.ELEMENT_NODE) {
 					NamedNodeMap attributes = node.getAttributes();
 
-					for(int sli = 0; sli < sl_list.length; sli++) {
-						Node tN = attributes.getNamedItem(sl_list[sli]);
-						sl_info[sli] = (tN != null ? tN.getNodeValue() : null);
+					for(int sli = 0; sli < svc_list.length; sli++) {
+						Node tN = attributes.getNamedItem(svc_list[sli]);
+						svc_info[sli] = (tN != null ? tN.getNodeValue() : null);
 					}
 					NodeList queryNodes = node.getChildNodes();
 					ArrayList<String> sqlColumns = null;
@@ -93,18 +93,18 @@ public class MkRestApiSqlConfigs extends MkSqlConfigCan {
 
 					xmlData.setControlName(this.controlName);
 					//ID = 0, DB = 1  
-					xmlData.setServiceName(sl_info[0]);
-					xmlData.setDB(sl_info[1]);
-					xmlData.setAllowSingle(sl_info[2]);
-					xmlData.setAllowLike(sl_info[3]);
+					xmlData.setServiceName(svc_info[0]);
+					xmlData.setDB(svc_info[1]);
+					xmlData.setAllowSingle(svc_info[2]);
+					xmlData.setAllowLike(svc_info[3]);
 					xmlData.setData(sqlQuerys);
 					xmlData.setColumnData(sqlColumns);
 
-					api_sql_configs.put(sl_info[0], xmlData);
+					api_sql_configs.put(svc_info[0], xmlData);
 
-					mklogger.info("SQL ID :\t\t\t" + sl_info[0]);
-					mklogger.info("SQL DB :\t\t\t" + sl_info[1]);
-					mklogger.info("Allow  :\t\t\t" + sl_info[2]);
+					mklogger.info("SQL ID :\t\t\t" + svc_info[0]);
+					mklogger.info("SQL DB :\t\t\t" + svc_info[1]);
+					mklogger.info("Allow  :\t\t\t" + svc_info[2]);
 					mklogger.info("");
 
 					sqlQuerys = sqlQuerys.trim();
