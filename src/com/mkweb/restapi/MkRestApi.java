@@ -166,9 +166,7 @@ public class MkRestApi extends HttpServlet {
 	private void doTask(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
 		request.setCharacterEncoding("UTF-8");
 		if(!MkConfigReader.Me().get("mkweb.restapi.use").equals("yes")) {
-			RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/WEB-INF/error/404.jsp");
-			dispatcher.forward(request, response);
-			response.setStatus(404);
+			response.sendError(404);
 			return;
 		}
 		final String MKWEB_URL_PATTERN = MkConfigReader.Me().get("mkweb.restapi.urlpattern");
@@ -274,17 +272,13 @@ public class MkRestApi extends HttpServlet {
 				searchKey = jsonObject.get(MkConfigReader.Me().get("mkweb.restapi.searchkey.exp")).toString();
 			}else {
 				//예외
-				RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/WEB-INF/error/600.jsp");
-				dispatcher.forward(request, response);
-				response.setStatus(401);
+				response.sendError(401);
 				return;
 			}
 			
 			if(searchKey == null) {
 				//예외
-				RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/WEB-INF/error/600.jsp");
-				dispatcher.forward(request, response);
-				response.setStatus(401);
+				response.sendError(401);
 				return;
 			}
 		}
@@ -301,9 +295,7 @@ public class MkRestApi extends HttpServlet {
 		
 		if(reqPage.length < 2) {
 			//예외
-			RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/WEB-INF/error/600.jsp");
-			dispatcher.forward(request, response);
-			response.setStatus(401);
+			response.sendError(401);
 			return;
 		}
 		mkPage = reqPage[1];
@@ -325,9 +317,7 @@ public class MkRestApi extends HttpServlet {
 				
 				if(splits.length != 2) {
 					//예외
-					RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/WEB-INF/error/600.jsp");
-					dispatcher.forward(request, response);
-					response.setStatus(401);
+					response.sendError(401);
 					return;
 				}
 				reqApiData = splits[1];
@@ -367,27 +357,23 @@ public class MkRestApi extends HttpServlet {
 		}
 		if(!cpi.isValidApiPageConnection(mkPage, noUrlPattern)) {
 			//예외
-			RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/WEB-INF/error/404.jsp");
-			dispatcher.forward(request, response);
+			response.sendError(401);
 			return;
 		}
 		if(requireKey && !isKeyValid(searchKey, mkPage)) {
 			//예외
-			RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/WEB-INF/error/600.jsp");
-			dispatcher.forward(request, response);
+			response.sendError(401);
 			return;
 		}
 		if(!checkMethod(request, method, mkPage)) {
 			//예외
-			response.setStatus(400);
-			RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/WEB-INF/error/600.jsp");
-			dispatcher.forward(request, response);
+			response.sendError(400);
 			return;
 		}
 		if(!method.contentEquals("get")) {
 			if(!request.getHeader("Content-Type").toLowerCase().contains("application/json")) {
 				//예외
-				response.setStatus(415);
+				response.sendError(415);
 				return;
 			}
 		}

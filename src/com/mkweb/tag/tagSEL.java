@@ -69,6 +69,7 @@ public class tagSEL extends SimpleTagSupport {
 
 		if(!pageInfo.isSet()) {
 			mklogger.error(TAG + " PageInfo is not set!");
+		//	response.sendError(500);
 			return;
 		}
 
@@ -88,14 +89,16 @@ public class tagSEL extends SimpleTagSupport {
 
 		if(rstID == -1) {
 			mklogger.error(TAG + " Tag 'rst(" + this.rst + ")' is not matched with Page-config 'rst'.");
+		//	response.sendError(500);
 			return;
 		}
-		
+
 		requestParams = cpi.getRequestPageParameterName(request, pageStaticParams, pageStaticParamsName);
 		requestValues = cpi.getRequestParameterValues(request, pageInfo.getPageParameter().get(rstID), pageStaticParams, pageStaticParamsName);
 				
 		if(!cpi.comparePageValueWithRequest(pageValue.get(rstID), requestValues, pageStaticParams, false)) {
 			mklogger.error(TAG + " Request Value is not authorized. Please check page config.");
+		//	response.sendError(500);
 			return;
 		}
 
@@ -126,17 +129,21 @@ public class tagSEL extends SimpleTagSupport {
 			}
 		}
 		
+		mklogger.debug(TAG + "requestParams : " + requestParams);
+		mklogger.debug(TAG + "pageParameter : " + pageParameter.get(rstID));
 		if(!rvPassed) {
+			
 			if(requestParams != null && pageParameter.get(rstID) != null) {
 				if(!requestParams.equals(pageParameter.get(rstID))) {
 					mklogger.error(TAG + " Request parameter is invalid. Please check page config. (" + requestParams + ")");
+				//	response.sendError(500);
 					return;
 				}
 			}else {
 				if( (requestParams != null && pageParameter.get(rstID) == null) || (requestParams == null && pageParameter.get(rstID) != null))
 				{
-
 					mklogger.error(TAG + " Request parameter is invalid. Please check page config. (" + requestParams + ")");
+				//	response.sendError(500);
 					return;
 				}
 			}

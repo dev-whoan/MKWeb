@@ -69,6 +69,7 @@ public class CheckPageInfo {
 					}
 				}
 				if(pageStaticParamsName != null) {
+					mklogger.debug(TAG + " func getRequestPageParameterName) pageStaticParamsName: " + pageStaticParamsName + " || nname: " + nname);
 					if(!nname.contentEquals(pageStaticParamsName))
 						requestParams = nname; 
 				}

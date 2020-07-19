@@ -102,11 +102,12 @@ public class MkReceiveFormData extends HttpServlet {
     	return (pxData != null ? true : false);
     }
     
-    private void doTask(HttpServletRequest request, HttpServletResponse response) {
+    private void doTask(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	MkDbAccessor DA = new MkDbAccessor();
 		
 		if(!cpi.comparePageValueWithRequest(pxData.getData(), requestValues, pxData.getPageStaticParams(), false)) {
 			mklogger.error(TAG + " Request Value is not authorized. Please check page config.");
+			response.sendError(400);
 			return;
 		}
 		
@@ -116,6 +117,15 @@ public class MkReceiveFormData extends HttpServlet {
 		String query = cpi.setQuery(befQuery);
 		
 		if(requestValues != null) {
+			String[] reqs = new String[requestValues.size()];
+			String tempValue = "";
+			for(int i = 0; i < reqs.length; i++) {
+				tempValue = request.getParameter(requestParams + "." + requestValues.get(i));
+				reqs[i] = tempValue;
+				mklogger.debug(TAG + " reqs: " + reqs[i]);
+			}
+			
+			/*
 			DA.setPreparedStatement(query);
 			
 			String[] reqs = new String[requestValues.size()];
@@ -129,6 +139,7 @@ public class MkReceiveFormData extends HttpServlet {
 			reqs = null;
 			
 			DA.executeDML();
+			*/
 		}
     }
 	
@@ -137,8 +148,7 @@ public class MkReceiveFormData extends HttpServlet {
 		pi = getPageControl(refURL);
 		if(!checkMethod(request, "get", refURL)) {
 			mklogger.error(TAG + " Request method is not authorized. [Tried: GET]");
-			RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/500.jsp");
-			dispatcher.forward(request, response);
+			response.sendError(400);
 			return;
 		}
 		
@@ -151,8 +161,7 @@ public class MkReceiveFormData extends HttpServlet {
 		pi = getPageControl(refURL);
 		if(!checkMethod(request, "post", refURL)) {
 			mklogger.error(TAG + " Request method is not authorized. [Tried: POST]");
-			RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/500.jsp");
-			dispatcher.forward(request, response);
+			response.sendError(401);
 			return;
 		}
 		doTask(request, response);

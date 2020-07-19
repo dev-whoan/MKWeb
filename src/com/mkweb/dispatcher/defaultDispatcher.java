@@ -66,8 +66,7 @@ public class defaultDispatcher extends HttpServlet {
 
 		if(!(new CheckPageInfo()).isValidPageConnection(mkPage, reqPage)) {
 			//에러페이지
-			RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/404.jsp");
-			dispatcher.forward(request, response);
+			response.sendError(404);
 			return;
 		}
 		

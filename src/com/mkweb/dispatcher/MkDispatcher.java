@@ -53,8 +53,7 @@ public class MkDispatcher extends HttpServlet {
 		ArrayList<PageXmlData> resultXmlData = MkPageConfigs.Me().getControl(mkPage);
 		
 		if(resultXmlData == null || resultXmlData.size() < 1) {
-			mklogger.error("requested URI : " + requestURI);
-			dispatch(request, response, "/600.jsp");
+			response.sendError(401);
 			return;
 		}
 		
