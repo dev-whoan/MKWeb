@@ -13,6 +13,7 @@
 	</sql>
 	
 	<sql id="selectName" db="mkweb">
+	
 		SELECT user_SEQ, name, address
 		FROM User
 		WHERE name LIKE @user_name@ and address LIKE @user_info@;

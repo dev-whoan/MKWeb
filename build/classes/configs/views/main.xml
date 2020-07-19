@@ -13,9 +13,6 @@
 			<Value>
 				@set(param.user_name = '%')
 				@set(param.user_info = '%')
-				<!-- 
-				n개짜리 안됨 ㅋㅋ
-				 -->
 			</Value>
 		</Service>
 		
@@ -26,9 +23,6 @@
 				@set(ins.user_name = '%')
 				@set(ins.user_info = '%')
 			
-				<!-- 
-				n개짜리 안됨 ㅋㅋ
-				 -->
 			</Value>
 		</Service>
 		
@@ -39,9 +33,6 @@
 				@set(upd.user_name = '%')
 				@set(upd.user_info = '%')
 				@set(upd.user_SEQ = '%')
-				<!-- 
-				n개짜리 안됨 ㅋㅋ
-				 -->
 			</Value>
 		</Service>
 		
@@ -50,22 +41,8 @@
 			<Parameter name="del" />
 			<Value>
 				@set(upd.user_SEQ = '%')
-				<!-- 
-				n개짜리 안됨 ㅋㅋ
-				 -->
 			</Value>
 		</Service>
-		
-		<!-- 
-		<Service type="browser">
-			<Parameter name="param" />
-			<Value>
-				@set(${browser.LAN="ko"})
-				@set(${browser.agent="chrome"})
-				@set(${browser.mob="N")
-			</Value>
-		</Service>
-		 -->
 		
 	</Control>
 </views>

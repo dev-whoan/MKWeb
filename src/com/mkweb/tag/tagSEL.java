@@ -3,10 +3,11 @@ package com.mkweb.tag;
 import java.io.IOException;
 
 
+
 import java.util.ArrayList;
 
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,7 +20,6 @@ import com.mkweb.database.MkDbAccessor;
 import com.mkweb.logger.MkLogger;
 import com.mkweb.security.CheckPageInfo;
 import com.mkweb.web.PageInfo;
-import com.mysql.cj.jdbc.Blob;
 
 public class tagSEL extends SimpleTagSupport {
 	private String obj;
@@ -105,8 +105,10 @@ public class tagSEL extends SimpleTagSupport {
 			return;
 		}
 
-		HashMap<String, Boolean> rqvHash = new HashMap<>();
-		HashMap<String, Boolean> pvHash = new HashMap<>();
+		
+		
+		LinkedHashMap<String, Boolean> rqvHash = new LinkedHashMap<>();
+		LinkedHashMap<String, Boolean> pvHash = cpi.pageValueToHashMap(pageValue.get(rstID));
 		
 		if(requestValues != null && requestValues.size() > 0) {
 			for(String s : requestValues) {
@@ -114,31 +116,29 @@ public class tagSEL extends SimpleTagSupport {
 			}
 		}
 		
-		boolean doCheckPageValue = (pageValue != null && pageValue.size() > 0);
+		boolean doCheckPageValue = (pvHash != null && pvHash.size() > 0);
 		
-	    Set entrySet = rqvHash.keySet();
-	    Iterator iter = entrySet.iterator();
-	    
-	    while(iter.hasNext()) {
-			String key = (String) iter.next();
-			if(doCheckPageValue) {
-				for(String s : pageValue) {
-					if(key.contentEquals(s)) {
-						pvHash.put(s, true);
+		requestValues.clear();
+		if(doCheckPageValue) {
+		    Set entrySet = rqvHash.keySet();
+		    Iterator iter = entrySet.iterator();
+		    Set pvEntrySet = null;
+		    Iterator pvIter = null;
+		    
+		    while(iter.hasNext()) {
+				String key = (String) iter.next();
+				pvEntrySet = pvHash.keySet();
+			    pvIter = pvEntrySet.iterator();
+			    
+				while(pvIter.hasNext()) {
+					String pvKey = (String) pvIter.next();
+					if(key.contentEquals(pvKey)) {
+						requestValues.add(key);
 					}
 				}
 			}
 		}
 		
-	    requestValues.clear();
-	    entrySet = pvHash.keySet();
-	    iter = entrySet.iterator();
-	    
-	    while(iter.hasNext()) {
-	    	String key = (String) iter.next();
-	    	requestValues.add(key);
-	    }
-	    
 		String befQuery = cpi.regularQuery(pageSqlInfo.get(rstID)[0]);
 
 		String query = null;
@@ -201,7 +201,6 @@ public class tagSEL extends SimpleTagSupport {
 						tempValue = request.getParameter(requestValues.get(i));
 					if(this.like.equals("no"))
 					{
-						mklogger.debug(TAG + " tempValue : " + tempValue);
 						if(tempValue.contains("%"))
 							tempValue = tempValue.replaceAll("%", " ");
 
@@ -219,13 +218,13 @@ public class tagSEL extends SimpleTagSupport {
 			else
 				dbResult = DA.executeSELLike(false);
 
-			HashMap<String, Object> result = new HashMap<String, Object>();
+			LinkedHashMap<String, Object> result = new LinkedHashMap<String, Object>();
 
 			if(dbResult != null && dbResult.size() > 0)
 			{
 				for(int i = 0; i < dbResult.size(); i++)
 				{
-					result = (HashMap<String, Object>) dbResult.get(i);
+					result = (LinkedHashMap<String, Object>) dbResult.get(i);
 					((PageContext)getJspContext()).getRequest().setAttribute(this.rst, result);
 					getJspBody().invoke(null);
 				}

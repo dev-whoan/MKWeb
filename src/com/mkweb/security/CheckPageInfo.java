@@ -2,9 +2,11 @@ package com.mkweb.security;
 
 import java.util.ArrayList;
 
+
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -37,7 +39,6 @@ public class CheckPageInfo {
 		}
 		for(int i = 0; i < pageStaticParams.size(); i++) {
 			if(reqParams.contentEquals(pageStaticParams.get(i))) {
-				mklogger.debug(TAG + " isPageParamValid :: staticParams: " + pageStaticParams.get(i) + " || reqParams: " + reqParams);
 				return reqParams;
 			}
 		}
@@ -91,7 +92,6 @@ public class CheckPageInfo {
 		while(params.hasMoreElements()) {
 			String name = params.nextElement().toString().trim();
 			String[] nname = name.split("\\.");
-			mklogger.debug(TAG + " name : " + name + " || pStaticName : " + pageStaticParamsName);
 			if(name.contains(".")) {
 				if(pageStaticParamsName != null) {
 					if(!nname[0].contentEquals(pageStaticParamsName) && nname[0].contentEquals(rstID))
@@ -188,13 +188,8 @@ public class CheckPageInfo {
 		if(staticParams != null) {
 			for(int i = 0; i < staticParams.size(); i++) {
 				passValues.put(staticParams.get(i).trim(), true);
-				mklogger.debug(TAG + " staticParams: " + staticParams.get(i));
 			}
 		}
-		for(int i = 0; i < reqValue.size(); i++) {
-			mklogger.debug(TAG + " reqValues : " + reqValue.get(i));
-		}
-		
 		String[] pvSetList = pageValue.split("=");
 		
 		try {
@@ -325,4 +320,34 @@ public class CheckPageInfo {
 		return true;
 	}
 	
+    public LinkedHashMap<String, Boolean> pageValueToHashMap(String pageValue){
+    	LinkedHashMap<String, Boolean> result = null;
+    	if(pageValue == null || pageValue.length() == 0) 
+    		return null;
+    	
+    	result = new LinkedHashMap<>();
+    	String[] splits = pageValue.split("@set");
+    	
+    	if(splits.length == 1)
+    		return null;
+    	for(int i = 1; i < splits.length; i++) {
+    		String s = null;
+    		splits[i] = splits[i].trim();
+    		
+    		if(splits[i].contains(".")) {
+    			s = splits[i].split("\\.")[1];
+    		}else {
+    			s = splits[i];
+    		}
+    		
+    		if(!s.contains("=")) {
+    			mklogger.error(TAG + " Invalid Page Value. There is no equal character. :: " + s);
+    			return null;
+    		}
+    		
+    		s = s.split("=")[0].trim();
+    		result.put(s, true);
+    	}
+    	return result;
+    }
 }

@@ -2,15 +2,14 @@ package com.mkweb.database;
 
 import java.sql.Connection;
 
+
 import java.sql.DriverManager;
-import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedHashMap;
 
 import org.json.simple.JSONObject;
 
@@ -159,11 +158,11 @@ public class MkDbAccessor {
 					        columnNames[i] = rsmd.getColumnName(i+1); 
 					    }
 					}
-					HashMap<String, Object> result = null;
+					LinkedHashMap<String, Object> result = null;
 					rs.beforeFirst();
 					
 					while(rs.next()) {
-						result = new HashMap<String, Object>();
+						result = new LinkedHashMap<String, Object>();
 						for( String name : columnNames )
 						{
 							if(asJson)
@@ -227,11 +226,11 @@ public class MkDbAccessor {
 					        columnNames[i] = rsmd.getColumnName(i+1); 
 					    }
 					}
-					HashMap<String, Object> result = null;
+					LinkedHashMap<String, Object> result = null;
 					rs.beforeFirst();
 					
 					while(rs.next()) {
-						result = new HashMap<String, Object>();
+						result = new LinkedHashMap<String, Object>();
 						for( String name : columnNames )
 						{
 							if(asJson)
