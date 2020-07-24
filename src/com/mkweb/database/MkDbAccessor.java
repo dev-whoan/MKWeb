@@ -46,7 +46,8 @@ public class MkDbAccessor {
 		String s = "Values : (";
 		for(int i = 0; i < arr.size(); i++) {
 			reqValue.add(arr.get(i));
-			s += arr.get(i);
+			
+			s += (arr.get(i).length() < 20 ? arr.get(i) : arr.get(i).substring(0, 19) + "...");
 			if(i < arr.size() - 1)
 				s += ", ";
 		}
@@ -62,7 +63,7 @@ public class MkDbAccessor {
 		String s = "Values : (";
 		for(int i = 0; i < reqValueArr.length; i++) {
 			reqValueArr[i] = arr[i];
-			s += arr[i];
+			s += (arr[i].length() < 20 ? arr[i] : arr[i].substring(0, 19) + "...");
 			if(i < reqValueArr.length - 1)
 				s += ", ";
 		}
@@ -78,7 +79,7 @@ public class MkDbAccessor {
 		String s = "Values : (";
 		for(int i = 0; i < arr.size(); i++) {
 			reqValue.add( jsonObject.get(arr.get(i)).toString() );
-			s += jsonObject.get(arr.get(i)).toString();
+			s += (jsonObject.get(arr.get(i)).toString().length() < 20 ? jsonObject.get(arr.get(i)).toString() : jsonObject.get(arr.get(i)).toString().substring(0, 19) + "...");
 			if(i < arr.size() - 1)
 				s += ", ";
 		}

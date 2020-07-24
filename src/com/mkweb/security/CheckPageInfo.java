@@ -63,12 +63,14 @@ public class CheckPageInfo {
 		String requestParams = null;
 		while(params.hasMoreElements()) {
 			String name = params.nextElement().toString().trim();
+			
 			if(name.contains(".")) {
 				String nname = name.split("\\.")[0];
 				if(requestParams != null) {
 					if( !requestParams.contentEquals("") && !requestParams.contentEquals(nname)) {
-						mklogger.error(TAG + " (getRequestPageParameterName) The service parameter is not same as previous parameter name(" + requestParams + " :: " + nname);
-						return null;
+						if(!requestParams.contentEquals(pageStaticParamsName)) {
+							return null;
+						}
 					}
 				}
 				if(pageStaticParamsName != null) {
@@ -77,7 +79,7 @@ public class CheckPageInfo {
 				}
 				else
 					requestParams = nname;
-			}else {
+			} else {
 				requestParams = isPageParamValid(pageStaticParams, name);
 			}
 		}
