@@ -432,12 +432,12 @@ public class MkRestApi extends HttpServlet {
 				sqlKey.add(scData);
 			}
 		}
-
-		if(!cpi.comparePageValueWithRequest(pxData.getData(), sqlKey, pxData.getPageStaticParams(), true)) {
-			//예외
-			mklogger.error(TAG + " Request Value is not authorized. Please check page config.");
-			return;
-		}
+//
+//		if(!cpi.comparePageValueWithRequest(pxData.getData(), sqlKey, pxData.getPageStaticParams(), true)) {
+//			//예외
+//			mklogger.error(TAG + " Request Value is not authorized. Please check page config.");
+//			return;
+//		}
 		//여기까지는 모든 메서드 중복되는 행위
 		//조회? 생성? 삭제?
 

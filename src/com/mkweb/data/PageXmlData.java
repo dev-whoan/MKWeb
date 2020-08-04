@@ -2,6 +2,7 @@ package com.mkweb.data;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import com.mkweb.logger.MkLogger;
 
@@ -14,6 +15,7 @@ public class PageXmlData extends AbsXmlData {
 	private String[] sql = null;
 	private String pageParamsName = null;
 	private ArrayList<String> pageParams = null;
+	private LinkedHashMap<String, Boolean> pageValue = null;
 	private boolean authorizedRequire = false;		//이거 클래스 필요한거임; 지우지마셈
 	private boolean post = false;
 	private boolean get = false;
@@ -39,6 +41,7 @@ public class PageXmlData extends AbsXmlData {
 	public void setStructure(String str) {	this.structure = str;	}
 	public void setPageStaticParamName(String ppn) {	this.pageParamsName = ppn;	}
 	public void setPageStaticParams(ArrayList<String> pageParams) {	this.pageParams = pageParams;	}
+	public void setPageValue(LinkedHashMap<String, Boolean> pageValue) { this.pageValue = pageValue;	}
 
 	public String getPageName() {	return this.pageName;	}
 	public String getDebug() {	return this.debug;	}
@@ -67,5 +70,6 @@ public class PageXmlData extends AbsXmlData {
 	public String getStructure() {	return this.structure;	}
 	public String getPageStaticParamsName() {	return this.pageParamsName;	}
 	public ArrayList<String> getPageStaticParams() {	return this.pageParams;	} 
+	public LinkedHashMap<String, Boolean> getPageValue(){	return this.pageValue;	}
 	public String getMyInfo() {	return "Control: " + (this.controlName) + " | Service: " + (this.serviceName) + " | Tag: " + (getTag());	}
 }

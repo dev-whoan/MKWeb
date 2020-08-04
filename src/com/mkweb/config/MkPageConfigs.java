@@ -4,6 +4,7 @@ import java.io.File;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -38,9 +39,8 @@ public class MkPageConfigs extends MkPageConfigCan{
 	};
 	private String[] ctr_info = new String[ctr_list.length];
 	private String[] svc_list = {
-			"id",
 			"obj",
-			"rst",
+			"result",
 			"method"	
 	};
 	private ArrayList<String> setPageParamToStrig(String pageParam) {
@@ -120,7 +120,9 @@ public class MkPageConfigs extends MkPageConfigCan{
 							
 							if(services.item(0) != null) {
 								for(int j = 0; j < services.getLength(); j++) {
+									
 									Node service = services.item(j);
+									
 									NodeList service_param = service.getChildNodes();
 
 									if(service.getNodeType() == Node.ELEMENT_NODE)
@@ -129,6 +131,7 @@ public class MkPageConfigs extends MkPageConfigCan{
 										String PRM_NAME = null;
 										String VAL_INFO = null;
 										for(int k = 0; k < service_param.getLength(); k++) {
+											
 											Node service_info = service_param.item(k);
 
 											if(service_info.getNodeType() == Node.ELEMENT_NODE)
@@ -150,13 +153,15 @@ public class MkPageConfigs extends MkPageConfigCan{
 												case "Value":
 													VAL_INFO = service_info.getTextContent();
 													VAL_INFO = VAL_INFO.trim();
+													
 													break;
 												}
 											}
 										}
-
-										String serviceName = service.getAttributes().getNamedItem("type").getNodeValue() + "." + SQL_INFO[0];
-										PageXmlData curData = setPageXmlData(pageParamsName, pageParam, serviceName, ctr_info, SQL_INFO, PRM_NAME, VAL_INFO, null);
+										
+										String serviceName = service.getAttributes().getNamedItem("id") != null ? service.getAttributes().getNamedItem("id").getNodeValue() : null;
+										String serviceType = service.getAttributes().getNamedItem("type").getNodeValue() + "." + SQL_INFO[0];
+										PageXmlData curData = setPageXmlData(pageParamsName, pageParam, serviceName, serviceType, ctr_info, SQL_INFO, PRM_NAME, VAL_INFO, null);
 										printPageInfo(curData, "info");
 										xmlData.add(curData);
 										page_configs.put(ctr_info[0], xmlData);
@@ -166,7 +171,7 @@ public class MkPageConfigs extends MkPageConfigCan{
 								String[] temp_sql = new String[svc_list.length];
 								for(String s : temp_sql) {	s = "no data";	}
 								
-								PageXmlData curData = setPageXmlData(pageParamsName, pageParam, "No Service", ctr_info, temp_sql, "No Parameter", "No Value", null);
+								PageXmlData curData = setPageXmlData(pageParamsName, pageParam, "No Service", "No Service", ctr_info, temp_sql, "No Parameter", "No Value", null);
 								printPageInfo(curData, "info");
 								xmlData.add(curData);
 								page_configs.put(ctr_info[0], xmlData);
@@ -211,12 +216,13 @@ public class MkPageConfigs extends MkPageConfigCan{
 	}
 	
 	@Override
-	protected PageXmlData setPageXmlData(String pageParamName, ArrayList<String> pageParam, String serviceName, String[] ctr_info, String[] sqlInfo, String PRM_NAME, String VAL_INFO, String STRUCTURE) {
+	protected PageXmlData setPageXmlData(String pageParamName, ArrayList<String> pageParam, String serviceName, String serviceType, String[] ctr_info, String[] sqlInfo, String PRM_NAME, String VAL_INFO, String STRUCTURE) {
 		PageXmlData result = new PageXmlData();
 		result.setPageStaticParamName(pageParamName);
 		result.setPageStaticParams(pageParam);
 		result.setControlName(ctr_info[0]);
 		result.setServiceName(serviceName);
+		result.setServiceType(serviceType);
 		result.setLogicalDir(ctr_info[3]);
 		result.setDir(ctr_info[2]);
 		
@@ -226,6 +232,10 @@ public class MkPageConfigs extends MkPageConfigCan{
 		result.setSql(sqlInfo);
 		result.setParameter(PRM_NAME);
 		result.setData(VAL_INFO);
+
+		LinkedHashMap<String, Boolean> PAGE_VALUE = null;
+		PAGE_VALUE = pageValueToHashMap(VAL_INFO);
+		result.setPageValue(PAGE_VALUE);
 		return result;
 	}
 
@@ -235,6 +245,7 @@ public class MkPageConfigs extends MkPageConfigCan{
 		String pageParamName = xmlData.getPageStaticParamsName();
 		ArrayList<String> pageParams = xmlData.getPageStaticParams();
 		String serviceName = xmlData.getServiceName();
+		String serviceType = xmlData.getServiceType();
 		String logicalDir = xmlData.getLogicalDir();
 
 		String pageDir = xmlData.getDir();
@@ -251,12 +262,14 @@ public class MkPageConfigs extends MkPageConfigCan{
 		}
 		String PRM_NAME = xmlData.getParameter();
 		String VAL_INFO = xmlData.getData();
+		String PAGE_VAL = null;
 
 		String valMsg = "No Page Value";
 		String[] valBuffer = null;
 		if(VAL_INFO != null)
 		{
 			valBuffer = VAL_INFO.split("\n");
+			PAGE_VAL = "";
 		
 			for (int ab = 0; ab < valBuffer.length; ab++) {
 				String tempVal = valBuffer[ab].trim();
@@ -265,6 +278,16 @@ public class MkPageConfigs extends MkPageConfigCan{
 				else
 					valMsg += ("\n\t" + tempVal);
 			}
+			LinkedHashMap<String, Boolean> pvv = xmlData.getPageValue();
+			if(pvv != null) {
+				for(int aabb = 0; aabb < pvv.size(); aabb++) {
+					PAGE_VAL += pvv.get(aabb);
+					if(aabb < pvv.size()-1) {
+						PAGE_VAL += ", ";
+					}
+				}
+			}
+			
 		}
 		String PRM = "";
 		if(pageParams != null) {
@@ -280,11 +303,12 @@ public class MkPageConfigs extends MkPageConfigCan{
 				+ "\n弛View Dir:\t" + pageDir + "\t\tView Page:\t" + pageName
 				+ "\n弛Logical Dir:\t" + logicalDir + "\t\tDebug Level:\t" + debugLevel
 				+ "\n弛Static Param Name:\t" + pageParamName + "\t\tStatic Param Value:\t" + PRM
-				+ "\n弛Service Name:\t" + serviceName + "\tParameter:\t" + PRM_NAME;
+				+ "\n弛Service Name:\t" + serviceName + "\nType:\t" + serviceType + "\tParameter:\t" + PRM_NAME;
 
 		if(type == "info") {
-			tempMsg += "\n弛SQL:\t" + sql_info
+			tempMsg +="\n弛SQL:\t" + sql_info
 					+ "\n弛Value:\t" + valMsg
+					+ "\n弛SET  :\t" + PAGE_VAL
 					+ "\n戌式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式";
 		}else {
 			tempMsg += "\n戌式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式";

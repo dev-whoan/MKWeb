@@ -26,12 +26,13 @@ import com.mkweb.security.CheckPageInfo;
 	name = "MkReceiveFormData",
 	loadOnStartup=1
 )
+
 public class MkReceiveFormData extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private MkLogger mklogger = MkLogger.Me();
 	private String TAG = "[MkReceiveFormData]";
-    private PageInfo pi = null;
     private PageXmlData pxData = null;
+    ArrayList<PageXmlData> pi = null;
     private String requestParams = null;
     private ArrayList<String> requestValues = null;
     private CheckPageInfo cpi = null;
@@ -40,15 +41,15 @@ public class MkReceiveFormData extends HttpServlet {
         cpi = new CheckPageInfo();
     }
 	
-	private PageInfo getPageControl(String url) {
+	private ArrayList<PageXmlData> getPageControl(String url) {
 		String[] requestUriList = url.split("/");
 		String mkPage = requestUriList[requestUriList.length - 1];
 		
 		if(mkPage.equals(MkConfigReader.Me().get("mkweb.web.hostname"))) {
 			mkPage = "";
 		}
-		
-		return new PageInfo(mkPage, false);
+
+		return MkPageConfigs.Me().getControl(mkPage);		
 	}
     
     private boolean checkMethod(HttpServletRequest request, String rqMethod, String rqPageURL) {

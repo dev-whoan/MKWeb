@@ -7,8 +7,8 @@
 			@set(wrap_post_id = '%')
 		</PageParams>
 		 -->
-		<Service type="sql">
-			<Sql id="selectName" obj="list" result="alpha" method="post" />
+		<Service id="selectName" type="sql">
+			<Sql obj="list" method="post" />
 			<Parameter name="param" />
 			<Value>
 				@set(param.user_name = '%')
@@ -16,8 +16,8 @@
 			</Value>
 		</Service>
 		
-		<Service type="sql">
-			<Sql id="insertUser" method="post" />
+		<Service id="insertUser" type="sql">
+			<Sql method="post" />
 			<Parameter name="ins" />
 			<Value>
 				@set(ins.qweqwe = '%')
@@ -25,8 +25,8 @@
 			</Value>
 		</Service>
 		
-		<Service type="sql">
-			<Sql id="updateUser" method="post" />
+		<Service id="updateUser" type="sql">
+			<Sql method="post" />
 			<Parameter name="upd" />
 			<Value>
 				@set(upd.user_name = '%')
@@ -35,8 +35,8 @@
 			</Value>
 		</Service>
 		
-		<Service type="sql">
-			<Sql id="deleteUser" method="post" />
+		<Service id="deleteUser" type="sql">
+			<Sql method="post" />
 			<Parameter name="del" />
 			<Value>
 				@set(upd.user_SEQ = '%')

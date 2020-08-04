@@ -4,6 +4,7 @@ import java.io.File;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -51,7 +52,7 @@ public class MkRestApiPageConfigs extends MkPageConfigCan{
 	private String[] svc_list = {
 		"id",
 		"obj",
-		"rst",
+		"result",
 		"method"
 	};
 	private ArrayList<String> setPageParamToStrig(String pageParam) {
@@ -173,10 +174,11 @@ public class MkRestApiPageConfigs extends MkPageConfigCan{
 											}
 										}
 
-										String serviceName = service.getAttributes().getNamedItem("type").getNodeValue() + "." + SQL_INFO[0];
+										String serviceName = service.getAttributes().getNamedItem("id") != null ? service.getAttributes().getNamedItem("id").getNodeValue() : null;
+										String serviceType = service.getAttributes().getNamedItem("type").getNodeValue() + "." + SQL_INFO[0];
 
 										//RestApiPageXmlData
-										PageXmlData rapData = setPageXmlData(pageParamsName, pageParam, serviceName, ctr_info, SQL_INFO, PRM_NAME, VAL_INFO, STRUCTURE);
+										PageXmlData rapData = setPageXmlData(pageParamsName, pageParam, serviceName, serviceType, ctr_info, SQL_INFO, PRM_NAME, VAL_INFO, STRUCTURE);
 										printPageInfo(rapData, "info");
 										xmlData.add(rapData);
 										page_configs.put(ctr_info[0], xmlData);
@@ -192,7 +194,7 @@ public class MkRestApiPageConfigs extends MkPageConfigCan{
 								
 								ctr_info[0] = node.getAttributes().getNamedItem("name").getNodeValue();
 								
-								PageXmlData rapData = setPageXmlData(pageParamsName, pageParam, "No Service", ctr_info, temp_sql, PRM_NAME, VAL_INFO, STRUCTURE);
+								PageXmlData rapData = setPageXmlData(pageParamsName, pageParam, "No Service", "No Service", ctr_info, temp_sql, PRM_NAME, VAL_INFO, STRUCTURE);
 								printPageInfo(rapData, "info");
 								xmlData.add(rapData);
 								page_configs.put(ctr_info[0], xmlData);
@@ -209,12 +211,13 @@ public class MkRestApiPageConfigs extends MkPageConfigCan{
 		}
 	}
 	@Override
-	protected PageXmlData setPageXmlData(String pageStaticParamName, ArrayList<String> pageStaticParam, String serviceName, String[] ctr_info, String[] sqlInfo, String PRM_NAME, String VAL_INFO, String STRUCTURE) {
+	protected PageXmlData setPageXmlData(String pageStaticParamName, ArrayList<String> pageStaticParam, String serviceName, String serviceType, String[] ctr_info, String[] sqlInfo, String PRM_NAME, String VAL_INFO, String STRUCTURE) {
 		PageXmlData result = new PageXmlData();
 		result.setControlName(ctr_info[0]);
 		result.setPageStaticParamName(pageStaticParamName);
 		result.setPageStaticParams(pageStaticParam);
 		result.setServiceName(serviceName);
+		result.setServiceName(serviceType);
 
 		result.setPageName(ctr_info[0]);
 		result.setDebug(ctr_info[1]);
@@ -232,8 +235,12 @@ public class MkRestApiPageConfigs extends MkPageConfigCan{
 		result.setData(VAL_INFO);
 		
 		result.setStructure(STRUCTURE);
-		return result;
 		
+
+		LinkedHashMap<String, Boolean> PAGE_VALUE = null;
+		PAGE_VALUE = pageValueToHashMap(VAL_INFO);
+		result.setPageValue(PAGE_VALUE);
+		return result;
 	}
 	
 	@Override

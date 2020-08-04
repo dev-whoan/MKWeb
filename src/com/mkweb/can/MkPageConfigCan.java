@@ -2,7 +2,10 @@ package com.mkweb.can;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+
 import com.mkweb.data.PageXmlData;
+import com.mkweb.logger.MkLogger;
 
 public abstract class MkPageConfigCan extends PageXmlData {
 	protected String[] svc_list = null;
@@ -32,6 +35,36 @@ public abstract class MkPageConfigCan extends PageXmlData {
 	public abstract ArrayList<PageXmlData> getControl(String k);
 	public abstract void setPageConfigs(File[] pageConfigs);
 	public abstract void printPageInfo(PageXmlData xmlData, String type);
-	protected abstract PageXmlData setPageXmlData(String pageParamName, ArrayList<String> pageParam, String serviceName, String[] ctr_info, String[] sqlInfo, String PRM_NAME, String VAL_INFO, String STRUCTURE);
+	protected abstract PageXmlData setPageXmlData(String pageParamName, ArrayList<String> pageParam, String serviceName, String serviceType, String[] ctr_info, String[] sqlInfo, String PRM_NAME, String VAL_INFO, String STRUCTURE);
+	protected LinkedHashMap<String, Boolean> pageValueToHashMap(String pageValue){
+    	LinkedHashMap<String, Boolean> result = null;
+    	if(pageValue == null || pageValue.length() == 0) 
+    		return null;
+    	
+    	result = new LinkedHashMap<>();
+    	String[] splits = pageValue.split("@set");
+    	
+    	if(splits.length == 1)
+    		return null;
+    	for(int i = 1; i < splits.length; i++) {
+    		String s = null;
+    		splits[i] = splits[i].trim();
+    		
+    		if(splits[i].contains(".")) {
+    			s = splits[i].split("\\.")[1];
+    		}else {
+    			s = splits[i];
+    		}
+    		
+    		if(!s.contains("=")) {
+    			MkLogger.Me().error("[PageConfigCan] Invalid Page Value. There is no equal character. :: " + s);
+    			return null;
+    		}
+    		
+    		s = s.split("=")[0].trim();
+    		result.put(s, true);
+    	}
+    	return result;
+    }
 	
 }

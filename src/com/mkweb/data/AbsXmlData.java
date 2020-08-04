@@ -14,6 +14,7 @@ import com.mkweb.impl.XmlData;
 public class AbsXmlData implements XmlData {
 	
 	protected String serviceName = null;
+	protected String serviceType = null;
 	protected String controlName = null;
 	protected String data = null;
 	protected String Tag = null;
@@ -45,6 +46,9 @@ public class AbsXmlData implements XmlData {
 
 	public void setServiceName(String serviceName) { this.serviceName = serviceName; }
 	public String getServiceName() {	return this.serviceName;	}
+	
+	public void setServiceType(String serviceType) { this.serviceType = serviceType; }
+	public String getServiceType() {	return this.serviceType;	}
 	
 	public void setControlName(String controlName)	{	this.controlName = controlName;	}
 	public String getControlName() {	return this.controlName;	}

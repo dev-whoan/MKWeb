@@ -126,13 +126,13 @@ This is page1.jsp
                         </tr>
                     </thead>
                     <tbody id="table-wrapper">
-                    	<mkw:get obj="list" result="alpha" like="no">
+                    	<mkw:get name="selectName" obj="list" like="no">
                     		<tr class="one-item">
-                    			<td> ${alpha.name}</td>
-                    			<td> ${alpha.address}</td>
+                    			<td> ${mkw.name}</td>
+                    			<td> ${mkw.address}</td>
                     			<td>
-                    			<button onclick="modifyUser('${alpha.user_SEQ}')">수정</button>
-                    			<button onclick="removeUser('${alpha.user_SEQ}')">삭제</button>
+                    			<button onclick="modifyUser('${mkw.user_SEQ}')">수정</button>
+                    			<button onclick="removeUser('${mkw.user_SEQ}')">삭제</button>
                     			</td>
                     		</tr>
                     	</mkw:get>
