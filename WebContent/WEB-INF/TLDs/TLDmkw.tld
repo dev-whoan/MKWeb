@@ -17,7 +17,7 @@
 			<rtexprvalue>false</rtexprvalue>
 		</attribute>
 		<attribute>
-			<name>rst</name>
+			<name>result</name>
 			<required>true</required>
 			<rtexprvalue>false</rtexprvalue>
 		</attribute>

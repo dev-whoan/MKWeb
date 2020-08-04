@@ -82,9 +82,13 @@ public class CheckPageInfo {
 			} else {
 				requestParams = isPageParamValid(pageStaticParams, name);
 			}
+			
+			if(requestParams != null && !requestParams.contentEquals(pageStaticParamsName)) {
+				return requestParams;
+			}
 		}
 		
-		return requestParams;
+		return null;
 	}
 	
 	public ArrayList<String> getRequestParameterValues(HttpServletRequest request, String rstID, ArrayList<String> pageParams, String pageStaticParamsName){

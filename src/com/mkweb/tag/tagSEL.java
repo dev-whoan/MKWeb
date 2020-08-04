@@ -24,7 +24,7 @@ import com.mkweb.web.PageInfo;
 public class tagSEL extends SimpleTagSupport {
 	private String obj;
 	private String like = "yes";
-	private String rst = "get";
+	private String result = "get";
 	private String TAG = "[tagSEL]";
 	private MkLogger mklogger = MkLogger.Me();
 	//Log го╠Б
@@ -32,8 +32,8 @@ public class tagSEL extends SimpleTagSupport {
 		this.obj = obj;
 	}
 
-	public void setRst(String rst) {
-		this.rst = rst;
+	public void setResult(String result) {
+		this.result = result;
 	}
 
 	public void setLike(String like) {
@@ -41,7 +41,7 @@ public class tagSEL extends SimpleTagSupport {
 	}
 
 	public String getResultId() {
-		return this.rst;
+		return this.result;
 	}
 
 	private PageInfo getPageControl(HttpServletRequest request) {
@@ -84,14 +84,14 @@ public class tagSEL extends SimpleTagSupport {
 
 		int rstID = -1;
 		for(int i = 0; i < pageSqlInfo.size(); i++) {
-			if(this.rst.equals(pageSqlInfo.get(i)[2])) {
+			if(this.result.equals(pageSqlInfo.get(i)[2])) {
 				rstID = i;
 				break;
 			}
 		}
 
 		if(rstID == -1) {
-			mklogger.error(TAG + " Tag 'rst(" + this.rst + ")' is not matched with Page-config 'rst'.");
+			mklogger.error(TAG + " Tag 'rst(" + this.result + ")' is not matched with Page-config 'rst'.");
 		//	response.sendError(500);
 			return;
 		}
@@ -105,8 +105,6 @@ public class tagSEL extends SimpleTagSupport {
 			return;
 		}
 
-		
-		
 		LinkedHashMap<String, Boolean> rqvHash = new LinkedHashMap<>();
 		LinkedHashMap<String, Boolean> pvHash = cpi.pageValueToHashMap(pageValue.get(rstID));
 		
@@ -240,10 +238,10 @@ public class tagSEL extends SimpleTagSupport {
 				for(int i = 0; i < dbResult.size(); i++)
 				{
 					result = (LinkedHashMap<String, Object>) dbResult.get(i);
-					((PageContext)getJspContext()).getRequest().setAttribute(this.rst, result);
+					((PageContext)getJspContext()).getRequest().setAttribute(this.result, result);
 					getJspBody().invoke(null);
 				}
-				((PageContext)getJspContext()).getRequest().removeAttribute(this.rst);
+				((PageContext)getJspContext()).getRequest().removeAttribute(this.result);
 			}else {
 				return;
 			}

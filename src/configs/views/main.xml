@@ -8,7 +8,7 @@
 		</PageParams>
 		 -->
 		<Service type="sql">
-			<Sql id="selectName" obj="list" rst="alpha" method="post" />
+			<Sql id="selectName" obj="list" result="alpha" method="post" />
 			<Parameter name="param" />
 			<Value>
 				@set(param.user_name = '%')
@@ -20,9 +20,8 @@
 			<Sql id="insertUser" method="post" />
 			<Parameter name="ins" />
 			<Value>
-				@set(ins.user_name = '%')
-				@set(ins.user_info = '%')
-			
+				@set(ins.qweqwe = '%')
+				@set(ins.qqwwee = '%')
 			</Value>
 		</Service>
 		
@@ -43,6 +42,5 @@
 				@set(upd.user_SEQ = '%')
 			</Value>
 		</Service>
-		
 	</Control>
 </views>

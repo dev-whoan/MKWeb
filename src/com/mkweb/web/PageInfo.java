@@ -46,6 +46,10 @@ public class PageInfo {
 			pageSqlInfo.add(i, xmlData.getSql());
 			pageValue.add(i, xmlData.getData());
 		}
+		
+		if(pageValue.size() != 0) {
+			setPageValue(pageValue);
+		}
 		set = true;
 	}
 	public boolean isSet()	{	return this.set;	}
@@ -58,4 +62,8 @@ public class PageInfo {
 	public ArrayList<String> getPageParameter() {	return this.pageParameter;	}
 	public ArrayList<String[]> getPageSqlInfo()	{	return this.pageSqlInfo;	}
 	public ArrayList<String> getPageValue()	{	return this.pageValue;	}
+	
+	private void setPageValue(ArrayList<String> pv) {
+		
+	}
 }

@@ -1,5 +1,5 @@
  
- <%@ page language="java" contentType="text/html; charset=UTF-8"
+<%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib uri="MkWeb" prefix="mkw" %>
 <!DOCTYPE html>
@@ -126,7 +126,7 @@ This is page1.jsp
                         </tr>
                     </thead>
                     <tbody id="table-wrapper">
-                    	<mkw:get obj="list" rst="alpha" like="no">
+                    	<mkw:get obj="list" result="alpha" like="no">
                     		<tr class="one-item">
                     			<td> ${alpha.name}</td>
                     			<td> ${alpha.address}</td>

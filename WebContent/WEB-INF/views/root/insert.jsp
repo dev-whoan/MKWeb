@@ -81,8 +81,7 @@
 
 <body>
     <div class="wrap">
-
-        <!-- section -->
+            <!-- section -->
         <div class="section">
             <div class="container">
                 <h1 id="action_login_title">
@@ -101,7 +100,6 @@
                             <input type="submit" value="로그인">
                         </div>
                     </form>
-                    
                 </div>
             </div>
         </div>
