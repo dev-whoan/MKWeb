@@ -1,12 +1,9 @@
 package com.mkweb.config;
 
 import java.io.File;
+
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Properties;
 
 import com.mkweb.logger.MkLogger;
@@ -16,7 +13,6 @@ public class MkConfigReader {
 	private Properties properties = null;
 	private File configFile = null;
 	private long lastModified = 0L;
-	
 	private MkLogger mklogger = MkLogger.Me();
 	
 	public static MkConfigReader Me() {
@@ -32,14 +28,9 @@ public class MkConfigReader {
 			FileInputStream reader = new FileInputStream(configFile);
 			properties = new Properties();
 			properties.load(reader);
+			
 			reader.close();
 			
-			mklogger.debug("property info");
-			mklogger.debug(properties.getProperty("mkweb.db.hostname").toString());
-			mklogger.debug(properties.getProperty("mkweb.db.port").toString());
-			mklogger.debug(properties.getProperty("mkweb.db.id").toString());
-			mklogger.debug(properties.getProperty("mkweb.db.pw").toString());
-			mklogger.debug(properties.getProperty("mkweb.db.database").toString());
 		}catch( IOException e) {
 			mklogger.error("ERROR OCCURED" + e);
 		}
@@ -54,7 +45,7 @@ public class MkConfigReader {
 			mklogger.info("==============Reload Mk Config files==============");
 		}
 		if(properties != null) {
-			return this.properties.getProperty(key).toString();
+			return this.properties.getProperty(key) != null ? this.properties.getProperty(key).toString() : null;
 		}else {
 			mklogger.error("Mk Config didn't set!");
 			return null;

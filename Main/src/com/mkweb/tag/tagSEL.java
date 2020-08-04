@@ -1,191 +1,253 @@
 package com.mkweb.tag;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
+
+
+import java.util.ArrayList;
+
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Set;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
 
-import com.mkweb.config.PageConfigs;
-import com.mkweb.config.SQLXmlConfigs;
-import com.mkweb.data.AbsXmlData;
-import com.mkweb.data.PageXmlData;
 import com.mkweb.database.MkDbAccessor;
 import com.mkweb.logger.MkLogger;
+import com.mkweb.security.CheckPageInfo;
 import com.mkweb.web.PageInfo;
 
 public class tagSEL extends SimpleTagSupport {
 	private String obj;
-	private String rst = "get";
+	private String like = "yes";
+	private String result = "get";
 	private String TAG = "[tagSEL]";
 	private MkLogger mklogger = MkLogger.Me();
 	//Log 하기
 	public void setObj(String obj) {
 		this.obj = obj;
 	}
-	
-	public void setRst(String rst) {
-		this.rst = rst;
+
+	public void setResult(String result) {
+		this.result = result;
 	}
-	
+
+	public void setLike(String like) {
+		this.like = like;
+	}
+
 	public String getResultId() {
-		return this.rst;
+		return this.result;
 	}
-	
+
 	private PageInfo getPageControl(HttpServletRequest request) {
 		Object o = request.getAttribute("mkPage");
 		if(o == null) {	return null;	}
-		
+
 		String controlName = o.toString();
-		
-		return new PageInfo(controlName);
+
+		return new PageInfo(controlName, false);
 	}
-	
+
 	public void doTag() throws JspException, IOException{
 		MkDbAccessor DA;
+		CheckPageInfo cpi = new CheckPageInfo();
 		ArrayList<Object> dbResult = new ArrayList<Object>();
-		
+
 		HttpServletRequest request = (HttpServletRequest) ((PageContext)getJspContext()).getRequest();
 		HttpServletResponse response = (HttpServletResponse) ((PageContext)getJspContext()).getResponse();
-		
+
+		request.setCharacterEncoding("UTF-8");
+
+		String requestParams = null;
+		ArrayList<String> requestValues = new ArrayList<String>();
+
 		PageInfo pageInfo = getPageControl(request);
-		
+		ArrayList<String> pageStaticParams = pageInfo.getPageStaticParams();
+		String pageStaticParamsName = pageInfo.getPageStaticParamsName();
+
 		if(!pageInfo.isSet()) {
 			mklogger.error(TAG + " PageInfo is not set!");
+		//	response.sendError(500);
 			return;
 		}
-		
-		String pageParameter = pageInfo.getPageParameter();
-		String[] pageSqlInfo = pageInfo.getPageSqlInfo();
-		String pageValue = pageInfo.getPageValue();
-		
-		AbsXmlData resultXmlData = SQLXmlConfigs.Me().getControlService(pageSqlInfo[0]);
-		
-		if(resultXmlData == null) {
-			mklogger.error("There is no sql service named : " + pageSqlInfo[0]);
+
+		//pageConfig Parameters
+
+		ArrayList<String> pageParameter = pageInfo.getPageParameter();
+		ArrayList<String[]> pageSqlInfo = pageInfo.getPageSqlInfo();
+		ArrayList<String> pageValue = pageInfo.getPageValue();
+
+		int rstID = -1;
+		for(int i = 0; i < pageSqlInfo.size(); i++) {
+			if(this.result.equals(pageSqlInfo.get(i)[2])) {
+				rstID = i;
+				break;
+			}
+		}
+
+		if(rstID == -1) {
+			mklogger.error(TAG + " Tag 'rst(" + this.result + ")' is not matched with Page-config 'rst'.");
+		//	response.sendError(500);
 			return;
 		}
+
+		requestParams = cpi.getRequestPageParameterName(request, pageStaticParams, pageStaticParamsName);
+		requestValues = cpi.getRequestParameterValues(request, pageInfo.getPageParameter().get(rstID), pageStaticParams, pageStaticParamsName);
 		
-		String befQuery = resultXmlData.getData();
-		String query = getQueryValue(befQuery, pageParameter, pageValue);
+		if(!cpi.comparePageValueWithRequest(pageValue.get(rstID), requestValues, pageStaticParams, false)) {
+			mklogger.error(TAG + " Request Value is not authorized. Please check page config.");
+		//	response.sendError(500);
+			return;
+		}
+
+		LinkedHashMap<String, Boolean> rqvHash = new LinkedHashMap<>();
+		LinkedHashMap<String, Boolean> pvHash = cpi.pageValueToHashMap(pageValue.get(rstID));
 		
+		if(requestValues != null && requestValues.size() > 0) {
+			for(String s : requestValues) {
+				rqvHash.put(s, true);
+			}
+		}
+		
+		boolean doCheckPageValue = (pvHash != null && pvHash.size() > 0);
+		
+		requestValues.clear();
+		requestValues = null;
+		
+		if(doCheckPageValue) {
+		    Set entrySet = rqvHash.keySet();
+		    Iterator iter = entrySet.iterator();
+		    Set pvEntrySet = null;
+		    Iterator pvIter = null;
+		    
+		    while(iter.hasNext()) {
+				String key = (String) iter.next();
+				pvEntrySet = pvHash.keySet();
+			    pvIter = pvEntrySet.iterator();
+			    
+				while(pvIter.hasNext()) {
+					String pvKey = (String) pvIter.next();
+					if(key.contentEquals(pvKey)) {
+						if(requestValues == null)
+							requestValues = new ArrayList<>();
+						requestValues.add(key);
+					}
+				}
+			}
+		}
+		
+		String befQuery = cpi.regularQuery(pageSqlInfo.get(rstID)[0]);
+
+		String query = null;
+		query = cpi.setQuery(befQuery);
 		if(query == null)
-		{
 			query = befQuery;
+		
+		boolean rvPassed = true;
+		
+		
+		if(requestValues != null && pageStaticParams != null) {
+			if(requestValues.size() > pageStaticParams.size()) {
+				rvPassed = false;
+			} else {
+				boolean isDone = false;
+				int sameCount = 0;
+				for(String rqv : requestValues) {
+					boolean passNow = false;
+					for(String psp : pageStaticParams) {
+						if(rqv.contentEquals(psp)) {
+							passNow = true;
+							sameCount++;
+							if(sameCount >= requestValues.size())
+								isDone = true;
+							break;
+						}
+					}
+					if(isDone)
+						break;
+					if(passNow)
+						continue;
+					
+				}
+				mklogger.debug(TAG + " isDone : " + isDone);
+				rvPassed = isDone;
+			}
 		}
 		
+		if(!rvPassed) {
+			
+			if(requestParams != null && pageParameter.get(rstID) != null) {
+				if(!requestParams.contentEquals(pageParameter.get(rstID))) {
+					if(!requestParams.contentEquals(pageStaticParamsName)) {
+						mklogger.error(TAG + " Request parameter is invalid(1). Please check page config. (" + requestParams + ")");
+						//	response.sendError(500);
+						return;
+					}
+				}
+			}else {
+				if( (requestParams != null && pageParameter.get(rstID) == null) || (requestParams == null && pageParameter.get(rstID) != null))
+				{
+					if(!requestParams.contentEquals(pageStaticParamsName)) {
+						mklogger.error(TAG + " Request parameter is invalid(2). Please check page config. (" + requestParams + ")");
+						//	response.sendError(500);
+						return;	
+					}
+				}
+			}
+		}
+
 		if(this.obj == "list")
 		{
 			DA = new MkDbAccessor();
-			
-			dbResult = DA.executeSEL(query);
-			HashMap<String, Object> result = new HashMap<String, Object>();
-			
-			if(dbResult.size() > 0)
+			DA.setPreparedStatement(query);
+			if(requestValues != null) {
+				String[] reqs = new String[requestValues.size()];
+				String tempValue = "";
+				for(int i = 0; i < reqs.length; i++) {
+					tempValue = request.getParameter(requestParams + "." + requestValues.get(i));
+					if(tempValue == null)
+						tempValue = request.getParameter(requestValues.get(i));
+					if(this.like.equals("no"))
+					{
+						if(tempValue.contains("%"))
+							tempValue = tempValue.replaceAll("%", " ");
+
+						reqs[i] = tempValue;
+					}else {
+						reqs[i] = tempValue;
+					}
+				}
+				tempValue = null;
+				DA.setRequestValue(reqs);
+				reqs = null;
+			}
+			if(this.like.equals("no"))
+				dbResult = DA.executeSEL(false);
+			else
+				dbResult = DA.executeSELLike(false);
+
+			LinkedHashMap<String, Object> result = new LinkedHashMap<String, Object>();
+
+			if(dbResult != null && dbResult.size() > 0)
 			{
 				for(int i = 0; i < dbResult.size(); i++)
 				{
-					result = (HashMap<String, Object>) dbResult.get(i);
-					
-					((PageContext)getJspContext()).getRequest().setAttribute(this.rst, result);
+					result = (LinkedHashMap<String, Object>) dbResult.get(i);
+					((PageContext)getJspContext()).getRequest().setAttribute(this.result, result);
 					getJspBody().invoke(null);
 				}
-				((PageContext)getJspContext()).getRequest().removeAttribute(this.rst);
+				((PageContext)getJspContext()).getRequest().removeAttribute(this.result);
 			}else {
-				try {
-					RequestDispatcher dispatcher = ((PageContext)getJspContext()).getServletContext().getRequestDispatcher("/500.jsp");
-					dispatcher.forward(request, response);
-				} catch (ServletException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				
 				return;
 			}
-			
-			//getJspContext()).getRequest().setAttribute
-			
 		}else if(this.obj =="map") {
 			DA = new MkDbAccessor();
 		}
-	}
-	
-	private String getQueryValue(String query, String pageParam, String pageValue) {
-		String befQuery = query;
-		String[] testQueryList = befQuery.split("@");
-		String testQuery = "";
-		String[] replaceTarget = null;
-		if(testQueryList.length > 0)
-		{
-			replaceTarget = new String[(testQueryList.length-1)/2];
-			for(int i = 0; i < replaceTarget.length; i++)
-				replaceTarget[i] = testQueryList[(i*2)+1];
-		}else {	return null;	}
-		
-		String[] pvSetList = null;
-		
-		if(pageValue != null && pageValue.length() > 0)
-		{
-			pvSetList = new String[pageValue.split("@set").length - 1]; 
-					
-			if(pvSetList.length > 0)
-			{
-				for(int i = 0; i < pvSetList.length; i++) {
-					pvSetList[i] = pageValue.split("@set")[i+1].trim(); 
-					pvSetList[i] = pvSetList[i].split("}")[0];
-				}
-			}
-		}else {
-			mklogger.error(TAG + " Page config is not matched with Sql config. ");
-			return null;
-		}
-		if(pvSetList != null && replaceTarget != null) {
-			if(pvSetList.length == replaceTarget.length) {
-				for(int i = 0; i < pvSetList.length; i++){
-			//		(${param.user_name = '최기현'
-					String pp = pageParam + ".";
-			//		user_name = '최기현'
-					String[] alpha = pvSetList[i].split(pp); //[1].split("=")[0];
-					
-					if(alpha == null || alpha.length != 2) {
-						mklogger.error(TAG + "Page Parameter setting is invalid. Please Check <Page Parameter> and <Page Value> :: " + pageParam);
-						return null;
-					}
-			//		user_name
-					String[] beta = alpha[1].split("=");
-					if(beta == null || beta.length != 2) {
-						mklogger.error(TAG + "<Page Value> syntax error. Cannot find equal character(\"=\").");
-						return null;
-					}
-					String charlie = beta[0].trim();
-					
-					if(!charlie.equals(replaceTarget[i])) {
-						mklogger.temp(TAG + " Page config is not matched with Sql config.", false);
-						mklogger.temp("================================Page Value(" + charlie + ") != Sql Value(" + replaceTarget[i] + ")", false);
-						mklogger.flush("error");
-						
-						return null;
-					}
-					
-					String pvSetValue = pvSetList[i].split("=")[1];
-					befQuery = befQuery.replaceFirst(("@" + replaceTarget[i]+ "@"), pvSetValue);
-				}
-			}else {
-				mklogger.error(TAG + " Page config is not matched with Sql config. ");
-				return null;
-			}
-		}else {
-			mklogger.error(TAG + " Page config is not matched with Sql config. ");
-			return null;
-		}
-		
-		return befQuery;
+
 	}
 }

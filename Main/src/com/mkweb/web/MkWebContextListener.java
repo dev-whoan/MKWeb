@@ -6,8 +6,10 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import com.mkweb.config.MkConfigReader;
-import com.mkweb.config.PageConfigs;
-import com.mkweb.config.SQLXmlConfigs;
+import com.mkweb.config.MkPageConfigs;
+import com.mkweb.config.MkRestApiPageConfigs;
+import com.mkweb.config.MkRestApiSqlConfigs;
+import com.mkweb.config.MkSQLXmlConfigs;
 import com.mkweb.data.AbsXmlData;
 import com.mkweb.logger.MkLogger;
 
@@ -26,6 +28,8 @@ public class MkWebContextListener implements ServletContextListener {
 		String sqlConfigsUri = event.getServletContext().getInitParameter("MKWeb.SqlConfigs");
 		String MkLoggerUri = event.getServletContext().getInitParameter("MKWeb.LoggerConfigs");
 		String pageConfigsUri = event.getServletContext().getInitParameter("MKWeb.PageConfigs");
+		String apiSqlConfigs = event.getServletContext().getInitParameter("MkWeb.ApiSqlConfigs");
+		String apiPageConfigs = event.getServletContext().getInitParameter("MkWeb.ApiPageConfigs");
 		
 		/*
 		 * Setting Mk Logger Configure
@@ -46,7 +50,7 @@ public class MkWebContextListener implements ServletContextListener {
 		 * Setting SQL
 		 */
 		File mkweb_sql_config = new File(new File(event.getServletContext().getRealPath("/")), sqlConfigsUri);
-		SQLXmlConfigs sxc = SQLXmlConfigs.Me();
+		MkSQLXmlConfigs sxc = MkSQLXmlConfigs.Me();
 		sxc.setSqlConfigs(mkweb_sql_config);
 		
 		/*
@@ -55,7 +59,24 @@ public class MkWebContextListener implements ServletContextListener {
 		File mkweb_page_config = new File(new File(event.getServletContext().getRealPath("/")), pageConfigsUri);
 		File[] config_pages = mkweb_page_config.listFiles();
 		
-		PageConfigs pc = PageConfigs.Me();
+		MkPageConfigs pc = MkPageConfigs.Me();
 		pc.setPageConfigs(config_pages);
+		
+		/*
+		 *  Rest Api Settings
+		
+		*/
+		if(MkConfigReader.Me().get("mkweb.restapi.use").equals("yes")) {
+			File mkweb_apisql_config = new File(new File(event.getServletContext().getRealPath("/")), apiSqlConfigs);
+			MkRestApiSqlConfigs mrasc = MkRestApiSqlConfigs.Me();
+			mrasc.setSqlConfigs(mkweb_apisql_config);
+			
+			File mkweb_apipage_config = new File(new File(event.getServletContext().getRealPath("/")), apiPageConfigs);
+			File[] config_api_pages = mkweb_apipage_config.listFiles();
+			
+			MkRestApiPageConfigs mrac = MkRestApiPageConfigs.Me();
+			mrac.setPageConfigs(config_api_pages);
+		}
+		
 	}
 }

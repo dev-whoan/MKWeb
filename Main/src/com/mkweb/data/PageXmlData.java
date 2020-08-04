@@ -1,70 +1,71 @@
 package com.mkweb.data;
 
-import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
+import com.mkweb.logger.MkLogger;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
-import com.mkweb.impl.XmlData;
-
-public class PageXmlData implements XmlData {
-	
-	private String serviceName = null;
+public class PageXmlData extends AbsXmlData {
 	private String logicalDir = null;
-	private String controlName = null;
 	private String pageDir = null;
 	private String pageName = null;			//페이지 네임
 	private String debug = null;
-	private String value = null;
 	private String parameter = null;
 	private String[] sql = null;
-	private String Tag = null;
-	private static String absPath = "/WEB-INF";
+	private String pageParamsName = null;
+	private ArrayList<String> pageParams = null;
+	private boolean authorizedRequire = false;		//이거 클래스 필요한거임; 지우지마셈
+	private boolean post = false;
+	private boolean get = false;
+	private boolean put = false;
+	private boolean delete = false;
+	private boolean options = false;
+	private boolean head = false;
+	private String structure = null;
 	
-	public String getTag() { return this.Tag; }
-
-	public static NodeList setNodeList(File defaultFile) {
-		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder dBuilder = null;
-		Document doc = null;
-		
-		try {
-			dBuilder = dbFactory.newDocumentBuilder();
-			doc = dBuilder.parse(defaultFile);
-		}catch(Exception e) {
-	//		mkLog.error(e);
-			e.getStackTrace();
-		}
-		
-		Node root = doc.getFirstChild();
-		NodeList nodeList = root.getChildNodes();
-		
-		return nodeList;
-	}
-	public void setControlName(String controlName)	{	this.controlName = controlName;	}
 	public void setPageName(String pageName) {	this.pageName = pageName;	}
 	public void setDebug(String debug) {	this.debug = debug;	}
-	public void setServiceName(String serviceName) {	this.serviceName = serviceName;	}
-	public void setData(String data) {	this.value = data;	}
-	public void setParameter(String data) {	this.parameter = data;	}
-	public void setSql(String[] data) {	this.sql = data;	}
+	public void setParameter(String param) {	this.parameter = param;	}
+	public void setSql(String[] sql) {	this.sql = sql;	}
 	public void setDir(String dir) {	this.pageDir = dir;	}
 	public void setLogicalDir(String dir) {	this.logicalDir = dir;	}
+	public void setAuthorizedRequire(String ar) {	this.authorizedRequire = (ar == null || ar.equals("no") ? false : ( ar.equals("yes") ? true : false) );	}
+	public void setPost(String post) {	this.post = (post == null || post.equals("no") ? false : ( post.equals("yes") ? true : false) );	}
+	public void setGet(String get) {	this.get = (get == null || get.equals("no") ? false : ( get.equals("yes") ? true : false) );	}
+	public void setPut(String put) {	this.put = (put == null || put.equals("no") ? false : ( put.equals("yes") ? true : false) );	}
+	public void setDelete(String delete) {	this.delete = (delete == null || delete.equals("no") ? false : ( delete.equals("yes") ? true : false) );	}
+	public void setOptions(String options) {	this.options = (options == null || options.equals("no") ? false : ( options.equals("yes") ? true : false) );	}
+	public void setHead(String head) {	this.head = (head == null || head.equals("no") ? false : ( head.equals("yes") ? true : false) );	}
+	public void setStructure(String str) {	this.structure = str;	}
+	public void setPageStaticParamName(String ppn) {	this.pageParamsName = ppn;	}
+	public void setPageStaticParams(ArrayList<String> pageParams) {	this.pageParams = pageParams;	}
 
-	public String getServiceName() {	return this.serviceName;	}
-	public String getControlName() {	return this.controlName;	}
 	public String getPageName() {	return this.pageName;	}
 	public String getDebug() {	return this.debug;	}
-	public String getData() {	return this.value;	}
 	public String getParameter() {	return this.parameter;	}
 	public String[] getSql() {	return this.sql;	}
 	public String getDir() {	return this.pageDir;	}
 	public String getLogicalDir() {	return this.logicalDir;	}
-	public static String getAbsPath()	{	return absPath;	}
+	public boolean getAuthorizedRequire() {	return this.authorizedRequire;	}
+	public boolean getPost() {	return this.post;	}
+	public boolean getGet() {	return this.get;	}
+	public boolean getPut() {	return this.put;	}
+	public boolean getDelete() {	return this.delete;	}
+	public boolean getOptions() {	return this.options;	}
+	public boolean getHead() {	return this.head;	}
+	public boolean isMethodAllowed(String method) {
+		HashMap<String, Boolean> map = new HashMap<>();
+		map.put("post", getPost());
+		map.put("get", getGet());
+		map.put("put", getPut());
+		map.put("delete", getDelete());
+		map.put("options", getOptions());
+		map.put("head", getHead());
+		
+		return map.get(method);
+	}
+	public String getStructure() {	return this.structure;	}
+	public String getPageStaticParamsName() {	return this.pageParamsName;	}
+	public ArrayList<String> getPageStaticParams() {	return this.pageParams;	} 
 	public String getMyInfo() {	return "Control: " + (this.controlName) + " | Service: " + (this.serviceName) + " | Tag: " + (getTag());	}
 }
