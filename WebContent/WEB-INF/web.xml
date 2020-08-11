@@ -30,6 +30,7 @@
 		<url-pattern>*.mkw</url-pattern>
 	</servlet-mapping>
 	
+	-->
 	 
 	<servlet>
 		<servlet-name>MkReceiveFormData</servlet-name>
@@ -41,7 +42,6 @@
 		<servlet-name>MkReceiveFormData</servlet-name>
 		<url-pattern>/data/receive</url-pattern>
 	</servlet-mapping>
-	-->
 	<servlet>
 		<servlet-name>MkWebRestApi</servlet-name>
 		<servlet-class>com.mkweb.restapi.MkRestApi</servlet-class>

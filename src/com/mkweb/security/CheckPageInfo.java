@@ -190,10 +190,13 @@ public class CheckPageInfo {
 		HashMap<String, Boolean> passValues = new HashMap<>();
 		LinkedHashMap<String, Boolean> pv = new LinkedHashMap<>(pageValue);
 		LinkedHashMap<String, Boolean> rv = new LinkedHashMap<>();
-
-		for(String sp : staticParams) {
-			passValues.put(sp, true);
+		
+		if(staticParams != null) {
+			for(String sp : staticParams) {
+				passValues.put(sp, true);
+			}
 		}
+		
 		boolean passExists = passValues.size() != 0 ? true : false;
 
 		for(int i = 0; i < reqValue.size(); i++) {
