@@ -68,7 +68,7 @@ public class MkReceiveFormData extends HttpServlet {
 		String host = MkConfigReader.Me().get("mkweb.web.hostname");
 		
     	if(host == null) {
-    		mklogger.error(TAG + " Hostname is not set. You must set hostname on configs/MkWeb.conf");
+    		mklogger.error(TAG, " Hostname is not set. You must set hostname on configs/MkWeb.conf");
     		return false;
     	}
     	host = host + "/";
@@ -86,12 +86,12 @@ public class MkReceiveFormData extends HttpServlet {
 		}
 
 		if(!cpi.isValidPageConnection(mkPage, reqPage)) {
-			mklogger.error(TAG + " checkMethod: Invalid Page Connection. ");
+			mklogger.error(TAG, " checkMethod: Invalid Page Connection. ");
 			return false;
 		}
     	
 		if(pi == null || !isPiSet) {
-			mklogger.error(TAG + " PageInfo is not set!");
+			mklogger.error(TAG, " PageInfo is not set!");
 			return false;
 		}
 		
@@ -105,7 +105,7 @@ public class MkReceiveFormData extends HttpServlet {
 			}
 		}
 		
-		mklogger.debug(TAG + " method: " + pxData.getSql()[2]);
+		mklogger.debug(TAG, " method: " + pxData.getSql()[2]);
 		
 		if(!pxData.getSql()[2].toLowerCase().contentEquals(rqMethod)) {
 			return false;
@@ -120,7 +120,7 @@ public class MkReceiveFormData extends HttpServlet {
     	MkDbAccessor DA = new MkDbAccessor();
 		
 		if(!cpi.comparePageValueWithRequest(pxData.getPageValue(), requestValues, pxData.getPageStaticParams(), false)) {
-			mklogger.error(TAG + " Request Value is not authorized. Please check page config.");
+			mklogger.error(TAG, " Request Value is not authorized. Please check page config.");
 			response.sendError(400);
 			return;
 		}
@@ -139,7 +139,7 @@ public class MkReceiveFormData extends HttpServlet {
 			
 			DA.setPreparedStatement(query);
 			
-			mklogger.debug(TAG + query);
+			mklogger.debug(TAG, query);
 			
 			for(int i = 0; i < reqs.length; i++) {
 				tempValue = request.getParameter(requestParams + "." + requestValues.get(i));
@@ -158,7 +158,7 @@ public class MkReceiveFormData extends HttpServlet {
 		pi = getPageControl(refURL);
 		isPiSet = (pi != null);
 		
-		mklogger.debug(TAG + " isPiSet : " + isPiSet);
+		mklogger.debug(TAG, " isPiSet : " + isPiSet);
 		
 		if(isPiSet) {
 			pageStaticParams = new ArrayList<>();
@@ -177,7 +177,7 @@ public class MkReceiveFormData extends HttpServlet {
 		}
 		
 		if(!checkMethod(request, "get", refURL)) {
-			mklogger.error(TAG + " Request method is not authorized. [Tried: GET]");
+			mklogger.error(TAG, " Request method is not authorized. [Tried: GET]");
 			response.sendError(400);
 			return;
 		}
@@ -191,7 +191,7 @@ public class MkReceiveFormData extends HttpServlet {
 		pi = getPageControl(refURL);
 		isPiSet = (pi != null);
 		
-		mklogger.debug(TAG + " isPiSet : " + isPiSet);
+		mklogger.debug(TAG, " isPiSet : " + isPiSet);
 		
 		if(isPiSet) {
 			pageStaticParams = new ArrayList<>();
@@ -209,7 +209,7 @@ public class MkReceiveFormData extends HttpServlet {
 			}
 		}
 		if(!checkMethod(request, "post", refURL)) {
-			mklogger.error(TAG + " Request method is not authorized. [Tried: POST]");
+			mklogger.error(TAG, " Request method is not authorized. [Tried: POST]");
 			response.sendError(401);
 			return;
 		}

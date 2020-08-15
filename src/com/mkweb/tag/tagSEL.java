@@ -78,14 +78,15 @@ public class tagSEL extends SimpleTagSupport {
 		ArrayList<LinkedHashMap<String, Boolean>> pageValue = null;
 		
 		if(isSet) {
-			pageStaticParams = new ArrayList<>();
-			pageStaticParamsName = "";
+			pageStaticParams = pageInfo.get(0).getPageStaticParams();
+			pageStaticParamsName = pageInfo.get(0).getPageStaticParamsName();
 			pageParameter = new ArrayList<>();
 			pageSqlInfo = new ArrayList<>();
 			pageValue = new ArrayList<>();
 			requestServiceName = new ArrayList<>();
 			//pageConfig Parameters
 			for(int i = 0; i < pageInfo.size(); i++) {
+				
 				pageParameter.add(pageInfo.get(i).getParameter());
 				pageSqlInfo.add(pageInfo.get(i).getSql());
 				pageValue.add(pageInfo.get(i).getPageValue());
@@ -100,15 +101,16 @@ public class tagSEL extends SimpleTagSupport {
 				break;
 			}
 		}
+		mklogger.debug(TAG, " Control : " + pageInfo.get(0).getControlName());
+		mklogger.debug(TAG, " serviceIndex: " + serviceIndex + " || name : " + this.name);
+		mklogger.debug(TAG, " pageParameter.get(serviceIndex) : " + pageParameter.get(serviceIndex));
 		
-		mklogger.debug(TAG + " serviceIndex: " + serviceIndex);
-				
 		if(serviceIndex == -1) {
-			mklogger.error(TAG + " Tag 'name(" + this.name + ")' is not matched with Page-config-service 'name'.");
+			mklogger.error(TAG, " Tag 'name(" + this.name + ")' is not matched with Page-config-service 'name'.");
 		//	response.sendError(500);
 			return;
 		}
-
+		
 		requestParams = cpi.getRequestPageParameterName(request, pageStaticParams, pageStaticParamsName);
 		requestValues = cpi.getRequestParameterValues(request, pageParameter.get(serviceIndex), pageStaticParams, pageStaticParamsName);
 		
@@ -118,7 +120,7 @@ public class tagSEL extends SimpleTagSupport {
 				pageStaticParams,
 				false)
 		){
-			mklogger.error(TAG + " Request Value is not authorized. Please check page config.");
+			mklogger.error(TAG, " Request Value is not authorized. Please check page config.");
 		//	response.sendError(500);
 			return;
 		}
@@ -168,7 +170,7 @@ public class tagSEL extends SimpleTagSupport {
 		
 		boolean rvPassed = true;
 		
-		mklogger.debug(TAG + " psp: " + pageStaticParams);
+		mklogger.debug(TAG, " psp: " + pageStaticParams);
 		
 		if(requestValues != null && pageStaticParams != null) {
 			if(requestValues.size() > pageStaticParams.size()) {
@@ -193,7 +195,6 @@ public class tagSEL extends SimpleTagSupport {
 						continue;
 					
 				}
-				mklogger.debug(TAG + " isDone : " + isDone);
 				rvPassed = isDone;
 			}
 		}
@@ -203,7 +204,7 @@ public class tagSEL extends SimpleTagSupport {
 			if(requestParams != null && pageParameter.get(serviceIndex) != null) {
 				if(!requestParams.contentEquals(pageParameter.get(serviceIndex))) {
 					if(!requestParams.contentEquals(pageStaticParamsName)) {
-						mklogger.error(TAG + " Request parameter is invalid(1). Please check page config. (" + requestParams + ")");
+						mklogger.error(TAG, " Request parameter is invalid(1). Please check page config. (" + requestParams + ")");
 						//	response.sendError(500);
 						return;
 					}
@@ -212,7 +213,7 @@ public class tagSEL extends SimpleTagSupport {
 				if( (requestParams != null && pageParameter.get(serviceIndex) == null) || (requestParams == null && pageParameter.get(serviceIndex) != null))
 				{
 					if(!requestParams.contentEquals(pageStaticParamsName)) {
-						mklogger.error(TAG + " Request parameter is invalid(2). Please check page config. (" + requestParams + ")");
+						mklogger.error(TAG, " Request parameter is invalid(2). Please check page config. (" + requestParams + ")");
 						//	response.sendError(500);
 						return;	
 					}
@@ -228,10 +229,15 @@ public class tagSEL extends SimpleTagSupport {
 				String[] reqs = new String[requestValues.size()];
 				String tempValue = "";
 				for(int i = 0; i < reqs.length; i++) {
-					mklogger.debug(TAG + "params: " + requestParams + " || Values : " + requestValues.get(i));
+					mklogger.debug(TAG, "params: " + requestParams + " || Values : " + requestValues.get(i));
 					tempValue = request.getParameter(requestParams + "." + requestValues.get(i));
 					if(tempValue == null)
 						tempValue = request.getParameter(requestValues.get(i));
+					
+					mklogger.debug(TAG, " getParameter : " + request.getParameter(requestValues.get(i)) + " || requestValue : " + requestValues.get(i));
+					
+					mklogger.debug(TAG, "tempValue: " + tempValue);
+					
 					if(this.like.equals("no"))
 					{
 						if(tempValue.contains("%"))

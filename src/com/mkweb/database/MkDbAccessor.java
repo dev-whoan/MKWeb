@@ -41,7 +41,7 @@ public class MkDbAccessor {
 	
 	public void setRequestValue(ArrayList<String> arr) {
 		reqValue = new ArrayList<>();
-		mklogger.temp(TAG + "=====RequestValue=====", false);
+		mklogger.temp(TAG, "=====RequestValue=====", false);
 		mklogger.temp(this.psmt, false);
 		String s = "Values : (";
 		for(int i = 0; i < arr.size(); i++) {
@@ -58,7 +58,7 @@ public class MkDbAccessor {
 	
 	public void setRequestValue(String[] arr) {
 		reqValueArr = new String[arr.length];
-		mklogger.temp(TAG + "=====RequestValue=====", false);
+		mklogger.temp(TAG, "=====RequestValue=====", false);
 		mklogger.temp(this.psmt, false);
 		String s = "Values : (";
 		for(int i = 0; i < reqValueArr.length; i++) {
@@ -74,7 +74,7 @@ public class MkDbAccessor {
 
 	public void setRequestValue(ArrayList<String> arr, JSONObject jsonObject) {
 		reqValue = new ArrayList<>();
-		mklogger.temp(TAG + "=====RequestValue=====", false);
+		mklogger.temp(TAG, "=====RequestValue=====", false);
 		mklogger.temp(this.psmt, false);
 		String s = "Values : (";
 		for(int i = 0; i < arr.size(); i++) {
@@ -94,15 +94,15 @@ public class MkDbAccessor {
 			try {
 				Class.forName("com.mysql.cj.jdbc.Driver");
 			} catch (ClassNotFoundException e) {
-				mklogger.error(TAG + "(connectDB) ClassNotFoundException: " + e.getMessage());
+				mklogger.error(TAG, "(connectDB) ClassNotFoundException: " + e.getMessage());
 			}
 			
 			String url = "jdbc:mysql://" + MkConfigReader.Me().get("mkweb.db.hostname") + ":" + MkConfigReader.Me().get("mkweb.db.port") + "/" + MkConfigReader.Me().get("mkweb.db.database")+ "?" + "characterEncoding=UTF-8&serverTimezone=UTC";
 			conn = DriverManager.getConnection(url, MkConfigReader.Me().get("mkweb.db.id"), MkConfigReader.Me().get("mkweb.db.pw"));
 		}catch(SQLException e){
-			mklogger.error(TAG + "(connectDB) SQLException : " + e.getMessage());
+			mklogger.error(TAG, "(connectDB) SQLException : " + e.getMessage());
 		}catch(Exception e){ 
-			mklogger.error(TAG + " " + e.getMessage());
+			mklogger.error(TAG, " " + e.getMessage());
 		}
 		
 		return conn;
@@ -182,7 +182,7 @@ public class MkDbAccessor {
 					if(rs != null)
 						rs.close();
 				} catch (SQLException e) {
-					mklogger.error(TAG + "(executeSEL) psmt = this.dbCon.prepareStatement(" + this.psmt + ") :" + e.getMessage());
+					mklogger.error(TAG, "(executeSEL) psmt = this.dbCon.prepareStatement(" + this.psmt + ") :" + e.getMessage());
 				}
 			}
 		}
@@ -250,7 +250,7 @@ public class MkDbAccessor {
 					if(rs != null)
 						rs.close();
 				} catch (SQLException e) {
-					mklogger.error(TAG + "(executeSELLike) psmt = this.dbCon.prepareStatement(" + this.psmt + ") :" + e.getMessage());
+					mklogger.error(TAG, "(executeSELLike) psmt = this.dbCon.prepareStatement(" + this.psmt + ") :" + e.getMessage());
 				}
 			}
 		}
@@ -286,10 +286,10 @@ public class MkDbAccessor {
 					if(prestmt != null)
 						prestmt.close();
 					
-					mklogger.debug(TAG + " 업로드 끝");
+					mklogger.debug(TAG, " 업로드 끝");
 					
 				} catch (SQLException e) {
-					mklogger.error(TAG + "(executeDML) psmt = this.dbCon.prepareStatement(" + this.psmt + ") :" + e.getMessage());
+					mklogger.error(TAG, "(executeDML) psmt = this.dbCon.prepareStatement(" + this.psmt + ") :" + e.getMessage());
 				}
 			}
 		}

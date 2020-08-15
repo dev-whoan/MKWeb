@@ -41,9 +41,9 @@ public class MkJsonData {
 			isDone = true;
 			return jo;
 		} catch (ParseException e) {
-			mklogger.error(TAG + "(func isValidDataForJson) ParseException:: " + e + " Given data is not valid for JSONObject.\n" + data);
+			mklogger.error(TAG, "(func isValidDataForJson) ParseException:: " + e + " Given data is not valid for JSONObject.\n" + data);
 		} catch(NullPointerException e2) {
-			mklogger.error(TAG + "(func isValidDataForJson) NullPoitnerException:: " + e2 + "\nGiven data is not valid for JSONObject.\n" + data);
+			mklogger.error(TAG, "(func isValidDataForJson) NullPoitnerException:: " + e2 + "\nGiven data is not valid for JSONObject.\n" + data);
 		}finally {
 			if(!isDone) {
 				return null;
@@ -74,7 +74,7 @@ public class MkJsonData {
 				if(splits[0].contains("[")) {
 					if(!splits[0].contains("]")) {
 						//¿¹¿Ü
-						mklogger.error(TAG + " Given data Parentheses not matching!");
+						mklogger.error(TAG, " Given data Parentheses not matching!");
 						return null;
 					}else {
 						key = splits[0].split("\\[")[0];
@@ -101,7 +101,7 @@ public class MkJsonData {
 				reqData.put(key, list);
 				reqParams.add(key);
 			}else {
-				mklogger.error(TAG + " Given data is not valid." + requestParams[i]);
+				mklogger.error(TAG, " Given data is not valid." + requestParams[i]);
 				return null;
 			}
 			//search_key=apple
@@ -155,7 +155,7 @@ public class MkJsonData {
 	
 	public void printObject(JSONObject jsonObject) {
 		if(jsonObject == null) {
-			mklogger.error(TAG + "(func printObject) JSONObject is null");
+			mklogger.error(TAG, "(func printObject) JSONObject is null");
 			return;
 		}
 	    Set entrySet = jsonObject.keySet();
@@ -167,12 +167,12 @@ public class MkJsonData {
 			String key = (String) iter.next();
 			result += "{'"+key+"':'"+jsonObject.get(key) + "'}";
 		}
-		mklogger.info(TAG + "[JSONObject]: "+result);
+		mklogger.info(TAG, "[JSONObject]: "+result);
 	}
 	
 	public boolean setJsonObject() {
 		if(this.data == null) {
-			mklogger.error(TAG + "(func setJsonObject) No given data.");
+			mklogger.error(TAG, "(func setJsonObject) No given data.");
 			return false;
 		}
 

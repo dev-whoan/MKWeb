@@ -69,10 +69,10 @@ public class MkRestApiGetKey extends MkDbAccessor {
 				if(rs != null)
 					rs.close();
 			} catch (SQLException e) {
-				mklogger.error(TAG + "(GetKey) psmt = this.dbCon.prepareStatement(" + psmt + ") :" + e.getMessage());
+				mklogger.error(TAG, "(GetKey) psmt = this.dbCon.prepareStatement(" + psmt + ") :" + e.getMessage());
 			}
 		}else {
-			mklogger.error(TAG + " dbCon is null");
+			mklogger.error(TAG, " dbCon is null");
 		}
 		return rst;
 	}

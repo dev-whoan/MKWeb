@@ -66,12 +66,12 @@ public class MkRestApi extends HttpServlet {
 		}
 
 		if(apiPageInfo == null) {
-			mklogger.error(TAG + " api page info null");
+			mklogger.error(TAG, " api page info null");
 			return false; 
 		}
 
 		if(!apiPageInfo.get(0).isMethodAllowed(rqMethod)) { 
-			mklogger.error(TAG + " The request method is not allowed : " + rqMethod);
+			mklogger.error(TAG, " The request method is not allowed : " + rqMethod);
 			return false;
 		}
 
@@ -84,7 +84,7 @@ public class MkRestApi extends HttpServlet {
 		}
 
 		if(pageInfo == null) {
-			mklogger.error(TAG + " No Service is allowed for request method : " + rqMethod);
+			mklogger.error(TAG, " No Service is allowed for request method : " + rqMethod);
 			return false;
 		}
 		return true;	
@@ -100,26 +100,26 @@ public class MkRestApi extends HttpServlet {
 		MkRestApiGetKey mra = new MkRestApiGetKey();
 		ArrayList<Object> apiKeyList = mra.GetKey();
 
-		mklogger.temp(TAG + " REST Api Key has searched : " + key + " Result: " , false);
+		mklogger.temp(TAG, " REST Api Key has searched : " + key + " Result: " , false);
 
 		if(apiKeyList != null) {
 			for(int i = 0; i < apiKeyList.size(); i++) {
 				HashMap<String, Object> result = new HashMap<String, Object>();
 				result = (HashMap<String, Object>) apiKeyList.get(i);
 				if(result.get("api_key").equals(key)) {
-					mklogger.temp(" key is valid! (user_id : " + result.get("user_id") +")", false);
+					mklogger.temp(TAG, " key is valid! (user_id : " + result.get("user_id") +")", false);
 					mklogger.flush("info");
 					isDone = true;
 					break;
 				}
 			}	
 		}else {
-			mklogger.temp(" Failed to search the key! (No Key List)", false);
+			mklogger.temp(TAG, " Failed to search the key! (No Key List)", false);
 			mklogger.flush("warn");
 		}
 
 		if(!isDone) {
-			mklogger.temp(" Failed to search the key! (Key is invalid)", false);
+			mklogger.temp(TAG, " Failed to search the key! (Key is invalid)", false);
 			mklogger.flush("warn");
 		}
 
@@ -179,7 +179,7 @@ public class MkRestApi extends HttpServlet {
 			mkJsonObject.setData(reqApiData);
 
 			if(!mkJsonObject.setJsonObject()) {
-				mklogger.error(TAG + " Failed to create JsonObject.");
+				mklogger.error(TAG, " Failed to create JsonObject.");
 				isDataRequestedAsJsonObject = false;
 			}
 
@@ -189,7 +189,7 @@ public class MkRestApi extends HttpServlet {
 				if(mkJsonObject.setJsonObject()) {
 					jsonObject = mkJsonObject.getJsonObject();
 				}else {
-					mklogger.error(TAG + " Failed to create MkJsonObject. :: " + reqToJson);
+					mklogger.error(TAG, " Failed to create MkJsonObject. :: " + reqToJson);
 				}
 
 			}else {
@@ -245,7 +245,7 @@ public class MkRestApi extends HttpServlet {
 
 				mkJsonObject.setData(reqApiData);
 				if(!mkJsonObject.setJsonObject()) {
-					mklogger.error(TAG + " failed to create JsonObject.");
+					mklogger.error(TAG, " failed to create JsonObject.");
 					isDataRequestedAsJsonObject = false;
 				}
 
@@ -255,7 +255,7 @@ public class MkRestApi extends HttpServlet {
 					if(mkJsonObject.setJsonObject()) {
 						jsonObject = mkJsonObject.getJsonObject();
 					}else {
-						mklogger.error(TAG + " Failed to create MkJsonObject. :: " + reqToJson);
+						mklogger.error(TAG, " Failed to create MkJsonObject. :: " + reqToJson);
 						return;
 					}
 				}else {
@@ -320,7 +320,7 @@ public class MkRestApi extends HttpServlet {
 				reqApiData = splits[1];
 				String[] reqApiDatas = reqApiData.split("/");
 				int size = reqApiDatas.length;
-				mklogger.debug(TAG + " size : " + size);
+				mklogger.debug(TAG, " size : " + size);
 				reqApiData = "{";
 				for(int i = 1; i < size; i++) {
 					if(i % 2 == 1)	//키
@@ -342,7 +342,7 @@ public class MkRestApi extends HttpServlet {
 
 				if(!mkJsonObject.setJsonObject()) {
 					//예외
-					mklogger.error(TAG + " Failed to create JsonObject.");
+					mklogger.error(TAG, " Failed to create JsonObject.");
 					return;
 				}
 				jsonObject = mkJsonObject.getJsonObject();
@@ -379,7 +379,7 @@ public class MkRestApi extends HttpServlet {
 		ArrayList<PageXmlData> apiPageInfo = MkRestApiPageConfigs.Me().getControl(mkPage);
 
 		if(apiPageInfo == null) {
-			mklogger.error(TAG + " api page info null");
+			mklogger.error(TAG, " api page info null");
 			return; 
 		}
 		int target = -1;
@@ -405,7 +405,7 @@ public class MkRestApi extends HttpServlet {
 
 		if(sqlData == null) {
 			//예외
-			mklogger.error(TAG + " There is no SQL Data named : " + pxData.getServiceName());
+			mklogger.error(TAG, " There is no SQL Data named : " + pxData.getServiceName());
 			return;
 		}
 
@@ -425,7 +425,7 @@ public class MkRestApi extends HttpServlet {
 				jsonObjectData = jsonObject.get(scData);
 				if(jsonObjectData == null) {
 					//예외
-					mklogger.error(TAG + " Allowsingle is not allowed at this page : " + pxData.getControlName());
+					mklogger.error(TAG, " Allowsingle is not allowed at this page : " + pxData.getControlName());
 					response.setStatus(401);
 					return;
 				}
@@ -435,7 +435,7 @@ public class MkRestApi extends HttpServlet {
 //
 //		if(!cpi.comparePageValueWithRequest(pxData.getData(), sqlKey, pxData.getPageStaticParams(), true)) {
 //			//예외
-//			mklogger.error(TAG + " Request Value is not authorized. Please check page config.");
+//			mklogger.error(TAG, " Request Value is not authorized. Please check page config.");
 //			return;
 //		}
 		//여기까지는 모든 메서드 중복되는 행위

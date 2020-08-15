@@ -68,65 +68,81 @@ public class MkLogger extends AbsXmlData{
 		if(logMsg != null)
 		{
 			if(msgType == "info")
-				info(logMsg);
+				info("", logMsg);
 			else if(msgType == "warn")
-				warn(logMsg);
+				warn("", logMsg);
 			else if(msgType == "error")
-				error(logMsg);
+				error("",   logMsg);
 			
 			logMsg = null;
 		}
-		
-			
 	}
 	
+	public void debug(Object msg) {
+		debug("", msg);
+	}
+	public void warn(Object msg) {
+		warn("", msg);
+	}
+	
+	public void error(Object msg) {
+		error("", msg);
+	}
 	public void temp(Object msg, boolean doFlush) {
+		temp("", msg, doFlush);
+	}
+	
+	public void info(Object msg) {
+		info("", msg);
+	}
+	
+	public void temp(String TAG, Object msg, boolean doFlush) {
 		if(logMsg != null) {
 			if(doFlush)
 			{
-				warn("--AUTO FLUSHING--: " + logMsg);
+				warn(TAG, "--AUTO FLUSHING--: " + logMsg);
 				logMsg = null;
 				return;
 			}
 			
 			logMsg += "\n" + msg.toString();
 		}else {
-			logMsg = msg.toString();
+			logMsg = TAG + " " + msg.toString();
 		}
 	}
 	
-	public void info(Object msg)  {
+	public void info(String TAG, Object msg)  {
 		switch(log_configs.get("log_level").toString())
 		{
 		case "info":
-			Log("[INFO]" + msg, "info");
+			Log("[INFO]" + TAG + " " + msg, "info");
 			break;
 		}
 	}
 	
-	public void warn(Object msg)  {
+	public void warn(String TAG, Object msg)  {
 		switch(log_configs.get("log_level").toString())
 		{
 		case "info": case "warn":
-			Log("[*WARN*]" + msg, "warn");
+			Log("[*WARN*]" + TAG + " " + msg, "warn");
 			break;
 		}
 	}
 	
-	public void error(Object msg) {
+	public void error(String TAG, Object msg) {
 		switch(log_configs.get("log_level").toString())
 		{
 		case "info": case "warn": case "error":
-			Log("[**ERROR**]" + msg, "error");
+			Log("[**ERROR**]" + TAG + " " + msg, "error");
 			break;
 		}
 	}
 	
-	public void debug(Object msg) {
+	public void debug(String TAG, Object msg) {
 		switch(log_configs.get("log_level").toString())
 		{
 		case "info": case "warn": case "error":
-			Log("[^_^ DEBUG ^_^]\n" + msg, "debug");
+			Log("[^_^ DEBUG ^_^]\n" + TAG + " " + msg, "debug");
 			break;
 		}
 	}
@@ -206,7 +222,7 @@ public class MkLogger extends AbsXmlData{
 			
 			createFile();
 			
-			info(logMsg);
+			info("", logMsg);
 			logMsg = null;
 		}catch(Exception e)
 		{

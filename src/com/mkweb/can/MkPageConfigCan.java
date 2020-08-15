@@ -53,7 +53,10 @@ public abstract class MkPageConfigCan extends PageXmlData {
     		if(splits[i].contains(".")) {
     			s = splits[i].split("\\.")[1];
     		}else {
-    			s = splits[i];
+    			if(splits[i].contains("("))
+    				s = splits[i].split("\\(")[1];
+    			else
+    				s = splits[i];
     		}
     		
     		if(!s.contains("=")) {

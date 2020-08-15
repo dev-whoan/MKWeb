@@ -27,7 +27,7 @@ public class CheckPageInfo {
 		SqlXmlData resultXmlData = MkSQLXmlConfigs.Me().getControlService(serviceName);
 
 		if(resultXmlData == null) {
-			mklogger.error(TAG + "There is no sql service named : " + serviceName);
+			mklogger.error(TAG, "There is no sql service named : " + serviceName);
 			return null;
 		}
 
@@ -36,13 +36,16 @@ public class CheckPageInfo {
 
 	private String isPageParamValid(ArrayList<String> pageStaticParams, String reqParams) {
 		if(pageStaticParams == null || pageStaticParams.size() == 0) {
+			mklogger.debug(TAG, " null here (1)");
 			return null;
 		}
 		for(int i = 0; i < pageStaticParams.size(); i++) {
 			if(reqParams.contentEquals(pageStaticParams.get(i))) {
+				mklogger.debug(TAG, " ippv return here : " + reqParams);
 				return reqParams;
 			}
 		}
+		mklogger.debug(TAG, " null here (2)");
 		return null;
 	}
 
@@ -92,26 +95,44 @@ public class CheckPageInfo {
 		return null;
 	}
 
-	public ArrayList<String> getRequestParameterValues(HttpServletRequest request, String requestParams, ArrayList<String> pageStaticParams, String pageStaticParamsName){
+	private boolean isPageStaticValue(ArrayList<String> pageStaticValues, String value) {
+		for(String staticValue : pageStaticValues) 
+			if(value.contentEquals(staticValue))
+				return true;
+		
+		return false;
+	}
+	
+	public ArrayList<String> getRequestParameterValues(HttpServletRequest request, String parameter, ArrayList<String> pageStaticValues, String pageStaticParamsName){
 		ArrayList<String> requestValues = new ArrayList<String>();
 		Enumeration params = request.getParameterNames();
 
 		while(params.hasMoreElements()) {
 			String name = params.nextElement().toString().trim();
 			String[] nname = name.split("\\.");
+			
 			if(name.contains(".")) {
 				if(pageStaticParamsName != null) {
-					if(!nname[0].contentEquals(pageStaticParamsName) && nname[0].contentEquals(requestParams))
+					if(!nname[0].contentEquals(pageStaticParamsName) && nname[0].contentEquals(parameter))
+					{
 						requestValues.add(nname[1]);
+						mklogger.debug(TAG,  " added(1) : " + nname[1]);
+					}
+						
 				}else {
-					if(nname[0].contentEquals(requestParams))
+					if(nname[0].contentEquals(parameter)) {
 						requestValues.add(nname[1]);
+						mklogger.debug(TAG,  " added(2) : " + nname[1]);
+					}
 				}
 			}else {
-				if(isPageParamValid(pageStaticParams, name) != null) {
-					requestValues.add(getPageStaticParameter(pageStaticParams, name));
+				// .이 포함되어 있지 않으면 Page Static Parameter에 포함되는지 확인한다.
+				mklogger.debug(TAG, pageStaticValues);
+				if(isPageStaticValue(pageStaticValues, name)) {
+					requestValues.add(name);
+					mklogger.debug(TAG, " added(3) : " + name);
 				}else {
-					mklogger.error(TAG + " (getRequestParameterValues) Invalid request parameter : " + name );
+					mklogger.error(TAG, " Request value is not authorized! ("+name+")");
 					return null;
 				}
 			}
@@ -186,27 +207,36 @@ public class CheckPageInfo {
 		return befQuery;
 	}
 
-	public boolean comparePageValueWithRequest(LinkedHashMap<String, Boolean> pageValue, ArrayList<String> reqValue, ArrayList<String> staticParams, boolean isApi) {
+	public boolean comparePageValueWithRequest(LinkedHashMap<String, Boolean> pageValue, ArrayList<String> reqValue, ArrayList<String> staticValues, boolean isApi) {
 		HashMap<String, Boolean> passValues = new HashMap<>();
 		LinkedHashMap<String, Boolean> pv = new LinkedHashMap<>(pageValue);
 		LinkedHashMap<String, Boolean> rv = new LinkedHashMap<>();
 		
-		if(staticParams != null) {
-			for(String sp : staticParams) {
+		if(staticValues != null) {
+			for(String sp : staticValues) {
 				passValues.put(sp, true);
+				mklogger.debug(TAG, "comparePageValueWithReques[staticValue] : " + sp);
 			}
 		}
 		
 		boolean passExists = passValues.size() != 0 ? true : false;
+		
+		mklogger.debug(TAG, "passExists :" + passExists + " || reqValue size : " + reqValue.size());
 
 		for(int i = 0; i < reqValue.size(); i++) {
+			/*
 			if(passExists) {
 				if(passValues.get(reqValue.get(i)) == null || !passValues.get(reqValue.get(i))) {
 					rv.put(reqValue.get(i).trim(), true);
+					mklogger.debug(TAG, "rv.put (1) : " + reqValue.get(i).trim());
 				}
 			}else {
 				rv.put(reqValue.get(i).trim(), true);
+				mklogger.debug(TAG, "rv.put (2) : " + reqValue.get(i).trim());
 			}
+			*/
+			rv.put(reqValue.get(i).trim(), true);
+			mklogger.debug(TAG, "rv.put (3) : " + reqValue.get(i).trim());
 		}
 
 		Set<String> entrySet = pv.keySet();
@@ -215,6 +245,7 @@ public class CheckPageInfo {
 		boolean apiResult = false;
 		while(iter.hasNext()) {
 			String key = (String) iter.next();
+			mklogger.debug(TAG, "pv key : " + key + " || rv.get(key): " + rv.get(key));
 			result = rv.get(key) != null ? rv.get(key) : false;
 			
 			if(result)

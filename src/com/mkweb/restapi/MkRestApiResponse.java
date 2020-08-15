@@ -17,7 +17,7 @@ public class MkRestApiResponse {
 	private MkLogger mklogger = MkLogger.Me();
 	
 	MkRestApiResponse(JSONObject jsonObject, int code, int count, String hashData){
-		mklogger.debug(TAG + " Called");
+		mklogger.debug(TAG, " Called");
 		responseResult = jsonObject;
 		setLife();
 		responseCount = count;
@@ -56,7 +56,7 @@ public class MkRestApiResponse {
 
 	private void setLife() {
 		this.responseLife = System.currentTimeMillis() + Integer.parseInt(MkConfigReader.Me().get("mkweb.restapi.lifecycle")) * 60 * 1000;
-		mklogger.debug(TAG + " lifecycle : " + responseLife);
+		mklogger.debug(TAG, " lifecycle : " + responseLife);
 	}
 	
 	public void setCount(int count) {
