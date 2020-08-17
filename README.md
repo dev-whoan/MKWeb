@@ -5,7 +5,7 @@
 Minwhoan - Kihyeon's JSP-Servlet Web Server Framework Repository
 
 # MkWeb wiki
-https://mkweb.dev-whoan.xyz/index.html
+https://mkweb.dev-whoan.xyz
 
 # What is MKWeb?
 
