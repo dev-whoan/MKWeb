@@ -7,6 +7,9 @@ Minwhoan - Kihyeon's JSP-Servlet Web Server Framework Repository
 # MkWeb wiki
 https://mkweb.dev-whoan.xyz
 
+# Download Without Source
+https://mkweb.dev-whoan.xyz/deploy.zip
+
 # What is MKWeb?
 
 MkWeb is well created 'Web-Server' framework.
