@@ -8,7 +8,7 @@ Minwhoan - Kihyeon's JSP-Servlet Web Server Framework Repository
 https://mkweb.dev-whoan.xyz
 
 # Download Without Source
-https://mkweb.dev-whoan.xyz/deploy.zip
+<a href="https://mkweb.dev-whoan.xyz/deploy.zip" target="_blank">Download</a>
 
 # What is MKWeb?
 
