@@ -72,5 +72,3 @@ If the request is not defined, then response will call error-page.
 - Minwhoan, Kihyeon. We just wanted to be well known programmers.
 
 2. Please scout us.
-
-# Thanks to JCY(Republic of Korea), Working at Sky Love.
