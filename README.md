@@ -39,6 +39,8 @@ A bridge of Model <---> Views
 
 * Service
 
+The actual functions(workers) which included in Controller
+
 # XML Configs
 - Definition of Services or Controllers.
 The biggest profit when you use MKWeb.
