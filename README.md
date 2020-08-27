@@ -4,6 +4,14 @@
 # MKweb
 Minwhoan - Kihyeon's JSP-Servlet Web Server Framework Repository
 
+# MkWeb wiki
+https://github.com/dev-whoan/MKWeb/wiki
+OR
+https://mkweb.dev-whoan.xyz
+
+# Download Without Source
+<a href="https://mkweb.dev-whoan.xyz/deploy.zip" target="_blank">Download</a>
+
 # What is MKWeb?
 
 MkWeb is well created 'Web-Server' framework.
@@ -20,8 +28,9 @@ So MKWeb borned.
 
 We are designing our MKWeb with MVC pattern( however we are students and not pertty good at desining it, but we are working hard on how can we follow the pattern. ), and what MKWeb should offer to let developers focusing into there 'Front-End'.
 
-<img src="https://user-images.githubusercontent.com/65178775/81583650-9b94b300-93ec-11ea-8683-c4ffc67215f9.png" width="66%" style="display:block; margin: 0 auto;"/>
-
+<p align="center">
+<img src="https://user-images.githubusercontent.com/65178775/81583650-9b94b300-93ec-11ea-8683-c4ffc67215f9.png" width="66%"/>
+</p>
 * Model
 
 A server-side resources such as; DbAccessor, FileTransfer, Logger, ...
@@ -31,6 +40,8 @@ A server-side resources such as; DbAccessor, FileTransfer, Logger, ...
 A bridge of Model <---> Views
 
 * Service
+
+The actual functions(workers) which included in Controller
 
 # XML Configs
 - Definition of Services or Controllers.
@@ -61,5 +72,3 @@ If the request is not defined, then response will call error-page.
 - Minwhoan, Kihyeon. We just wanted to be well known programmers.
 
 2. Please scout us.
-
-# Thanks to JCY(Republic of Korea), Working at Sky Love.
