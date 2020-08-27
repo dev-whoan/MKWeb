@@ -114,7 +114,7 @@ public class MkLogger extends AbsXmlData{
 	public void info(String TAG, Object msg)  {
 		switch(log_configs.get("log_level").toString())
 		{
-		case "info":
+		case "info": case "debug":
 			Log("[INFO]" + TAG + " " + msg, "info");
 			break;
 		}
@@ -123,7 +123,7 @@ public class MkLogger extends AbsXmlData{
 	public void warn(String TAG, Object msg)  {
 		switch(log_configs.get("log_level").toString())
 		{
-		case "info": case "warn":
+		case "info": case "warn": case "debug":
 			Log("[*WARN*]" + TAG + " " + msg, "warn");
 			break;
 		}
@@ -132,7 +132,7 @@ public class MkLogger extends AbsXmlData{
 	public void error(String TAG, Object msg) {
 		switch(log_configs.get("log_level").toString())
 		{
-		case "info": case "warn": case "error":
+		case "info": case "warn": case "error": case "debug":
 			Log("[**ERROR**]" + TAG + " " + msg, "error");
 			break;
 		}
@@ -141,7 +141,7 @@ public class MkLogger extends AbsXmlData{
 	public void debug(String TAG, Object msg) {
 		switch(log_configs.get("log_level").toString())
 		{
-		case "info": case "warn": case "error":
+		case "debug":
 			Log("[^_^ DEBUG ^_^]\n" + TAG + " " + msg, "debug");
 			break;
 		}

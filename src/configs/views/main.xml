@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <views>
-	<Control name="" debug="error" dir="/views/root" dir_key="/" page="main.jsp" >
+	<Control name="main" debug="error" dir="/views/root" dir_key="/old" page="main.jsp" >
 		<!-- 
 		<PageParams name="PAGE_STATIC">
 			@set(wrap_post_id = '%')

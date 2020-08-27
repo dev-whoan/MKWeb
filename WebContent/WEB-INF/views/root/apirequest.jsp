@@ -31,8 +31,8 @@ $(document).ready(function(){
 
 	$("#testapi").click(function(){
 	//	var jsonInfo = '{"search_key":"apple", "data" : "민환"}';
-		var jsonInfo = '{"name":"김민환"}';
-		var reqInfo = "search_key=apple&name=김민환&user_SEQ=1";
+		var jsonInfo = '{"search_key":"apple", "name":"dev.whoan"}';
+		var reqInfo = "search_key=apple&name=dev.whoan";
 		
 		var testApi = $.ajax({
 			type : "POST", //전송방식을 지정한다 (POST,GET)
@@ -40,7 +40,7 @@ $(document).ready(function(){
 	        dataType : "json",//호출한 페이지의 형식이다. xml,json,html,text등의 여러 방식을 사용할 수 있다.
 	        data : {
 	        	"apiData" : jsonInfo
-	    //    	"apiData" : reqInfo
+	     //   	"apiData" : reqInfo
 	        },
 	        contentType : "application/json; charset=utf-8"
 		})

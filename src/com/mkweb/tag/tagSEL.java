@@ -101,10 +101,6 @@ public class tagSEL extends SimpleTagSupport {
 				break;
 			}
 		}
-		mklogger.debug(TAG, " Control : " + pageInfo.get(0).getControlName());
-		mklogger.debug(TAG, " serviceIndex: " + serviceIndex + " || name : " + this.name);
-		mklogger.debug(TAG, " pageParameter.get(serviceIndex) : " + pageParameter.get(serviceIndex));
-		
 		if(serviceIndex == -1) {
 			mklogger.error(TAG, " Tag 'name(" + this.name + ")' is not matched with Page-config-service 'name'.");
 		//	response.sendError(500);
@@ -170,8 +166,6 @@ public class tagSEL extends SimpleTagSupport {
 		
 		boolean rvPassed = true;
 		
-		mklogger.debug(TAG, " psp: " + pageStaticParams);
-		
 		if(requestValues != null && pageStaticParams != null) {
 			if(requestValues.size() > pageStaticParams.size()) {
 				rvPassed = false;
@@ -229,14 +223,9 @@ public class tagSEL extends SimpleTagSupport {
 				String[] reqs = new String[requestValues.size()];
 				String tempValue = "";
 				for(int i = 0; i < reqs.length; i++) {
-					mklogger.debug(TAG, "params: " + requestParams + " || Values : " + requestValues.get(i));
 					tempValue = request.getParameter(requestParams + "." + requestValues.get(i));
 					if(tempValue == null)
 						tempValue = request.getParameter(requestValues.get(i));
-					
-					mklogger.debug(TAG, " getParameter : " + request.getParameter(requestValues.get(i)) + " || requestValue : " + requestValues.get(i));
-					
-					mklogger.debug(TAG, "tempValue: " + tempValue);
 					
 					if(this.like.equals("no"))
 					{

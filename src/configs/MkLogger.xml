@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <MkLogger xmlid="mklog">
-	<log log_level="info" />
+	<log log_level="debug" />
 	<log print_date="yes" />
 	<log print_time="yes" />
 	<log use_catalina="no" />

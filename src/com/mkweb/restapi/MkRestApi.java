@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 
 import javax.servlet.ServletException;
@@ -166,10 +167,98 @@ public class MkRestApi extends HttpServlet {
 			response.sendError(404);
 			return;
 		}
+		
 		final String MKWEB_URL_PATTERN = MkConfigReader.Me().get("mkweb.restapi.urlpattern");
-		String reqApiData =  request.getParameter(MkConfigReader.Me().get("mkweb.restapi.request.id"));
-		String searchKey = null;
+		final String MKWEB_API_ID = MkConfigReader.Me().get("mkweb.restapi.request.id");
+		final String MKWEB_SEARCH_KEY = MkConfigReader.Me().get("mkweb.restapi.searchkey.exp");
+		String reqApiData = null;
+		
+		String requestURI = request.getRequestURI();
+		String[] reqPage = null;
+		String mkPage = null;
+		
 		boolean requireKey = MkConfigReader.Me().get("mkweb.restapi.usekey").contentEquals("yes") ? true : false;
+		String searchKey = null;
+		
+		reqPage = requestURI.split("/" + MKWEB_URL_PATTERN + "/");
+		
+		if(reqPage.length < 2) {
+			//예외
+			mklogger.debug(TAG, "401 here 3");
+			response.sendError(401);
+			return;
+		}
+		mkPage = reqPage[1];
+		
+		if(mkPage.contains("/")) {
+			mkPage = mkPage.split("/")[0];
+		}
+		
+		mklogger.debug(TAG, "mkPage : " + mkPage);
+		
+		if(request.getAttribute("api-method").toString().contentEquals("get")) {
+			//
+			reqApiData = "{";
+			//3개면 쿼리스트링 3개 초과면 `/~/~/~`
+			//3개 미만이면 에러
+
+			int size = requestURI.split("/").length;
+			mklogger.debug(TAG, "URI : " + requestURI + " || size : " + size);
+			
+			if(size == 3) {
+				//쿼리스트링
+				Enumeration params = request.getParameterNames();
+				String requestParams = null;
+				int i = 0;
+				while(params.hasMoreElements()) {
+					if(i++ != 0)
+						reqApiData += ", ";
+					
+					String key = params.nextElement().toString().trim();
+					String value = request.getParameter(key);
+					
+					reqApiData += "\"" + key + "\":" + "\"" + value + "\"";
+				}
+			}else if(size > 3) {
+				// `/~/~/~`
+				String[] urlPattern = requestURI.split(MKWEB_URL_PATTERN);
+				searchKey = request.getParameter(MKWEB_SEARCH_KEY);
+				if(urlPattern != null && urlPattern.length == 2) {
+					String reqApiURI = urlPattern[1];
+					String[] reqApiArray = reqApiURI.split(mkPage);
+					if(reqApiArray != null && reqApiArray.length == 2) {
+						String[] reqApiRequestData = reqApiArray[1].split("/");;
+						
+						for(int i = 1; i < reqApiRequestData.length; i++) {
+							mklogger.debug(TAG, "splited api datas : " + reqApiRequestData[i]);
+							
+							if(i % 2 == 1) {
+								reqApiData += "\"" + reqApiRequestData[i] + "\"" + ":";
+							}else {
+								reqApiData += "\"" + reqApiRequestData[i] + "\"";
+								
+								if(i < reqApiRequestData.length -1) {
+									reqApiData += ", ";
+								}
+							}
+						}
+					}else{
+						mklogger.debug(TAG, "요청 URI에 mkPage가 없거나 reqApiArray 사이즈가 2가 아님");
+					}
+				}else {
+					mklogger.debug(TAG, "urlPattern 배열 확인 필요");
+				}
+				
+			}else {
+				// 예외
+			}
+			reqApiData += "}";
+		}else {
+			reqApiData = request.getParameter(MKWEB_API_ID);
+		}
+		
+		mklogger.debug(reqApiData);
+
 		String reqToJson = null;
 		boolean isDataRequestedAsJsonObject = true;
 		MkJsonData mkJsonObject = new MkJsonData();
@@ -196,7 +285,7 @@ public class MkRestApi extends HttpServlet {
 				jsonObject = mkJsonObject.getJsonObject();
 			}
 		}
-
+		
 		if(jsonObject == null) {
 			StringBuilder stringBuilder = new StringBuilder();
 
@@ -223,13 +312,6 @@ public class MkRestApi extends HttpServlet {
 			boolean stringPass = false;
 			if(stringBuilder.length() == 0) {
 				stringPass = true;
-				/*
-				//예외
-				RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/600.jsp");
-				dispatcher.forward(request, response);
-				response.setStatus(401);
-				return;
-				*/
 			}
 			if(!stringPass) {
 				String rbPostData = stringBuilder.toString();
@@ -237,7 +319,7 @@ public class MkRestApi extends HttpServlet {
 				String rbpds[] = rbPostData.split("&");
 
 				for(int i = 0; i < rbpds.length; i++) {
-					if(rbpds[i].contains(MkConfigReader.Me().get("mkweb.restapi.request.id"))) {
+					if(rbpds[i].contains(MKWEB_API_ID)) {
 						reqApiData = URLDecoder.decode(rbpds[i].split("=")[1], "UTF-8");
 						break;
 					}
@@ -264,42 +346,31 @@ public class MkRestApi extends HttpServlet {
 			}
 		}
 		
-		if(requireKey) {
+		if(requireKey && searchKey == null) {
 			if(jsonObject != null) {
-				searchKey = jsonObject.get(MkConfigReader.Me().get("mkweb.restapi.searchkey.exp")).toString();
+				searchKey = jsonObject.get(MKWEB_SEARCH_KEY).toString();
 			}else {
 				//예외
+				mklogger.debug(TAG, "401 here 1");
 				response.sendError(401);
 				return;
 			}
 			
 			if(searchKey == null) {
 				//예외
+				mklogger.debug(TAG, "401 here 2");
 				response.sendError(401);
 				return;
 			}
 		}
 		
-		String requestURI = request.getRequestURI();
 		Object mAttributes = request.getAttribute("api-method");
 		String method = null;
 		
 		//페이지 유효성 검사
 		//String requestURI = request.getRequestURI();
-		String[] reqPage = null;
-		String mkPage = null;
-		reqPage = requestURI.split("/" + MKWEB_URL_PATTERN + "/");
-		
-		if(reqPage.length < 2) {
-			//예외
-			response.sendError(401);
-			return;
-		}
-		mkPage = reqPage[1];
-		
-		if(mkPage.contains("/")) {
-			mkPage = mkPage.split("/")[0];
-		}
+
+		mklogger.debug(TAG, "mkPage : " + mkPage);
 		
 		if(mAttributes != null)
 			method = mAttributes.toString().toLowerCase();
@@ -307,46 +378,6 @@ public class MkRestApi extends HttpServlet {
 		if(method == null) {
 			//예외
 			return;
-		}else {
-			if(method.contentEquals("get")) {
-				requestURI = URLDecoder.decode(requestURI, "UTF-8");
-				String[] splits = requestURI.split(mkPage);
-				
-				if(splits.length != 2) {
-					//예외
-					response.sendError(401);
-					return;
-				}
-				reqApiData = splits[1];
-				String[] reqApiDatas = reqApiData.split("/");
-				int size = reqApiDatas.length;
-				mklogger.debug(TAG, " size : " + size);
-				reqApiData = "{";
-				for(int i = 1; i < size; i++) {
-					if(i % 2 == 1)	//키
-						reqApiData += "\"" + reqApiDatas[i] + "\":";
-					else			//밸류
-						reqApiData += "\"" + reqApiDatas[i] + "\"";
-					
-					//마지막이고 홀수면 (URL상 짝수)
-					if( i == size - 1 && size % 2 == 0) {
-						reqApiData += "\"" + "MK_GET_ALL" + "\"";
-					}
-					
-					if( i < size - 1 && i % 2 == 0 )
-						reqApiData += ",";
-				}
-				reqApiData += "}";
-				
-				mkJsonObject.setData(reqApiData);
-
-				if(!mkJsonObject.setJsonObject()) {
-					//예외
-					mklogger.error(TAG, " Failed to create JsonObject.");
-					return;
-				}
-				jsonObject = mkJsonObject.getJsonObject();
-			}
 		}
 		String[] noUrlPattern = new String[reqPage.length-1];
 		for(int i = 1; i < reqPage.length; i++) {
@@ -354,16 +385,19 @@ public class MkRestApi extends HttpServlet {
 		}
 		if(!cpi.isValidApiPageConnection(mkPage, noUrlPattern)) {
 			//예외
+			mklogger.debug(TAG, "401 here 4");
 			response.sendError(401);
 			return;
 		}
 		if(requireKey && !isKeyValid(searchKey, mkPage)) {
 			//예외
+			mklogger.debug(TAG, "401 here 5");
 			response.sendError(401);
 			return;
 		}
 		if(!checkMethod(request, method, mkPage)) {
 			//예외
+			
 			response.sendError(400);
 			return;
 		}

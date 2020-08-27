@@ -67,31 +67,49 @@ public class CheckPageInfo {
 		String requestParams = null;
 		while(params.hasMoreElements()) {
 			String name = params.nextElement().toString().trim();
-
+			mklogger.debug(TAG, " name : " + name + " || staticParams : " + pageStaticParams);
 			if(name.contains(".")) {
 				String nname = name.split("\\.")[0];
-				if(requestParams != null) 
-					if( !requestParams.contentEquals("") && !requestParams.contentEquals(nname)) 
-						if(!requestParams.contentEquals(pageStaticParamsName)) 
+				if(requestParams != null) {
+					if( !requestParams.contentEquals("") && !requestParams.contentEquals(nname)) {
+						if(!requestParams.contentEquals(pageStaticParamsName)) {
+							mklogger.debug(TAG, " param null here (1)");
 							return null;
+						}
+					}
+				}		
 				
-				if(pageStaticParamsName != null) 
-					if(!nname.contentEquals(pageStaticParamsName)) 
+				if(pageStaticParamsName != null) {
+					if(!nname.contentEquals(pageStaticParamsName)) {
 						requestParams = nname;
-				else
+						mklogger.debug(TAG, " success to set parameter (1)");
+					}
+				}	
+				else {
 					requestParams = nname;
-			} else 
+					mklogger.debug(TAG, " success to set parameter (2)");
+				}
+			} else {
 				requestParams = isPageParamValid(pageStaticParams, name);
+				mklogger.debug(TAG, " success to set parameter (3)");
+			}
+				
 				
 			if(requestParams != null) {
-				if(pageStaticParams != null) 
-					if(!requestParams.contentEquals(pageStaticParamsName)) 
+				mklogger.debug(TAG, " try to return (1)");
+				if(pageStaticParams != null) {
+					if(!requestParams.contentEquals(pageStaticParamsName)) {
+						mklogger.debug(TAG, " success to return (1)");
 						return requestParams;
-				else 
+					}
+				}	
+				else {
+					mklogger.debug(TAG, " success to return (2)");
 					return requestParams;
-				
+				}
 			}
 		}
+		mklogger.debug(TAG, " param null here (2)");
 		return null;
 	}
 
@@ -209,20 +227,22 @@ public class CheckPageInfo {
 
 	public boolean comparePageValueWithRequest(LinkedHashMap<String, Boolean> pageValue, ArrayList<String> reqValue, ArrayList<String> staticValues, boolean isApi) {
 		HashMap<String, Boolean> passValues = new HashMap<>();
-		LinkedHashMap<String, Boolean> pv = new LinkedHashMap<>(pageValue);
+		LinkedHashMap<String, Boolean> pv = null;
+		if(pageValue != null)
+			pv = new LinkedHashMap<>(pageValue);
+		else
+			pv = new LinkedHashMap<>();
+		
 		LinkedHashMap<String, Boolean> rv = new LinkedHashMap<>();
 		
 		if(staticValues != null) {
 			for(String sp : staticValues) {
 				passValues.put(sp, true);
-				mklogger.debug(TAG, "comparePageValueWithReques[staticValue] : " + sp);
 			}
 		}
 		
 		boolean passExists = passValues.size() != 0 ? true : false;
 		
-		mklogger.debug(TAG, "passExists :" + passExists + " || reqValue size : " + reqValue.size());
-
 		for(int i = 0; i < reqValue.size(); i++) {
 			/*
 			if(passExists) {
@@ -236,21 +256,29 @@ public class CheckPageInfo {
 			}
 			*/
 			rv.put(reqValue.get(i).trim(), true);
-			mklogger.debug(TAG, "rv.put (3) : " + reqValue.get(i).trim());
 		}
-
-		Set<String> entrySet = pv.keySet();
-		Iterator iter = entrySet.iterator();
+		
 		boolean result = false;
 		boolean apiResult = false;
-		while(iter.hasNext()) {
-			String key = (String) iter.next();
-			mklogger.debug(TAG, "pv key : " + key + " || rv.get(key): " + rv.get(key));
-			result = rv.get(key) != null ? rv.get(key) : false;
+		
+		if(pv.size() > 0 && pv != null) {
+			Set<String> entrySet = pv.keySet();
+			Iterator iter = entrySet.iterator();
 			
-			if(result)
-				apiResult = true;
+			
+			while(iter.hasNext()) {
+				String key = (String) iter.next();
+				mklogger.debug(TAG, "pv key : " + key + " || rv.get(key): " + rv.get(key));
+				result = rv.get(key) != null ? rv.get(key) : false;
+				
+				if(result)
+					apiResult = true;
+			}
+		}else {
+			return true;
 		}
+		
+		
 		
 		return (!isApi ? result : apiResult);
 	}

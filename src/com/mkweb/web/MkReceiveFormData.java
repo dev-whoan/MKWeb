@@ -132,19 +132,14 @@ public class MkReceiveFormData extends HttpServlet {
 		if(requestValues != null) {
 			String[] reqs = new String[requestValues.size()];
 			String tempValue = "";
+			
+			DA.setPreparedStatement(query);
+			
 			for(int i = 0; i < reqs.length; i++) {
 				tempValue = request.getParameter(requestParams + "." + requestValues.get(i));
 				reqs[i] = tempValue;
 			}
 			
-			DA.setPreparedStatement(query);
-			
-			mklogger.debug(TAG, query);
-			
-			for(int i = 0; i < reqs.length; i++) {
-				tempValue = request.getParameter(requestParams + "." + requestValues.get(i));
-				reqs[i] = tempValue;
-			} 
 			tempValue = null;
 			DA.setRequestValue(reqs);
 			reqs = null;

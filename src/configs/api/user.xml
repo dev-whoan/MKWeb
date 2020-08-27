@@ -6,7 +6,16 @@
 		<Service type="sql">
 			<Sql id="api_selectUser" method="get" />
 			<Parameter name="api_sel_user" />
+			
 			<Value>
+			<!-- 
+			// /mk_api_key/users?name=dev.whoan
+			// /mk_api_key/users/dev.whoan
+			// /mk_api_key/users get
+			// /mk_api_key/users/city/Bucheon/name/dev.whoan
+			// /mk_api_key/users post 추가
+			// /~/users/
+			-->
 				@set(api_sel_user.name = '%')
 				@set(api_sel_user.address = '%')
 			</Value>
