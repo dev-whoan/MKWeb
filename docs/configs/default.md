@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: custom
 ---
 
 # Header 1

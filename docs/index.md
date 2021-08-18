@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: custom
 ---
 
 # Welcome to MkWeb Documents!
