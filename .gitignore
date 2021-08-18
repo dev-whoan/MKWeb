@@ -1,0 +1,19 @@
+# IDE
+/.project
+/.classpath
+/build
+/config
+/.idea
+/.settings
+MKWeb.iml
+/classes
+/WebContent/META-INF/
+
+common.properties
+UML_MKWeb.ucls
+
+#ant
+build*.xml
+
+#jsp
+*.jsp
