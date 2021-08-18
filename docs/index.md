@@ -16,4 +16,4 @@ Links
 - [FTP][5]
 - [MkAuthToken][6]
 
-[1]: 
+[1]: (./configs/default.html)
