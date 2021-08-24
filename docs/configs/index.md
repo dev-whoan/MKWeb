@@ -2,15 +2,14 @@
 layout: custom
 ---
 
-# How to set MkWeb.conf
+# MkWeb.conf
 
 ## Location: /WEB-INF/classes/configs
 
-```ApacheConf
+```yaml
 ##############################################################
-#					 Version 0.1.1
-#
-#                    Default Setting
+#   
+#   Version 0.1.1
 #
 ##############################################################
 
@@ -47,7 +46,7 @@ mkweb.auth.secretkey=mksecretkey
 mkweb.auth.lifetime=600
 
 ##############################################################
-#                     Setting DB            
+#                     Setting FTP            
 # mkweb.db.hostname is ip address of data base.
 # mkweb.db.port     is port number of data base.
 # mkweb.db.id       is id of the data base.
@@ -72,7 +71,9 @@ mkweb.db.id=id
 mkweb.db.pw=pw
 
 ##############################################################
-#                      		REST Api
+#                     
+#                     REST Api
+#                     
 ##############################################################
 # default: no
 mkweb.restapi.use=yes
@@ -156,4 +157,28 @@ mkweb.restapi.key.column.remark=user_id
 
 -----
 
+# MkLogger.json
 
+## Location: /WEB-INF/classes/configs
+
+```javascript
+{
+	"Controller":{
+		"name":"[MkLogger]",
+		"level":"debug",
+		"print_date":"yes",
+		"print_time":"yes",
+		"use_catalina":"no",
+		"log_location":"/dogood2021/webapps/log/MkLogger.log"
+	}
+}
+```
+
+| name           | description                     | default                 |
+|:---------------|:--------------------------------|:------------------------| 
+| name           | name of Controller              | MkLogger                |
+| level          | level to log                    | debug, info, warn, error|
+| print_date     | log with date or not            | yes, no                 |
+| print_time     | log time when print dating      | yes, no                 |
+| use_catalina   | print MkLogger in catalina      | yes, no                 |
+| log_location   | location to save file           | must have permissions   |
