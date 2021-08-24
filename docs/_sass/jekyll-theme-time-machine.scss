@@ -1,6 +1,34 @@
 @import "normalize";
 
+/* mobile */
+@media (max-width: 480px){
+  .wrapper{
+    max-width: 480px !important;
+  }
+  
+  .markdown-body table {
+	width: 475px !important;
+  }
+}
+/* mobile */
+
+/* tablet */
+@media (min-width: 481px and max-width: 959px){
+  .wrapper{
+    max-width: 675px !important;
+  }
+  
+  .markdown-body table {
+    width: 658px !important;
+  }
+}
+
+
+/* tablet */
+
 /* Style */
+
+
 
 body {
   font-size: 15px;
