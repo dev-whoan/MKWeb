@@ -110,6 +110,57 @@ Or Error will be returned in response.
 
 ## Test HTML for FTP
 
+### View Controller Example
+```json
+{
+  "Controller": {
+    "name":"ftp-uploader",
+    "last_uri":"Feed",
+    "auth":"no",
+    "device":{
+      "desktop":{
+        "default":{
+          "path":"",
+          "file":"",
+          "uri":""
+        }
+      }
+    },
+    "debug":"error",
+    "api":"yes",
+    "services":[
+      {
+        "page_static":"false",
+        "type":{
+          "kind":"ftp",
+          "id":"posts"
+        },
+        "method":"post",
+        "obj":"list",
+        "parameter_name":"post_file",
+        "value":{
+          "1":"upload"
+        }
+      },
+      {
+        "page_static":"false",
+        "type":{
+          "kind":"ftp",
+          "id":"comments"
+        },
+        "method":"post",
+        "obj":"list",
+        "parameter_name":"comment_file",
+        "value":{
+          "1":"upload"
+        }
+      }
+    ]
+  }
+}
+```
+
+### HTML Example
 ```html
 <!DOCTYPE html>
 <html>
