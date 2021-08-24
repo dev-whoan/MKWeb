@@ -11,4 +11,4 @@ Links
 
 - [Default Setting][1]
 
-[1]: [/configs/default.html]
+[1]: [/MKWeb/configs/default.html]
