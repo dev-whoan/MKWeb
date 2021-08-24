@@ -150,6 +150,7 @@ function removeTokenCookie(cookieInfo) {
 }
 ```
 
+-----
 ## How to Generate Token
 
 ### Request of Generating Token
@@ -180,7 +181,8 @@ fetch("/auth/login", requestOptions)
   .catch(error => console.log('error', error));
 ```
 
-### Result of Generating Token
+-----
+## Result of Generating Token
 
 ```json
 {
@@ -189,8 +191,8 @@ fetch("/auth/login", requestOptions)
 }
 ```
 
-
-### Using
+-----
+## Using
 
 ```javascript
 /*
