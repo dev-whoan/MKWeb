@@ -6,9 +6,4 @@ layout: custom
 
 Welcome to MkWeb Documents!
 
-Links
 -----
-
-- [Default Setting][1]
-
-[1]: [/MKWeb/configs/default.html]
