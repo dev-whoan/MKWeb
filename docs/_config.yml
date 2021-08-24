@@ -1,7 +1,6 @@
 theme: jekyll-theme-time-machine
 title: MkWeb
 description: Servlet Based Web Server Framework
-baseurl: https://mkweb.dev-whoan.xyz
 show_list: true
 link1: true
 link1_uri: /configs
