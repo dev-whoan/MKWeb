@@ -157,6 +157,8 @@ public class MkWebContextListener implements ServletContextListener {
 			registration.addMapping(MkConfigReader.Me().get("mkweb.web.receive.uri"));
 		}
 
-
+		ml.info("=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=");
+		ml.info("=*=*=*=*=*=* Success  to  operate  MkWeb *=*=*=*=*=*=*=");
+		ml.info("=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=");
 	}
 }

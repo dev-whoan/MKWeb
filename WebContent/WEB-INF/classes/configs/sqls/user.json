@@ -1,58 +1,28 @@
-<<<<<<< HEAD
 {
 	"Controller": {
 		"name":"user",
 		"debug":"error",
-		"db":"MkWeb",
+		"db":"database",
 		"api":"no",
 		"services":[
 			{
-				"id":"user_login",
+				"id":"doLogin",
 				"auth":"no",
 				"query":{
 					"crud":"select",
 					"column":{
-						"1":"user_id as id",
-                        "2":"user_nickname as nickname"
+						"1":"userid as id",
+						"2":"userage as age"
 					},
 					"table":{
-                        "from":"user"
-                    },
+						"from":"user"
+					},
 					"data":{
 						"1":""
 					},
-					"where":"user_id = @user_id@ AND user_pw = @user_pw@"
+					"where":"userid = @id@ AND userpw = @password@"
 				}
 			}
 		]
 	}
-=======
-{
-	"Controller": {
-		"name":"user",
-		"debug":"error",
-		"db":"MkWeb",
-		"api":"no",
-		"services":[
-			{
-				"id":"user_login",
-				"auth":"no",
-				"query":{
-					"crud":"select",
-					"column":{
-						"1":"user_id as id",
-                        "2":"user_nickname as nickname"
-					},
-					"table":{
-                        "from":"user"
-                    },
-					"data":{
-						"1":""
-					},
-					"where":"user_id = @user_id@ AND user_pw = @user_pw@"
-				}
-			}
-		]
-	}
->>>>>>> be8dee1c6b62a24d537840f2604e2bd69a56eed1
 }

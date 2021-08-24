@@ -8,7 +8,124 @@ layout: custom
 
 # Install
 
+You can download war file here: [https://github.com/dev-whoan/MKWeb/tree/master/deploy]
 
+Or you can clone from github, and you can use files under WebContent, and sources in src/com/mkweb.
+- You must change WebContent folder name into ROOT
+- The sources you downloaded must be compiled into .class, and put them inside of ROOT/WEB-INF/classes
+	- com/mkweb/...
+
+## With War file
+
+### For Windows
+
+1. Place war file in servlet container such as Tomcat.
+
+2. Unzip war file with starting servlet container as Administrator.
+
+3. Move to /path/to/mkweb/ROOT/WEB-INF/classes/configs
+
+4. Modify MkWeb.conf and require json configs and add Controllers you want to use.
+
+5. Restart the tomcat
+
+### For Linux
+
+1. Place war file specified location.
+```bash
+$ mkdir /mkweb/webapps
+$ mv MkWeb.war /mkweb/webapps
+```
+
+2. Give Read Write Permission on MkWeb's location to servlet container.
+```bash
+$ chown -R SERVLET_CONTAINER /mkweb
+$ chmod -R 755 /mkweb
+```
+
+3. Unzip the war file with starting servlet container.
+```bash
+# With Tomcat9
+$ systemctl start tomcat9
+```
+
+4. Rename just unzipped folder into ROOT, and move to configs folder
+```bash
+$ cd /mkweb/webapps
+$ mv MkWeb ROOT
+$ cd ROOT/WEB-INF/classes/configs
+```
+
+5. Modify MkWeb.conf and require json configs and add Controller you want to use.
+
+6. Restart the tomcat
+```bash
+# @ will be version of tomcat. for me, tomcat@ => tomcat9
+$ systemctl restart tomcat@
+```
+
+- If tomcat doesn't respond to log or any ftp requests, you need to check Servlet Container's permission.
+
+```bash
+# For tomcat
+$ cd /etc/systemd/system/multi-user.target.wants
+# Modify Tomcat service
+$ sudo vi tomcat@.service
+
+#######tomcat9.service######
+...
+#Security
+...
+ReadWritePaths=/etc/tomcat@/Catalina/
+ReadWritePaths=/var/lib/tomcat@/webapps/
+ReadWritePaths=/var/log/tomcat@/
+#Add your mkweb paths
+ReadWritePaths=/mkweb/webapps/
+```
+
+After modify it, you need to change user/group of tomcat's umask.
+
+```bash
+$ vi /usr/share/tomcat@/bin/catalina.sh
+
+### find UMASK, change it into 0022
+...
+if [ -z "$UMASK" ]; then
+    UMASK="0022"
+fi
+...
+```
+
+Save the catalina.sh, and restart the tomcat.
+
+## With Cloning Codes
+
+1. Open the project with Java IDE.
+
+2. Modify require json configs and the source you want to change.
+
+- json configs are located in WebContent/WEB-INF/classes/configs
+
+3. Export Project to WAR file
+- For eclipse
+    - You can export it with Runnable Jar
+	  - To export into Runnable jar, only sources should be exported.
+	  - After exports jar file, located jar into your webapps jar lib, and copy the /WEB-INF/classes/configs into your /WEB-INF folder
+	- Or WAR file
+	  - Follow [With War file] above.
+
+- For IntelliJ, Build artifacts.
+![artifacts](https://github.com/dev-whoan/MKWeb/tree/master/docs)/assets/img/png/intellij.png)
+
+4. Follow [With War file] above.
+
+## When you operate MkWeb...
+
+- with not logging on catalina
+![standalone](https://github.com/dev-whoan/MKWeb/tree/master/docs)/assets/img/png/operated_log.png)
+
+- with catalina
+![catalina](https://github.com/dev-whoan/MKWeb/tree/master/docs)/assets/img/png/operated_cat.png)
 
 -----
 # About
@@ -37,7 +154,7 @@ So MkWeb's idea is started with 'Front developer just need to focus on the Plann
 
 We are designing our MkWeb with MVC pattern.
 
-![Branching](https://user-images.githubusercontent.com/65178775/81583650-9b94b300-93ec-11ea-8683-c4ffc67215f9.png)
+![MVC Pattern](https://user-images.githubusercontent.com/65178775/81583650-9b94b300-93ec-11ea-8683-c4ffc67215f9.png)
 
 ## Model
 
