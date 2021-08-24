@@ -115,17 +115,17 @@ Save the catalina.sh, and restart the tomcat.
 	  - Follow [With War file] above.
 
 - For IntelliJ, Build artifacts.
-![artifacts](https://github.com/dev-whoan/MKWeb/blob/master/docs/assets/img/png/intellij.png?raw=true)
+![artifacts](https://raw.githubusercontent.com/dev-whoan/MKWeb/master/docs/assets/img/png/intellij.png)
 
 4. Follow [With War file] above.
 
 ## When you operate MkWeb...
 
 - with not logging on catalina
-![standalone](https://github.com/dev-whoan/MKWeb/tree/master/docs/assets/img/png/operated_log.png?raw=true)
+![standalone](https://raw.githubusercontent.com/dev-whoan/MKWeb/master/docs/assets/img/png/operated_log.png)
 
 - with catalina
-![catalina](https://github.com/dev-whoan/MKWeb/tree/master/docs/assets/img/png/operated_cat.png?raw=true)
+![catalina](https://raw.githubusercontent.com/dev-whoan/MKWeb/master/docs/assets/img/png/operated_cat.png)
 
 -----
 # About
