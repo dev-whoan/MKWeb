@@ -121,7 +121,7 @@ Save the catalina.sh, and restart the tomcat.
 
 ## When you operate MkWeb...
 
-- with not logging on catalina
+- with standalone logging
 ![standalone](https://raw.githubusercontent.com/dev-whoan/MKWeb/master/docs/assets/img/png/operated_log.png)
 
 - with catalina
