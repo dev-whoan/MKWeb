@@ -56,7 +56,7 @@ Sql includes services for executing sqls that can be separated into each DMLs, a
 This Sql connected to database named "database", and use table named "user".
 
 As you remember, the parameters from View(page), is equally same with the value you have set in View Controller.
-```javascript
+```json
 //Part of View Controller's doLogin Service
 ...
 {
@@ -68,7 +68,9 @@ As you remember, the parameters from View(page), is equally same with the value 
   "method":"post",
   "obj":"list",
   "parameter_name":"user",
-  // below values are used in sql services with wrapped by "@"
+  /*
+  below values are used in sql services with wrapped by "@"
+  */
   "value":{
     "1":"id",
     "2":"password"
@@ -100,7 +102,9 @@ As you remember, the parameters from View(page), is equally same with the value 
           "data":{
             "1":""
           },
-          // the parameter from View is wrapped with "@" and without parameter_name
+          /*
+		  the parameter from View is wrapped with "@" and without parameter_name
+		  */
           "where":"userid = @id@ AND userpw = @password@"
         }
       }
@@ -132,7 +136,6 @@ As you remember, the parameters from View(page), is equally same with the value 
               "type":"INNER JOIN",
               "joinfrom":"article as a",
               "on":"u.id = a.writer AND u.id=@id@"
-            "
           },
           "data":{
             "1":""
