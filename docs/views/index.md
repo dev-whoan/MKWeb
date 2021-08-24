@@ -18,24 +18,24 @@ Also page includes services, for examples, sqls, jwt, ftp, etc, therefore you ne
 
 ## Basic Properties
 
-| name           | description                     | value                                                           |
-|:---------------|:--------------------------------|:----------------------------------------------------------------| 
-| name           | name of Controller              | Unique ID in Views could have same value with last_uri          |
-| last_uri       | last segment of the page        | must not duplicated with other views that have same parent uri  |
-| debug          | level to log                    | debug, info, warn, error                                        |
-| auth           | requiring authority or not      | yes, part for some services, no                                 |
-| api            | is page for api or not          | yes for other library(react, just html, ...), no for jsp        |
+| name           | description                                    | value                                          |
+|:---------------|:-----------------------------------------------|:-----------------------------------------------| 
+| name           | name of Controller                             | Unique ID in Views could have same value with last_uri |
+| last_uri       | last segment of the page                       | must not duplicated with other views that have same parent uri  |
+| debug          | level to log                                   | debug, info, warn, error                                        |
+| auth           | requiring authority or not                     | yes, part for some services, no                                 |
+| api            | is page for api or not                         | yes for other library(react, just html, ...), no for jsp        |
 
 MkWeb also supports separate pages between different platforms.
 
 ## Device Properties
 
-| name           | description                                             | value                                 |
-|:---------------|:--------------------------------------------------------|:--------------------------------------| 
-| desktop        | When client connected via desktop platform              | must includes device service          |
-| android        | When client connected via android platform              | must includes device service          |
-| ios            | When client connected via ios     platform              | must includes device service          |
-|:---------------|:--------------------------------------------------------|:--------------------------------------| 
+| name           | description                                    | value                                          |
+|:---------------|:-----------------------------------------------|:-----------------------------------------------| 
+| desktop        | When client connected via desktop platform     | must includes device service                   |
+| android        | When client connected via android platform     | must includes device service                   |
+| ios            | When client connected via ios     platform     | must includes device service                   |
+|:---------------|:-----------------------------------------------|:-----------------------------------------------| 
 | device services                                                                                                  |
 | default        | index page for default language. you can add more supports pages for another language with changing "default" key into another language like "en".              | must have default key         |
 | path	         | JSP: dri location for jsp file. ANOTHER: empty path |  |
@@ -48,17 +48,17 @@ View Controller have at least one service.
 
 Services are could be SQL, FTP.
 
-| name           | description                                                                                                               | value                           |
-|:---------------|:--------------------------------------------------------------------------------------------------------------------------|:--------------------------------| 
+| name           | description                                    | value                                          |
+|:---------------|:-----------------------------------------------|:-----------------------------------------------| 
 | page_static    | is service executes right after page have loaded. Usually services that executed without user request. Used for JSP       | true, false                     |
-|:---------------|:--------------------------------------------------------------------------------------------------------------------------|:--------------------------------| 
+|:---------------|:-----------------------------------------------|:-----------------------------------------------| 
 | type                                                                                                                                                                         |
 | kind           | type of service. the type is a kind of controller, and the controller must have service that have same id                 | sql, ftp                        |
 | id             | id of service that also must be defined in the target Controller.                                                                | must be defined on target contr |
-|:---------------|:--------------------------------------------------------------------------------------------------------------------------|:--------------------------------| 
-| method         | method to execute the service                                                                                             | GET, POST                       |
-| obj            | service will return the result with the obj data type                                                                     | list                            |
-| parameter_name | superscript of parameter for data communication. each service must have unique superscript. For page_static services, this property must be empty. this service is used with value property.                                                         | Unique parameter name |
+|:---------------|:-----------------------------------------------|:-----------------------------------------------| 
+| method         | method to execute the service                  | GET, POST                                      |
+| obj            | service will return the result with the obj data type | list                                    |
+| parameter_name | superscript of parameter for data communication. each service must have unique superscript. For page_static services, this property must be empty. this service is used with value property. | Unique parameter name |
 | value          | subscript of parameter for data communication. this service is used with parameter_name property. for sql service, this value is used on SQL json file too, will be wrapped with "@". You can check details on SQL page |  |
 
 -----
