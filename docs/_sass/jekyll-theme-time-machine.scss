@@ -169,8 +169,9 @@ p.tagline {
   position: fixed;
   top: 0;
   left: 50%;
-  width: 978px;
-  margin-left: -352px;
+  width: 990px;
+  transform: translateX(-50%);
+/*  margin-left: -352px; */
   background: #222;
   border: 5px solid #444;
   color: #fff;
