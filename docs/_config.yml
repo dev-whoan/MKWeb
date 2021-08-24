@@ -2,7 +2,6 @@ theme: jekyll-theme-time-machine
 title: MkWeb
 description: Servlet Based Web Server Framework
 show_list: true
-site.link_home: /MKWeb
 link1: true
 link1_uri: /configs
 link1_label: Configs
