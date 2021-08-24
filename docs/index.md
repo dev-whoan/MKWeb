@@ -101,40 +101,40 @@ Request header content type must be `application/json`.
 `GET` for getting data, `POST` for generating data, `PUT` for modifying data, `DELETE` for deleting data, and `HEAD`, `OPTIONS`.
 
 GET: You can get specify the target data with Document URI.
-```js
+```bash
 curl --request GET "http://localhost/users/name/Jhon"
 ```
 
 POST: You can generate data with sending Body parameter. 
-```js
-curl --request POST "http://localhost/users" --data '{"name":"Jhon"}'
+```bash
+curl --request POST "http://localhost/users" --data '{"name":"Jhon", "age":"23"}'
 ```
 
 PUT: You can modify exists data or generating new data. Condition to search original data will be sent with Document URI, and new data will be sent in Body parameter.
-```js
+```bash
 curl --request PUT "http://localhost/users/name/Jhon" --data '{"age":"24"}'
 ```
 
 DELETE: You can remove exists data with specifying in Body parmater
-```js
+```bash
 curl --request DELETE "http://localhost/users" --data '{"name":"Jhon"}'
 ```
 
 ### Options for RESTful API
 
 `pretty`: You can receive the response in pretty json.
-```js
+```bash
 curl --request GET "http://localhost/users?pretty"
 ```
 
 `paging`: You can paging the result datas.
-```js
+```bash
 curl --request GET "http://localhost/users?paging=5"
 ```
 
 `orderby`: You can ordering the result datas.
 `orderway`: You can specify the ordering method, DESC or ASC.
 
-```js
+```bash
 curl --request GET "http://localhost/users?orderby=name&orderway=desc"
 ```
