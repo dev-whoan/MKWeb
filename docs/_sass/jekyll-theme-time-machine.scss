@@ -1,23 +1,23 @@
 @import "normalize";
 
 /* mobile */
-@media (max-width: 480px){
+@media (max-width: 360px){
   .wrapper{
-    max-width: 420px !important;
+    max-width: 320px !important;
   }
   
   .markdown-body table {
-	width: 418px !important;
+	width: 318px !important;
   }
   
   .current-section {
-    width: 430px !important;
+    width: 330px !important;
   }
 }
 /* mobile */
 
 /* tablet */
-@media (min-width: 481px) and (max-width: 959px){
+@media (min-width: 361px) and (max-width: 959px){
   .wrapper{
     max-width: 675px !important;
   }
