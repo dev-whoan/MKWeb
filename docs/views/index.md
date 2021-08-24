@@ -16,7 +16,7 @@ Each json files, indeed views, is one of Controllers.
 
 Also page includes services, for examples, sqls, jwt, ftp, etc, therefore you need to set services inside of json file.
 
-## Basic properties
+## Basic Properties
 
 | name           | description                     | value                                                           |
 |:---------------|:--------------------------------|:----------------------------------------------------------------| 
@@ -28,7 +28,7 @@ Also page includes services, for examples, sqls, jwt, ftp, etc, therefore you ne
 
 MkWeb also supports separate pages between different platforms.
 
-## Device properties
+## Device Properties
 
 | name           | description                                             | value                                 |
 |:---------------|:--------------------------------------------------------|:--------------------------------------| 
@@ -42,28 +42,30 @@ MkWeb also supports separate pages between different platforms.
 | file           | JSP: jsp file name (index.jsp). ANOTHER: empty file |  |
 | uri            | uri for the platform | |
 
-## Service properties
+## Service Properties
 
 View Controller have at least one service. 
 
 Services are could be SQL, FTP.
 
-| name           | description                                                                                                   | value                           |
-|:---------------|:--------------------------------------------------------------------------------------------------------------|:--------------------------------| 
-| page_static    | is service executes right after page have loaded. Usually services that executed without user request.        | true, false                     |
-|:---------------|:--------------------------------------------------------------------------------------------------------------|:--------------------------------| 
-| type                                                                                                                                                             |
-| kind           | type of service. the type is a kind of controller, and the controller must have service that have same id     | sql, ftp                        
-| id             | id of service that defined in the target Controller.                                                          | must be defined on target contr 
-|:---------------|:--------------------------------------------------------------------------------------------------------------|:--------------------------------| 
-| method         | method to execute the service                                                                                 | GET, POST                       |
-| obj            | service will return the result with the obj data type                                                         | list                            |
+| name           | description                                                                                                               | value                           |
+|:---------------|:--------------------------------------------------------------------------------------------------------------------------|:--------------------------------| 
+| page_static    | is service executes right after page have loaded. Usually services that executed without user request. Used for JSP       | true, false                     |
+|:---------------|:--------------------------------------------------------------------------------------------------------------------------|:--------------------------------| 
+| type                                                                                                                                                                         |
+| kind           | type of service. the type is a kind of controller, and the controller must have service that have same id                 | sql, ftp                        |
+| id             | id of service that defined in the target Controller.                                                                      | must be defined on target contr |
+|:---------------|:--------------------------------------------------------------------------------------------------------------------------|:--------------------------------| 
+| method         | method to execute the service                                                                                             | GET, POST                       |
+| obj            | service will return the result with the obj data type                                                                     | list                            |
 | parameter_name | superscript of parameter for data communication. each service must have unique superscript. For page_static services, this property must be empty. this service is used with value property.                                                         | Unique parameter name |
 | value          | subscript of parameter for data communication. this service is used with parameter_name property. for sql service, this value is used on SQL json file too, will be wrapped with "@". You can check details on SQL page |  |
 
-## Usage Examples
+-----
 
-### Device Examples
+# Usage Examples
+
+## Device Examples
 
 ```javascript
 ...
@@ -108,7 +110,7 @@ Services are could be SQL, FTP.
 ...
 ```
 
-### View Controller without any service
+## View Controller Without Any Service
 
 This controller is for index page because there is no name and no uri.
 
@@ -152,7 +154,7 @@ No user login required.
 ```
 
 
-### Page Controller with one login service
+## Page Controller With One Login Service
 
 This controller means, index page that include user login.
 
@@ -179,13 +181,59 @@ To request a user login, page file (.jsp, .html, .jsx whatever) must send reques
         },
         "services":[
         {
+            "page_static":"false",
+            "type":{
+                "kind":"sql",
+                "id":"doLogin"
+            },
+            "method":"post",
+            "obj":"list",
+            "parameter_name":"user",
+            "value":{
+                "1":"id",
+                "2":"password"
+            }
+        }]
+    }
+}
+```
+
+## Page Controller With Several Services
+
+This Controller is for index page includes page_static, and adding comment service.
+
+However, auth is set into part, it means some service requires authority.
+
+As we expected, "addComment" is the service.
+
+This page will execute "getArticles" service right after page have called.
+
+```json
+{
+    "Controller": {
+        "name":"",
+        "last_uri":"",
+		"debug":"debug",
+		"auth":"part",
+        "api":"no",
+        "device":{
+            "desktop":{
+                "default":{
+                    "path":"/views/root",
+                    "file":"main.jsp",
+                    "uri":""
+                }
+            }
+        },
+        "services":[
+        {
             "page_static":"true",
             "type":{
-                "kind":"",
-                "id":""
+                "kind":"sql",
+                "id":"getArticles"
             },
-            "method":"",
-            "obj":"",
+            "method":"get",
+            "obj":"list",
             "parameter_name":"",
             "value":{
                 "1":""
@@ -204,7 +252,75 @@ To request a user login, page file (.jsp, .html, .jsx whatever) must send reques
                 "1":"id",
                 "2":"password"
             }
+        },
+        {
+            "page_static":"false",
+            "type":{
+                "kind":"sql",
+                "id":"addComment"
+            },
+            "method":"post",
+            "obj":"list",
+            "parameter_name":"cmt",
+            "value":{
+                "1":"info"
+            }
         }]
     }
+}
+```
+
+## Page Controller With Ftp Service
+
+When you allow to send more than one files, the "value" will have same strings.
+
+```json
+{
+	"Controller": {
+		"name":"ftp-uploader",
+		"last_uri":"Feed",
+        "auth":"no",
+		"device":{
+			"desktop":{
+				"default":{
+					"path":"",
+					"file":"",
+					"uri":""
+				}
+			}
+		},
+		"debug":"error",
+		"api":"yes",
+		"services":[
+			{
+				"page_static":"false",
+				"type":{
+					"kind":"ftp",
+					"id":"posts"
+				},
+				"method":"post",
+				"obj":"list",
+				"parameter_name":"post_file",
+				"value":{
+					"1":"upload",
+					"2":"upload",
+					"3":"upload"
+				}
+			},
+            {
+				"page_static":"false",
+				"type":{
+					"kind":"ftp",
+					"id":"comments"
+				},
+				"method":"post",
+				"obj":"list",
+				"parameter_name":"comment_file",
+				"value":{
+					"1":"upload"
+				}
+			}
+		]
+	}
 }
 ```
