@@ -94,10 +94,10 @@ As you remember, the parameters from View(page), is equally same with the value 
           "crud":"select",
           "column":{
             "1":"userid as id",
-                        "2":"userage as age"
+            "2":"userage as age"
           },
           "table":{
-                        "from":"user"
+            "from":"user"
                     },
           "data":{
             "1":""

@@ -140,3 +140,14 @@ curl --request GET "http://localhost/users?paging=5"
 ```bash
 curl --request GET "http://localhost/users?orderby=name&orderway=desc"
 ```
+
+# Please dont hesitate to contact us
+
+## dev-whoan, PM & Developer (2020.04 ~ )
+- dev.whoan@gmail.com
+
+## hyeonic, Developer (2020.04~2020.09)
+- evan3566@gmail.com
+
+## koh, Developer     (2021.01~2021.03)
+- khj1538104@gmail.com

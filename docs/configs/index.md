@@ -4,7 +4,7 @@ layout: custom
 
 # MkWeb.conf
 
-## Location: /WEB-INF/classes/configs
+## Location: /WEB-INF/classes/configs/MkWeb.conf & /WEB-INF/classes/configs/MkLogger.json
 
 ```yaml
 ##############################################################
