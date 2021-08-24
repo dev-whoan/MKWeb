@@ -8,319 +8,6 @@ layout: custom
 
 -----
 
-# How to Request
-
-There are several constraints to send requests:
-- "Content-Type": "application/json"
-- Authorization
-  - The key storage is defined on MkWeb.conf, `mkweb.restapi.key.table`
-  - Get method via URL, must be exporessed with query parameter that defined with `search_key`
-  - Key could be JWT which MkWeb offered, or just Hashed String
-  - The other requests include get method through HTTP communication, must be sent with `Authorization` Header, value with:
-    - "Authorization": "Bearer _____"
-- GET, HEAD, OPTIONS only allow URI options
-- PUT allow URI options for condition, body parameter for update
-- DELETE allow body parameter for deleting
-- POST allow body parameter
-
-Here I explain with default options for default values
-- `mkapi` is default value of mkweb.restapi.uri
-- `search_key` is default value of mkweb.restapi.search.keyexp
-  - which have mykey
-- pretty is returning data as pretty, the default value of mkweb.restapi.search.opt.pretty.param
-- and so on...
-
-Let's suppose that there is a `user` data set. Which have `users` uri, and 4 columns that named `SEQ`, `userid`, `userpw` and `usernickname`.
-```sql
-CREATE TABLE `user` (
-  `SEQ` int(11) NOT NULL AUTO_INCREMENT,
-  `userid` varchar(45) NOT NULL,
-  `userpw` varchar(45) NOT NULL,
-  `usernickname` varchar(45) NOT NULL,
-  PRIMARY KEY (`SEQ`,`userid`),
-  UNIQUE KEY `userid` (`userid`)
-) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4
-```
-
------
-
-## GET Method
-
-Get method is used to request data.
-
-Examples:
-- There is a user data set and want to get all the users
-  - which means can get every datas from data set
-- There is a user data set and want to get users nickname of 'John'
-  - which means can get specified datas from data set
-  
-### Send Request
-
-```bash
-# No key required
-$ curl --request GET "http://localhost/mkapi/users/usernickname/John"
-
-# Key required
-$ curl --request GET "http://localhost/mkapi/users/usernickname/John?search_key=mykey"
-```
-
-### Success to request
-
-- There is at least one data
-```javascript
-{
-    "took": "12",
-    "code": "200",
-    "response": "HTTP 1.1 200 OK",
-    "Content-Type": "application/json;charset=UTF-8",
-    "Content-Length": "72",
-    "users": [
-        {
-            "userid": "john@gmail.com",
-            "SEQ": "28",
-            "usernickname": "John"
-        },
-		...
-    ]
-}
-```
-
-- If there is no data, the result will be empty and response code will be 204.
-
-![delete](https://raw.githubusercontent.com/dev-whoan/MKWeb/master/docs/assets/img/png/api_get_success.PNG)
-
------
-
-## POST Method
-
-Post method is used to generate new data.
-
-Examples:
-- There is a user who want to register
-  - userid must not be duplicated
-
-### Send Request
-
-```bash
-$ curl --request GET "http://localhost/mkapi/users" --data '{"userid":"john@gmail.com","userpw":"123456","usernickname":"John"}'
-```
-
-The result will returned with JSON type.
-
-The result JSON Object is wrapped with name of dataset, for this example, `users`. Remember that name of data set is defined on api's view configs.
-
-### Success to Request
-
-```json
-{
-  "took": "35",
-  "code": "201",
-  "response": "HTTP 1.1 201 Created",
-  "Content-Type": "application/json;charset=UTF-8",
-  "Content-Length": "94",
-  "users": {
-    "_update_seq": 28,
-    "userpw": "123456",
-    "userid": "john@gmail.com",
-    "usernickname": "John"
-  }
-}
-```
-
-If you want to change _updated_seq into another string, please change MkWeb.conf -> `mkweb.restapi.dml.sequence`
-
-![delete](https://raw.githubusercontent.com/dev-whoan/MKWeb/master/docs/assets/img/png/api_post_success.PNG)
-
------
-## PUT Method
-
-Put method is used to modify the data. However, in a special case you can generate a new data.
-
-Examples:
-- There is a user data and want to change nickname
-  - which means you have to specify the user who wants to change the nickname
-- I thought there is a data, and try to change, but actually there is none.
-  - which means you have to specify the user who wants to change the nickanme
-  - also I know the whole datas
-  
-### Send Request
-
-```bash
-# There is a user
-$ curl --request PUT "http://localhost/mkapi/users/userid/smith@gmail.com" --data '{"usernickname":"changed!"}'
-
-# There is no user
-$ curl --request PUT "http://localhost/mkapi/users/userid/smith@gmail.com" --data '{"usernickname":"changed!", "userid":"smith@gmail.com", "userpw":"123456"}'
------
-
-### Success to request
-
-- Success to Fetch the data
-```json
-{
-  "took": "12",
-  "code": "200",
-  "response": "HTTP 1.1 200 OK",
-  "Content-Type": "application/json;charset=UTF-8",
-  "Content-Length": "26"
-}
-```
-
-- Success to generate a new data
-  - Remember, in this case, no data sequence or auto increment is returned.
-
-```json
-{
-  "took": "139",
-  "code": "201",
-  "response": "HTTP 1.1 201 Created",
-  "Content-Type": "application/json;charset=UTF-8",
-  "Content-Length": "54"
-}
-```
-
-![delete](https://raw.githubusercontent.com/dev-whoan/MKWeb/master/docs/assets/img/png/api_put_success.PNG)
-
------
-
-## DELETE Method
-
-Delete method is used to remove a data. Whether the data is exists or not, always returns empty results with code 204.
-
-Constraints:
-- You must specify the data. Nor All of the duplicated datas will be removed.
-
-Examples:
-- Whether user is exists or not want to remove the specified data.
-
-### Send Request
-```bash
-$ curl --request DELETE "http://localhost/mkapi/users" --data '{"userid":"john@gmail.com"}'
-```
-
-### Success to request
-- Empty result, and code 204 will be returned
-
-![delete](https://raw.githubusercontent.com/dev-whoan/MKWeb/master/docs/assets/img/png/api_delete_success.PNG)
-
------
-
-## HEAD Method
-
-Head method is almost same with Get method, however no result will be returned.
-
-### Send Request
-
-```bash
-# Whole users
-$ curl --request HEAD "http://localhost/mkapi/users"
-# Specify the target
-$ curl --request HEAD "http://localhost/mkapi/users/userid/john@gmail.com"
-```
-
-![head](https://raw.githubusercontent.com/dev-whoan/MKWeb/master/docs/assets/img/png/api_head_success.PNG)
-
------
-
-## OPTIONS Method
-
-Options method is used to check which method is allowed for api data set.
-
-### Send request
-
-```bash
-curl --request OPTIONS "http://localhost/mkapi/users"
-```
-
-### Success to request
-
-```json
-{
-  "took": "2",
-  "code": "200",
-  "response": "HTTP/1.1 200 OK",
-  "Content-Type": "application/json;charset=UTF-8",
-  "Allow": "GET,HEAD,POST,OPTIONS,PUT,DELETE"
-}
-```
-
-![head](https://raw.githubusercontent.com/dev-whoan/MKWeb/master/docs/assets/img/png/api_options_success.PNG)
-
------
-
-## Fail to Request
-
-- If you send bad requests, results will include the error messages.
-
-```json
-{
-    "took": "7",
-    "code": "400",
-    "response": "HTTP/1.1 400 Bad Request",
-    "Content-Type": "application/json;charset=UTF-8",
-    "Content-Length": "136",
-    "error": {
-        "message": "You must enter every column data.",
-        "code": "400",
-        "status": "Bad Request",
-        "info": "deploy.dev-whoan.xyz:58443/docs/400"
-    }
-}
-```
-
-```json
-{
-    "took": "21",
-    "code": "400",
-    "response": "HTTP/1.1 400 Bad Request",
-    "Content-Type": "application/json;charset=UTF-8",
-    "Content-Length": "152",
-    "error": {
-        "message": "Duplicate entry 'john@gmail.com' for key 'userid'",
-        "code": "400",
-        "status": "Bad Request",
-        "info": "deploy.dev-whoan.xyz:58443/docs/400"
-    }
-}
-```
------
-
-## If You Require Authorization
-
-- For `curl`
-```bash
-$ curl --request GET "http://localhost/mkapi/users" -H "Authorization: Bearer 123456"
-$ curl --request POST "http://localhost/mkapi/users" --data '{"userid":"test@test.com", "userpw":"159159", "usernickname":"testnick"}' -H "Authorization: Bearer 123456"
-# and so on....
-```
-
-- For `GET` via URL
-```
-http://localhost/mkapi/users?search_key=123456
-```
-
-## Options for RESTful API
-
-`pretty`: You can receive the response in pretty json.
-```bash
-curl --request GET "http://localhost/users?pretty"
-```
-
-`paging`: You can paging the result datas.
-```bash
-curl --request GET "http://localhost/users?paging=5"
-```
-
-`orderby`: You can ordering the result datas.
-`orderway`: You can specify the ordering method, DESC or ASC.
-
-```bash
-curl --request GET "http://localhost/users?orderby=name&orderway=desc"
-```
-
------
-
-
 # How to Set RESTful API
 
 # View Configs
@@ -813,3 +500,507 @@ The purpose is satisified with POST, but when we specify userid in Document URI,
 But actually you will request those with POST method, and MkWeb do not define any results when you do like this.
 
 I recommend you to use "parameter" field when you create a RESTful API that only allows "GET", (includes head, options) Methods.
+
+-----
+
+# How to Request
+
+There are several constraints to send requests:
+- "Content-Type": "application/json"
+- Authorization
+  - The key storage is defined on MkWeb.conf, `mkweb.restapi.key.table`
+  - Get method via URL, must be exporessed with query parameter that defined with `search_key`
+  - Key could be JWT which MkWeb offered, or just Hashed String
+  - The other requests include get method through HTTP communication, must be sent with `Authorization` Header, value with:
+    - "Authorization": "Bearer _____"
+- GET, HEAD, OPTIONS only allow URI options
+- PUT allow URI options for condition, body parameter for update
+- DELETE allow body parameter for deleting
+- POST allow body parameter
+
+Here I explain with default options for default values
+- `mkapi` is default value of mkweb.restapi.uri
+- `search_key` is default value of mkweb.restapi.search.keyexp
+  - which have mykey
+- pretty is returning data as pretty, the default value of mkweb.restapi.search.opt.pretty.param
+- and so on...
+
+Let's suppose that there is a `user` data set. Which have `users` uri, and 4 columns that named `SEQ`, `userid`, `userpw` and `usernickname`.
+```sql
+CREATE TABLE `user` (
+  `SEQ` int(11) NOT NULL AUTO_INCREMENT,
+  `userid` varchar(45) NOT NULL,
+  `userpw` varchar(45) NOT NULL,
+  `usernickname` varchar(45) NOT NULL,
+  PRIMARY KEY (`SEQ`,`userid`),
+  UNIQUE KEY `userid` (`userid`)
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4
+```
+
+-----
+
+## GET Method
+
+Get method is used to request data.
+
+Examples:
+- There is a user data set and want to get all the users
+  - which means can get every datas from data set
+- There is a user data set and want to get users nickname of 'John'
+  - which means can get specified datas from data set
+  
+### Send Request
+
+```bash
+# No key required
+$ curl --request GET "http://localhost/mkapi/users/usernickname/John"
+
+# Key required
+$ curl --request GET "http://localhost/mkapi/users/usernickname/John?search_key=mykey"
+```
+
+### Success to request
+
+- There is at least one data
+```javascript
+{
+    "took": "12",
+    "code": "200",
+    "response": "HTTP 1.1 200 OK",
+    "Content-Type": "application/json;charset=UTF-8",
+    "Content-Length": "72",
+    "users": [
+        {
+            "userid": "john@gmail.com",
+            "SEQ": "28",
+            "usernickname": "John"
+        },
+		...
+    ]
+}
+```
+
+- If there is no data, the result will be empty and response code will be 204.
+
+![delete](https://raw.githubusercontent.com/dev-whoan/MKWeb/master/docs/assets/img/png/api_get_success.PNG)
+
+-----
+
+## POST Method
+
+Post method is used to generate new data.
+
+Examples:
+- There is a user who want to register
+  - userid must not be duplicated
+
+### Send Request
+
+```bash
+$ curl --request GET "http://localhost/mkapi/users" --data '{"userid":"john@gmail.com","userpw":"123456","usernickname":"John"}'
+```
+
+The result will returned with JSON type.
+
+The result JSON Object is wrapped with name of dataset, for this example, `users`. Remember that name of data set is defined on api's view configs.
+
+### Success to Request
+
+```json
+{
+  "took": "35",
+  "code": "201",
+  "response": "HTTP 1.1 201 Created",
+  "Content-Type": "application/json;charset=UTF-8",
+  "Content-Length": "94",
+  "users": {
+    "_update_seq": 28,
+    "userpw": "123456",
+    "userid": "john@gmail.com",
+    "usernickname": "John"
+  }
+}
+```
+
+If you want to change _updated_seq into another string, please change MkWeb.conf -> `mkweb.restapi.dml.sequence`
+
+![delete](https://raw.githubusercontent.com/dev-whoan/MKWeb/master/docs/assets/img/png/api_post_success.PNG)
+
+-----
+## PUT Method
+
+Put method is used to modify the data. However, in a special case you can generate a new data.
+
+Examples:
+- There is a user data and want to change nickname
+  - which means you have to specify the user who wants to change the nickname
+- I thought there is a data, and try to change, but actually there is none.
+  - which means you have to specify the user who wants to change the nickanme
+  - also I know the whole datas
+  
+### Send Request
+
+```bash
+# There is a user
+$ curl --request PUT "http://localhost/mkapi/users/userid/smith@gmail.com" --data '{"usernickname":"changed!"}'
+
+# There is no user
+$ curl --request PUT "http://localhost/mkapi/users/userid/smith@gmail.com" --data '{"usernickname":"changed!", "userid":"smith@gmail.com", "userpw":"123456"}'
+-----
+
+### Success to request
+
+- Success to Fetch the data
+```json
+{
+  "took": "12",
+  "code": "200",
+  "response": "HTTP 1.1 200 OK",
+  "Content-Type": "application/json;charset=UTF-8",
+  "Content-Length": "26"
+}
+```
+
+- Success to generate a new data
+  - Remember, in this case, no data sequence or auto increment is returned.
+
+```json
+{
+  "took": "139",
+  "code": "201",
+  "response": "HTTP 1.1 201 Created",
+  "Content-Type": "application/json;charset=UTF-8",
+  "Content-Length": "54"
+}
+```
+
+![delete](https://raw.githubusercontent.com/dev-whoan/MKWeb/master/docs/assets/img/png/api_put_success.PNG)
+
+-----
+
+## DELETE Method
+
+Delete method is used to remove a data. Whether the data is exists or not, always returns empty results with code 204.
+
+Constraints:
+- You must specify the data. Nor All of the duplicated datas will be removed.
+
+Examples:
+- Whether user is exists or not want to remove the specified data.
+
+### Send Request
+```bash
+$ curl --request DELETE "http://localhost/mkapi/users" --data '{"userid":"john@gmail.com"}'
+```
+
+### Success to request
+- Empty result, and code 204 will be returned
+
+![delete](https://raw.githubusercontent.com/dev-whoan/MKWeb/master/docs/assets/img/png/api_delete_success.PNG)
+
+-----
+
+## HEAD Method
+
+Head method is almost same with Get method, however no result will be returned.
+
+### Send Request
+
+```bash
+# Whole users
+$ curl --request HEAD "http://localhost/mkapi/users"
+# Specify the target
+$ curl --request HEAD "http://localhost/mkapi/users/userid/john@gmail.com"
+```
+
+![head](https://raw.githubusercontent.com/dev-whoan/MKWeb/master/docs/assets/img/png/api_head_success.PNG)
+
+-----
+
+## OPTIONS Method
+
+Options method is used to check which method is allowed for api data set.
+
+### Send request
+
+```bash
+curl --request OPTIONS "http://localhost/mkapi/users"
+```
+
+### Success to request
+
+```json
+{
+  "took": "2",
+  "code": "200",
+  "response": "HTTP/1.1 200 OK",
+  "Content-Type": "application/json;charset=UTF-8",
+  "Allow": "GET,HEAD,POST,OPTIONS,PUT,DELETE"
+}
+```
+
+![head](https://raw.githubusercontent.com/dev-whoan/MKWeb/master/docs/assets/img/png/api_options_success.PNG)
+
+-----
+
+## Fail to Request
+
+- If you send bad requests, results will include the error messages.
+
+```json
+{
+    "took": "7",
+    "code": "400",
+    "response": "HTTP/1.1 400 Bad Request",
+    "Content-Type": "application/json;charset=UTF-8",
+    "Content-Length": "136",
+    "error": {
+        "message": "You must enter every column data.",
+        "code": "400",
+        "status": "Bad Request",
+        "info": "deploy.dev-whoan.xyz:58443/docs/400"
+    }
+}
+```
+
+```json
+{
+    "took": "21",
+    "code": "400",
+    "response": "HTTP/1.1 400 Bad Request",
+    "Content-Type": "application/json;charset=UTF-8",
+    "Content-Length": "152",
+    "error": {
+        "message": "Duplicate entry 'john@gmail.com' for key 'userid'",
+        "code": "400",
+        "status": "Bad Request",
+        "info": "deploy.dev-whoan.xyz:58443/docs/400"
+    }
+}
+```
+-----
+
+## If You Require Authorization
+
+- For `curl`
+
+```bash
+$ curl --request GET "http://localhost/mkapi/users" -H "Authorization: Bearer 123456"
+$ curl --request POST "http://localhost/mkapi/users" --data '{"userid":"test@test.com", "userpw":"159159", "usernickname":"testnick"}' -H "Authorization: Bearer 123456"
+# and so on....
+```
+
+- For `GET` via URL
+
+```
+http://localhost/mkapi/users?search_key=123456
+```
+
+## Options for RESTful API
+
+`pretty`: You can receive the response in pretty json.
+```bash
+curl --request GET "http://localhost/users?pretty"
+```
+
+`paging`: You can paging the result datas.
+```bash
+curl --request GET "http://localhost/users?paging=5"
+```
+
+`orderby`: You can ordering the result datas.
+`orderway`: You can specify the ordering method, DESC or ASC.
+
+```bash
+curl --request GET "http://localhost/users?orderby=name&orderway=desc"
+```
+
+-----
+
+## Used Controllers
+
+- Api View Controller
+
+```json
+{
+  "Controller": {
+    "name":"users",
+    "last_uri":"users",
+    "device":{
+      "desktop":{
+        "default":{
+          "path":"",
+          "file":"",
+          "uri":""
+        }
+      }
+    },
+    "debug":"error",
+    "api":"yes",
+    "services":[
+      {
+        "page_static":"false",
+        "type":{
+          "kind":"sql",
+          "id":"getAllUser"
+        },
+        "method":"get",
+        "obj":"list",
+        "parameter_name":"",
+        "value":{
+          "1":"SEQ",
+          "2":"userid",
+          "3":"usernickname"
+        }
+      },
+      {
+        "page_static":"false",
+        "type":{
+          "kind":"sql",
+          "id":"getAllUser"
+        },
+        "method":"head",
+        "obj":"list",
+        "parameter_name":"",
+        "value":{
+          "1":"SEQ",
+          "2":"userid",
+          "3":"usernickname"
+        }
+      },
+      {
+        "page_static":"false",
+        "type":{
+          "kind":"sql",
+          "id":"createUser"
+        },
+        "method":"post",
+        "obj":"list",
+        "parameter_name":"",
+        "value":{
+          "1":"userid",
+          "2":"userpw",
+          "3":"usernickname"
+        }
+      },
+      {
+        "page_static":"false",
+        "type":{
+          "kind":"sql",
+          "id":""
+        },
+        "method":"options",
+        "obj":"list",
+        "parameter_name":"",
+        "value":{
+          "1":""
+        }
+      },
+      {
+        "page_static":"false",
+        "type":{
+          "kind":"sql",
+          "id":"getAllUser"
+        },
+        "method":"put",
+        "obj":"list",
+        "parameter_name":"",
+        "value":{
+            "1":"SEQ",
+            "2":"userid",
+            "3":"userpw",
+            "4":"usernickname"
+        }
+      },
+      {
+        "page_static":"false",
+        "type":{
+          "kind":"sql",
+          "id":"removeUser"
+        },
+        "method":"delete",
+        "obj":"list",
+        "parameter_name":"",
+        "value":{
+            "1":"SEQ",
+            "2":"userid",
+            "3":"usernickname"
+        }
+      }
+    ]
+  }
+}
+```
+
+- Api SQL Controller
+
+```json
+{
+  "Controller": {
+    "name":"api_user",
+    "debug":"error",
+    "db":"dogood",
+    "table":"user",
+    "api":"yes",
+    "condition":{
+      "1":"SEQ",
+      "2":"userid",
+      "3":"userpw",
+      "4":"usernickname"
+    },
+    "parameter":{
+      "1":"*"
+    },
+    "services":[
+      {
+        "id":"getAllUser",
+        "query":{
+          "crud":"select",
+          "column":{
+            "1":"SEQ",
+            "2":"userid",
+            "3":"usernickname"
+          },
+          "data":{
+            "1":""
+          },
+          "where":""
+        }
+      },
+      {
+        "id":"createUser",
+        "query":{
+          "crud":"insert",
+          "column":{
+            "1":"userid",
+            "2":"userpw",
+            "3":"usernickname"
+          },
+          "data":{
+            "1":"userid",
+            "2":"userpw",
+            "3":"usernickname"
+          },
+          "where":""
+
+        }
+      },
+      {
+        "id":"removeUser",
+        "query":{
+          "crud":"delete",
+          "column":{
+            "1":""
+          },
+          "data":{
+            "1":""
+          },
+          "where":""
+		}
+      }
+    ]
+  }
+}
+```
+
+-----
