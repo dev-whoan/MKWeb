@@ -56,6 +56,8 @@ In MkWeb, you can use several offered Controllers.
 
 To use those Controllers, you need to set, config them with modifying and adding JSON files.
 
+And after you modify the json configs, you don't have to restart the webserver. The modifying information will be automatically covered. (however you have to restart when you create new one.)
+
 ## Controllers and Services
 
 JSON Configs are the biggest profit when you use MkWeb.

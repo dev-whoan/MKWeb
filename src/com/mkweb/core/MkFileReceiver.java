@@ -69,7 +69,13 @@ public class MkFileReceiver extends HttpServlet {
 		if(hostcheck.contentEquals(host)) {
 			mkPage = "";
 		}else {
-			mkPage = "/" + hostcheck.split(host)[1];
+			try{
+				mkPage = "/" + hostcheck.split(host)[1];
+			} catch(IndexOutOfBoundsException e) {
+				mklogger.error("Unknown server is trying to send data: " + hostcheck);
+				return null;
+			}
+
 		}
 		mklogger.debug("mkpage :" + mkPage);
 		return MkPageConfigs.Me().getControl(mkPage);
