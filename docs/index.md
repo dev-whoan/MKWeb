@@ -8,7 +8,7 @@ layout: custom
 
 # Install
 
-You can download WAR file here: [https://github.com/dev-whoan/MKWeb/tree/master/deploy]
+You can download WAR file here: [Download War](https://github.com/dev-whoan/MKWeb/tree/master/deploy)
 
 Or you can clone from github, and you can use files under WebContent, and sources in src/com/mkweb.
 - You must change WebContent folder name into ROOT
