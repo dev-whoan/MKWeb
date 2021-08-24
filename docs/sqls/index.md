@@ -60,87 +60,87 @@ As you remember, the parameters from View(page), is equally same with the value 
 //Part of View Controller's doLogin Service
 ...
 {
-		"page_static":"false",
-		"type":{
-		"kind":"sql",
-		"id":"doLogin"
-	},
-	"method":"post",
-	"obj":"list",
-	"parameter_name":"user",
-	// below values are used in sql services with wrapped by "@"
-	"value":{
-		"1":"id",
-		"2":"password"
-	}
+  "page_static":"false",
+  "type":{
+    "kind":"sql",
+    "id":"doLogin"
+  },
+  "method":"post",
+  "obj":"list",
+  "parameter_name":"user",
+  // below values are used in sql services with wrapped by "@"
+  "value":{
+    "1":"id",
+    "2":"password"
+  }
 },
 ...
 ```
 
-```javascript
+```json
 {
-	"Controller": {
-		"name":"user",
-		"debug":"error",
-		"db":"database",
-		"api":"no",
-		"services":[
-			{
-				"id":"doLogin",
-				"auth":"no",
-				"query":{
-					"crud":"select",
-					"column":{
-						"1":"userid as id",
+  "Controller": {
+    "name":"user",
+    "debug":"error",
+    "db":"database",
+    "api":"no",
+    "services":[
+      {
+        "id":"doLogin",
+        "auth":"no",
+        "query":{
+          "crud":"select",
+          "column":{
+            "1":"userid as id",
                         "2":"userage as age"
-					},
-					"table":{
+          },
+          "table":{
                         "from":"user"
                     },
-					"data":{
-						"1":""
-					},
-					// the parameter from View is wrapped with "@" and without parameter_name
-					"where":"userid = @id@ AND userpw = @password@"
-				}
-			}
-		]
-	}
+          "data":{
+            "1":""
+          },
+          // the parameter from View is wrapped with "@" and without parameter_name
+          "where":"userid = @id@ AND userpw = @password@"
+        }
+      }
+    ]
+  }
 }
 ```
 
 ## Sql Controller With Join Example
 
-```javascript
+```json
 {
-	"Controller": {
-		"name":"user",
-		"debug":"error",
-		"db":"database",
-		"api":"no",
-		"services":[
-			{
-				"id":"JOIN_EXAMPLE",
-				"query":{
-					"crud":"select",
-					"column":{
-						"1":"*"
-					},
-					"table":{
-						"from":"user as u",
-						"join":{
-							"type":"INNER JOIN",
-							"joinfrom":"article as a",
-							"on":"u.id = a.writer AND u.id=@id@"
-						"
-					},
-					"data":{
-						"1":""
-					},
-					"where":"user.id = @id@"
-				}
-			}
-		]
-	}
+  "Controller": {
+    "name":"user",
+    "debug":"error",
+    "db":"database",
+    "api":"no",
+    "services":[
+      {
+        "id":"JOIN_EXAMPLE",
+        "query":{
+          "crud":"select",
+          "column":{
+            "1":"*"
+          },
+          "table":{
+            "from":"user as u",
+            "join":{
+              "type":"INNER JOIN",
+              "joinfrom":"article as a",
+              "on":"u.id = a.writer AND u.id=@id@"
+            "
+          },
+          "data":{
+            "1":""
+          },
+          "where":"user.id = @id@"
+        }
+      }
+    ]
+  }
 }
 ```

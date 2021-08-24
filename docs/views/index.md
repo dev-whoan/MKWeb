@@ -67,45 +67,45 @@ Services are could be SQL, FTP.
 
 ## Device Examples
 
-```javascript
+```json
 ...
 "device":{
-    "desktop":{
-        "default":{
-            "path":"/views/root/desktop",
-            "file":"main.jsp",
-            "uri":""
-        },
-        "en":{
-            "path":"/views/root/desktop/eng",
-            "file":"main.jsp",
-            "uri":"/eng"
-        }
+  "desktop":{
+    "default":{
+      "path":"/views/root/desktop",
+      "file":"main.jsp",
+      "uri":""
     },
-    "android":{
-        "default":{
-            "path":"/views/root/mobile/android",
-            "file":"main.jsp",
-            "uri":""
-        },
-        "en":{
-            "path":"/views/root/mobile/android/eng",
-            "file":"main.jsp",
-            "uri":"/eng"
-        }
-    },
-    "ios":{
-        "default":{
-            "path":"/views/root/mobile/ios",
-            "file":"main.jsp",
-            "uri":""
-        },
-        "en":{
-            "path":"/views/root/mobile/ios/eng",
-            "file":"main.jsp",
-            "uri":"/eng"
-        }
+    "en":{
+      "path":"/views/root/desktop/eng",
+      "file":"main.jsp",
+      "uri":"/eng"
     }
+  },
+  "android":{
+    "default":{
+      "path":"/views/root/mobile/android",
+      "file":"main.jsp",
+      "uri":""
+    },
+    "en":{
+      "path":"/views/root/mobile/android/eng",
+      "file":"main.jsp",
+      "uri":"/eng"
+    }
+  },
+  "ios":{
+    "default":{
+      "path":"/views/root/mobile/ios",
+      "file":"main.jsp",
+      "uri":""
+    },
+    "en":{
+      "path":"/views/root/mobile/ios/eng",
+      "file":"main.jsp",
+      "uri":"/eng"
+      }
+  }
 }
 ...
 ```
@@ -118,38 +118,39 @@ Also controller have no services even page_static, and the jsp file is located i
 
 No user login required.
 
-```javascript
+```json
 {
-    "Controller": {
-        "name":"",
-        "last_uri":"",
-        "debug":"error",
-		"auth":"no",
-        "api":"no",
-		"device":{
-            "desktop":{
-                "default":{
-                    "path":"/views/root",
-                    "file":"main.jsp",
-                    "uri":""
-                }
-            }
+  "Controller": {
+    "name":"",
+    "last_uri":"",
+    "debug":"error",
+    "auth":"no",
+    "api":"no",
+    "device":{
+      "desktop":{
+        "default":{
+          "path":"/views/root",
+          "file":"main.jsp",
+          "uri":""
+        }
+      }
+    },
+    "services":[
+      {
+        "page_static":"true",
+        "type":{
+          "kind":"",
+          "id":""
         },
-        "services":[
-        {
-            "page_static":"true",
-            "type":{
-                "kind":"",
-                "id":""
-            },
-            "method":"",
-            "obj":"",
-            "parameter_name":"",
-            "value":{
-                "1":""
-            }
-        }]
-    }
+        "method":"",
+        "obj":"",
+        "parameter_name":"",
+          "value":{
+            "1":""
+        }
+      }
+    ]
+  }
 }
 ```
 
@@ -162,39 +163,40 @@ User login service is sql type, and id of sql is doLogin. It means, in some SQL 
 
 To request a user login, page file (.jsp, .html, .jsx whatever) must send request with parameters: user.id, user.password
 
-```javascript
+```json
 {
-    "Controller": {
-        "name":"",
-        "last_uri":"",
-		"debug":"debug",
-		"auth":"no",
-        "api":"no",
-        "device":{
-            "desktop":{
-                "default":{
-                    "path":"/views/root",
-                    "file":"main.jsp",
-                    "uri":""
-                }
-            }
+  "Controller": {
+    "name":"",
+    "last_uri":"",
+    "debug":"debug",
+    "auth":"no",
+    "api":"no",
+      "device":{
+      "desktop":{
+        "default":{
+          "path":"/views/root",
+          "file":"main.jsp",
+          "uri":""
+        }
+      }
+    },
+    "services":[
+      {
+        "page_static":"false",
+        "type":{
+          "kind":"sql",
+          "id":"doLogin"
         },
-        "services":[
-        {
-            "page_static":"false",
-            "type":{
-                "kind":"sql",
-                "id":"doLogin"
-            },
-            "method":"post",
-            "obj":"list",
-            "parameter_name":"user",
-            "value":{
-                "1":"id",
-                "2":"password"
-            }
-        }]
-    }
+        "method":"post",
+        "obj":"list",
+        "parameter_name":"user",
+        "value":{
+          "1":"id",
+          "2":"password"
+        }
+      }
+    ]
+  }
 }
 ```
 
@@ -210,63 +212,64 @@ This page will execute "getArticles" service right after page have called.
 
 ```json
 {
-    "Controller": {
-        "name":"",
-        "last_uri":"",
-		"debug":"debug",
-		"auth":"part",
-        "api":"no",
-        "device":{
-            "desktop":{
-                "default":{
-                    "path":"/views/root",
-                    "file":"main.jsp",
-                    "uri":""
-                }
-            }
+  "Controller": {
+    "name":"",
+    "last_uri":"",
+    "debug":"debug",
+    "auth":"no",
+    "api":"no",
+      "device":{
+      "desktop":{
+        "default":{
+          "path":"/views/root",
+          "file":"main.jsp",
+          "uri":""
+        }
+      }
+    },
+    "services":[
+      {
+        "page_static":"true",
+        "type":{
+          "kind":"sql",
+          "id":"getArticles"
         },
-        "services":[
-        {
-            "page_static":"true",
-            "type":{
-                "kind":"sql",
-                "id":"getArticles"
-            },
-            "method":"get",
-            "obj":"list",
-            "parameter_name":"",
-            "value":{
-                "1":""
-            }
+        "method":"get",
+        "obj":"list",
+        "parameter_name":"",
+        "value":{
+          "1":""
+        }
+      },
+      {
+        "page_static":"false",
+        "type":{
+          "kind":"sql",
+          "id":"doLogin"
         },
-        {
-            "page_static":"false",
-            "type":{
-                "kind":"sql",
-                "id":"doLogin"
-            },
-            "method":"post",
-            "obj":"list",
-            "parameter_name":"user",
-            "value":{
-                "1":"id",
-                "2":"password"
-            }
+        "method":"post",
+        "obj":"list",
+        "parameter_name":"user",
+        "value":{
+          "1":"id",
+          "2":"password"
+        }
+      },
+      {
+        "page_static":"false",
+        "type":{
+          "kind":"sql",
+          "id":"addComment"
         },
-        {
-            "page_static":"false",
-            "type":{
-                "kind":"sql",
-                "id":"addComment"
-            },
-            "method":"post",
-            "obj":"list",
-            "parameter_name":"cmt",
-            "value":{
-                "1":"info"
-            }
-        }]
-    }
+        "method":"post",
+        "obj":"list",
+        "parameter_name":"cmt",
+        "value":{
+          "1":"info"
+        }
+      }
+    ]
+  }
 }
 ```
 
@@ -276,51 +279,51 @@ When you allow to send more than one files, the "value" will have same strings.
 
 ```json
 {
-	"Controller": {
-		"name":"ftp-uploader",
-		"last_uri":"Feed",
-        "auth":"no",
-		"device":{
-			"desktop":{
-				"default":{
-					"path":"",
-					"file":"",
-					"uri":""
-				}
-			}
-		},
-		"debug":"error",
-		"api":"yes",
-		"services":[
-			{
-				"page_static":"false",
-				"type":{
-					"kind":"ftp",
-					"id":"posts"
-				},
-				"method":"post",
-				"obj":"list",
-				"parameter_name":"post_file",
-				"value":{
-					"1":"upload",
-					"2":"upload",
-					"3":"upload"
-				}
-			},
+  "Controller": {
+    "name":"ftp-uploader",
+    "last_uri":"Feed",
+    "auth":"no",
+    "device":{
+      "desktop":{
+        "default":{
+          "path":"",
+          "file":"",
+          "uri":""
+        }
+      }
+    },
+    "debug":"error",
+    "api":"yes",
+    "services":[
+      {
+        "page_static":"false",
+        "type":{
+          "kind":"ftp",
+          "id":"posts"
+        },
+        "method":"post",
+        "obj":"list",
+        "parameter_name":"post_file",
+        "value":{
+          "1":"upload",
+          "2":"upload",
+          "3":"upload"
+        }
+      },
             {
-				"page_static":"false",
-				"type":{
-					"kind":"ftp",
-					"id":"comments"
-				},
-				"method":"post",
-				"obj":"list",
-				"parameter_name":"comment_file",
-				"value":{
-					"1":"upload"
-				}
-			}
-		]
-	}
+        "page_static":"false",
+        "type":{
+          "kind":"ftp",
+          "id":"comments"
+        },
+        "method":"post",
+        "obj":"list",
+        "parameter_name":"comment_file",
+        "value":{
+          "1":"upload"
+        }
+      }
+    ]
+  }
 }
 ```
