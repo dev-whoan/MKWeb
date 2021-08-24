@@ -6,7 +6,7 @@
 /.idea
 /.settings
 MKWeb.iml
-/classes
+/classes/
 /WebContent/META-INF/
 
 common.properties

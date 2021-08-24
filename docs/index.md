@@ -8,7 +8,7 @@ layout: custom
 
 # Install
 
-You can download war file here: [https://github.com/dev-whoan/MKWeb/tree/master/deploy]
+You can download WAR file here: [https://github.com/dev-whoan/MKWeb/tree/master/deploy]
 
 Or you can clone from github, and you can use files under WebContent, and sources in src/com/mkweb.
 - You must change WebContent folder name into ROOT
@@ -30,6 +30,8 @@ Or you can clone from github, and you can use files under WebContent, and source
 5. Restart the tomcat
 
 ### For Linux
+
+### WAR file compiled in Java13, so you have to use Java13 to run your servlet container.
 
 1. Place war file specified location.
 ```bash
@@ -118,6 +120,9 @@ Save the catalina.sh, and restart the tomcat.
 ![artifacts](https://raw.githubusercontent.com/dev-whoan/MKWeb/master/docs/assets/img/png/intellij.png)
 
 4. Follow [With War file] above.
+
+- You should compile the project up to Java8
+- If you use higher than Java8, you need to set your Servlet container's java version in a same version.
 
 ## When you operate MkWeb...
 
