@@ -15,6 +15,7 @@ There are several constraints to send requests:
 - Authorization
   - The key storage is defined on MkWeb.conf, `mkweb.restapi.key.table`
   - Get method via URL, must be exporessed with query parameter that defined with `search_key`
+  - Key could be JWT which MkWeb offered, or just Hashed String
   - The other requests include get method through HTTP communication, must be sent with `Authorization` Header, value with:
     - "Authorization": "Bearer _____"
 - GET, HEAD, OPTIONS only allow URI options
@@ -41,6 +42,7 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4
 ```
 
+-----
 
 ## GET Method
 
@@ -166,6 +168,7 @@ $ curl --request PUT "http://localhost/mkapi/users/userid/smith@gmail.com" --dat
 
 - Success to generate a new data
   - Remember, in this case, no data sequence or auto increment is returned.
+
 ```json
 {
   "took": "139",
@@ -281,6 +284,20 @@ curl --request OPTIONS "http://localhost/mkapi/users"
 }
 ```
 -----
+
+## If You Require Authorization
+
+- For `curl`
+```bash
+$ curl --request GET "http://localhost/mkapi/users" -H "Authorization: Bearer 123456"
+$ curl --request POST "http://localhost/mkapi/users" --data '{"userid":"test@test.com", "userpw":"159159", "usernickname":"testnick"}' -H "Authorization: Bearer 123456"
+# and so on....
+```
+
+- For `GET` via URL
+```
+http://localhost/mkapi/users?search_key=123456
+```
 
 ## Options for RESTful API
 
