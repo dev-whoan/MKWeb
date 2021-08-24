@@ -5,6 +5,7 @@ import com.mkweb.data.MkAuthTokenData;
 import com.mkweb.data.MkJWTData;
 import com.mkweb.logger.MkLogger;
 import com.mkweb.utils.MkJsonData;
+import com.mkweb.utils.MkUtils;
 import org.json.simple.JSONObject;
 
 import javax.servlet.http.Cookie;
@@ -44,8 +45,8 @@ public class MkAuthToken {
 
 		String orgHeader, orgPayload;
 		try{
-			orgHeader = new String(Base64.getUrlDecoder().decode(header));
-			orgPayload = new String(Base64.getUrlDecoder().decode(payload));
+			orgHeader = MkUtils.base64urlDecoding(header);   ////new String(Base64.getUrlDecoder().decode(header));
+			orgPayload = MkUtils.base64urlDecoding(payload); //new String(Base64.getUrlDecoder().decode(payload));
 		} catch (Exception e){
 			return false;
 		}

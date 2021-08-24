@@ -1,0 +1,33 @@
+{
+  "Controller": {
+    "name":"",
+    "last_uri":"",
+    "debug":"error",
+    "auth":"no",
+    "api":"no",
+    "device":{
+      "desktop":{
+        "default":{
+          "path":"/views/root",
+          "file":"main.jsp",
+          "uri":""
+        }
+      }
+    },
+    "services":[
+      {
+        "page_static":"true",
+        "type":{
+          "kind":"",
+          "id":""
+        },
+        "method":"",
+        "obj":"",
+        "parameter_name":"",
+          "value":{
+            "1":""
+        }
+      }
+    ]
+  }
+}

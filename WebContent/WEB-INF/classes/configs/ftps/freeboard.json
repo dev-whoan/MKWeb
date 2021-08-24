@@ -1,0 +1,43 @@
+{
+  "Controller": {
+    "name":"freeboard",
+    "path":"/files",
+    "debug":"error",
+    "auth":"no",
+    "services":[
+      {
+        "id":"posts",
+        "type":"ftp-receiver",
+        "servicepath":"/post",
+        "hash_dir":"true",
+        "max_count":"10",
+        "format":{
+          "1":"jpg",
+          "2":"png",
+          "3":"gif",
+          "4":"PNG",
+          "5":"jpeg",
+          "6":"bmp",
+          "7":"mp4",
+          "8":"avi",
+          "9":"zip"
+        }
+      },
+      {
+        "id":"comments",
+        "type":"ftp-receiver",
+        "servicepath":"/comment",
+        "hash_dir":"true",
+        "max_count":"1",
+        "format":{
+          "1":"jpg",
+          "2":"png",
+          "3":"gif",
+          "4":"PNG",
+          "5":"jpeg",
+          "6":"bmp"
+        }
+      }
+    ]
+  }
+}

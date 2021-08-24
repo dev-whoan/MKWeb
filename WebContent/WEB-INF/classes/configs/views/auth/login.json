@@ -38,8 +38,8 @@
 				"obj":"list",
 				"parameter_name":"user",
 				"value":{
-					"1":"user_id",
-					"2":"user_pw"
+					"1":"id",
+					"2":"password"
 				}
 			}
 		]
