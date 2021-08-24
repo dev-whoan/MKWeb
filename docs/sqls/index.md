@@ -31,7 +31,7 @@ Sql includes services for executing sqls that can be separated into each DMLs, a
 
 | name           | description                     | value                      |
 |:---------------|:--------------------------------|:---------------------------| 
-| id             | id of service. you must use one of defined id in View Controller.              | Unique ID in SQLs          |
+| id             | id of service. View Controller must use one of id that defined here    | Unique ID in SQLs          |
 | auth           | requiring authority for the service or not                                     | yes, no                    |
 |:---------------|:--------------------------------|:---------------------------| 
 | query                                                                         |
@@ -136,6 +136,7 @@ As you remember, the parameters from View(page), is equally same with the value 
               "type":"INNER JOIN",
               "joinfrom":"article as a",
               "on":"u.id = a.writer AND u.id=@id@"
+            }
           },
           "data":{
             "1":""

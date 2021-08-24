@@ -54,7 +54,7 @@ Services are could be SQL, FTP.
 |:---------------|:--------------------------------------------------------------------------------------------------------------------------|:--------------------------------| 
 | type                                                                                                                                                                         |
 | kind           | type of service. the type is a kind of controller, and the controller must have service that have same id                 | sql, ftp                        |
-| id             | id of service that defined in the target Controller.                                                                      | must be defined on target contr |
+| id             | id of service that also must be defined in the target Controller.                                                                | must be defined on target contr |
 |:---------------|:--------------------------------------------------------------------------------------------------------------------------|:--------------------------------| 
 | method         | method to execute the service                                                                                             | GET, POST                       |
 | obj            | service will return the result with the obj data type                                                                     | list                            |

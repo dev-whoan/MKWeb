@@ -89,6 +89,10 @@ mkweb.restapi.docs=docs
 # default : no [yes, no]
 mkweb.restapi.hostonly=no
 
+# When you post data, returned sequence or auto_increment
+# default: _update_seq
+mkweb.restapi.dml.sequence=_update_seq
+
 # auth require for using restapi
 # if you change this value, server need to be restarted.
 # default: no
