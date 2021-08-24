@@ -521,7 +521,7 @@ There are several constraints to send requests:
 Here I explain with default options for default values
 - `mkapi` is default value of mkweb.restapi.uri
 - `search_key` is default value of mkweb.restapi.search.keyexp
-  - which have mykey
+  - which have 123456
 - pretty is returning data as pretty, the default value of mkweb.restapi.search.opt.pretty.param
 - and so on...
 
@@ -556,7 +556,7 @@ Examples:
 $ curl --request GET "http://localhost/mkapi/users/usernickname/John"
 
 # Key required
-$ curl --request GET "http://localhost/mkapi/users/usernickname/John?search_key=mykey"
+$ curl --request GET "http://localhost/mkapi/users/usernickname/John?search_key=123456"
 ```
 
 ### Success to request
