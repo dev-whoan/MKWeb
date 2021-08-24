@@ -346,8 +346,8 @@ public class MkDbAccessor {
 					}
 				}
 
-				int executeResult = prestmt.executeUpdate();
-				if(executeResult > 0){
+				result = prestmt.executeUpdate();
+				if(result > 0){
 					try(ResultSet generated = prestmt.getGeneratedKeys()){
 						if(generated.next())
 							result = generated.getLong(1);
