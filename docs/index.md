@@ -31,7 +31,7 @@ Or you can clone from github, and you can use files under WebContent, and source
 
 ### For Linux
 
-### WAR file compiled in Java13, so you have to use Java13 to run your servlet container.
+### WAR file compiled in Java13, so you have to use Java13 to run your servlet container. 
 
 1. Place war file specified location.
 ```bash
