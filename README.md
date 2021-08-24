@@ -1,155 +1,292 @@
 
 <img src="https://user-images.githubusercontent.com/65178775/83269009-6a481f80-a201-11ea-8475-0a779375a005.png" width="100%" />
 
-# MKweb
-Minwhoan - Kihyeon's JSP-Servlet Web Server Framework Repository
+---
+layout: custom
+---
 
-# MkWeb wiki
-https://github.com/dev-whoan/MKWeb/wiki
-OR
-https://mkweb.dev-whoan.xyz
+# Welcome to MkWeb!
 
-# Download Without Source
-<a href="https://mkweb.dev-whoan.xyz/deploy.zip" target="_blank">Download</a>
+-----
 
-# What is MKWeb?
+# Install
 
-MkWeb is well created 'Web-Server' framework.
+You can download WAR file here: [https://github.com/dev-whoan/MKWeb/tree/master/deploy]
 
-We considered that developers should consider lots of things when he/she started to create some services; App, WebSite, science experimental, etc. Simply Front-End, and Back-End.
+Or you can clone from github, and you can use files under WebContent, and sources in src/com/mkweb.
+- You must change WebContent folder name into ROOT
+- The sources you downloaded must be compiled into .class, and put them inside of ROOT/WEB-INF/classes
+	- com/mkweb/...
 
-But actually, the simple service idea is about Front-End like: How about creating a food delivery service? People can choose the foods what they want to eat, and the page will show information about the food. Furthermore when they order it, the seller will receive the infor where consumer wants to receive it, and the other things about infor.
+## With War file
 
-So the idea started with 'Developers just need to focus on the Front-End, easily View-side.'
+### For Windows
 
-However, there are lots of libraries for creating Web-Server, but when developer use it, he/she needs to construct, code, and test about it. It costs time too much, so we thought that 'What about let we solve the web-server part?'
+1. Place war file in servlet container such as Tomcat.
 
-So MKWeb borned.
+2. Unzip war file with starting servlet container as Administrator.
 
-We are designing our MKWeb with MVC pattern( however we are students and not pertty good at desining it, but we are working hard on how can we follow the pattern. ), and what MKWeb should offer to let developers focusing into there 'Front-End'.
+3. Move to /path/to/mkweb/ROOT/WEB-INF/classes/configs
 
-<p align="center">
-<img src="https://user-images.githubusercontent.com/65178775/81583650-9b94b300-93ec-11ea-8683-c4ffc67215f9.png" width="66%"/>
-</p>
-* Model
+4. Modify MkWeb.conf and require json configs and add Controllers you want to use.
 
-A server-side resources such as; DbAccessor, FileTransfer, Logger, ...
+5. Restart the tomcat
 
-* Controller
+### For Linux
 
-A bridge of Model <---> Views
+### WAR file compiled in Java13, so you have to use Java13 to run your servlet container. 
 
-* Service
+1. Place war file specified location.
+```bash
+$ mkdir /mkweb/webapps
+$ mv MkWeb.war /mkweb/webapps
+```
 
-The actual functions(workers) which included in Controller
+2. Give Read Write Permission on MkWeb's location to servlet container.
+```bash
+$ chown -R SERVLET_CONTAINER /mkweb
+$ chmod -R 755 /mkweb
+```
 
-# JSON Configs
-* Controller
+3. Unzip the war file with starting servlet container.
+```bash
+# With Tomcat9
+$ systemctl start tomcat9
+```
 
-In MkWeb, controller means all the relations and actions needed to define the relationship between Model and View such as page configs, sql configs, and etc, that 
+4. Rename just unzipped folder into ROOT, and move to configs folder
+```bash
+$ cd /mkweb/webapps
+$ mv MkWeb ROOT
+$ cd ROOT/WEB-INF/classes/configs
+```
 
-Definition of Services and Controllers
+5. Modify MkWeb.conf and require json configs and add Controller you want to use.
 
-JSON Configs are the biggest profit  when you use MKWeb.
+6. Restart the tomcat
+```bash
+# @ will be version of tomcat. for me, tomcat@ => tomcat9
+$ systemctl restart tomcat@
+```
 
-You can easily access to Model via services or controllers.
-To use the services and controllers, you need to set the config files, ~.json.
+- If tomcat doesn't respond to log or any ftp requests, you need to check Servlet Container's permission.
 
-The configs are designed with JSON, so you can simply define it.
+```bash
+# For tomcat
+$ cd /etc/systemd/system/multi-user.target.wants
+# Modify Tomcat service
+$ sudo vi tomcat@.service
 
-For example, before using MKWeb you need to design DBA, DBO, and whatever you need to access to DB, but now you just need to set relevant Configs to access DB.
+#######tomcat9.service######
+...
+#Security
+...
+ReadWritePaths=/etc/tomcat@/Catalina/
+ReadWritePaths=/var/lib/tomcat@/webapps/
+ReadWritePaths=/var/log/tomcat@/
+#Add your mkweb paths
+ReadWritePaths=/mkweb/webapps/
+```
 
-Define the <span>SQL Json</span>, and View Json to choose which query to use, and after defining it, you can easily execute the SQL.
+After modify it, you need to change user/group of tomcat's umask.
 
-Just you need to define the relations <span>well</span> for request to response.
+```bash
+$ vi /usr/share/tomcat@/bin/catalina.sh
 
-If the relations or requests are not defined, MkLogger would let you know what's going on.
+### find UMASK, change it into 0022
+...
+if [ -z "$UMASK" ]; then
+    UMASK="0022"
+fi
+...
+```
 
+Save the catalina.sh, and restart the tomcat.
 
+## With Cloning Codes
 
-# What MkWeb Can Do?
+1. Open the project with Java IDE.
 
-* Logging, DB Connect, and RESTful API
+2. Modify require json configs and the source you want to change.
 
-MKWeb supports Logging, DB connect, and limited RESTful API functions.
+- json configs are located in WebContent/WEB-INF/classes/configs
 
-* MkLogger
+3. Export Project to WAR file
+- For eclipse
+    - You can export it with Runnable Jar
+	  - To export into Runnable jar, only sources should be exported.
+	  - After exports jar file, located jar into your webapps jar lib, and copy the /WEB-INF/classes/configs into your /WEB-INF folder
+	- Or WAR file
+	  - Follow [With War file] above.
 
-MkLogger is logging every tasks on MkWeb, so you can check which requests has come, and what was the response.
+- For IntelliJ, Build artifacts.
+![artifacts](https://raw.githubusercontent.com/dev-whoan/MKWeb/master/docs/assets/img/png/intellij.png)
 
-You can manage your webserver easily with MkLogger's feedback.
+4. Follow [With War file] above.
 
-For example, if the user asked wrong requesets, MkLogger would tell what is the problem,
+- You should compile the project up to Java8
+- If you use higher than Java8, you need to set your Servlet container's java version in a same version.
 
-And user asked right requests, and you set wrong definition(or relations) on controller, MkLogger would also tell the problem.
+## When you operate MkWeb...
 
-So, easy maintance.
+- with standalone logging
+![standalone](https://raw.githubusercontent.com/dev-whoan/MKWeb/master/docs/assets/img/png/operated_log.png)
 
-Also you can use MkLogger on your custom java file so you can check your custom log on MkLogger.
+- with catalina
+![catalina](https://raw.githubusercontent.com/dev-whoan/MKWeb/master/docs/assets/img/png/operated_cat.png)
 
-With other frameworks, you need to connect DB with programming it, and create every DAO, DTO, Data Beans.
+-----
+# About
 
-However, using mkweb, you don't have to create any DAO, DTO, and Data Beans.
+MkWeb is Web Server Framework based on Servlet.
 
-You just need to config the View jsons and SQL jsons.
+You can use MkWeb with JSP, HTML and even another front library like Reactjs, Vuejs.
 
-You can easily use your query result data with &lt;mkw:get&gt; HTML Custom Tag.
+## Motive
 
-* MkWeb supports RESTful API.
+Front developers should consider lots of things when they want to launch kind of services; Application, Web Site, Databases, etc.
 
-For now, it's not 100% developed, but we are planning to support every function in RESTful API.
+Simply Front-End and Back-End.
 
-Supporting functions: <span>Method: Get, Post</span>
+And their ideas come from Front-End: 'How about creatinga food delivery service?', 'Why there is no service like ...'
 
-However, Get method is now limited supported. Following is now supporting functions.
+However, they need to crew a team for developing their ideas; Backend developer, Frontend developer, Designer, ... 
 
-For example, if you have Users data set, and there are 3 columns; name, phone, and address:
+So MkWeb's idea is started with 'Front developer just need to focus on the Planning, Front-End easily View-side and user experience.
 
-1. /users
+-----
 
-2. /users/name/이름
+# Architecture
 
-3. /users/name/이름/phone/번호
+## Design
 
-==> 1. searching everything in users 2. searching with perfect condition (name have value, and phone have value)<br>
+We are designing our MkWeb with MVC pattern.
 
-And following functions are not supporting now.
+![MVC Pattern](https://user-images.githubusercontent.com/65178775/81583650-9b94b300-93ec-11ea-8683-c4ffc67215f9.png)
 
-1. /users/name
+## Model
 
-2. /users/name/이름/phone
+We defined Model as server-side resources: DB, File server, Logger
 
-==> 1. want to get only name column that includes whole names in users / 2. want to get only phone column that the people whos' name is John.)
+## Controller
 
-We support 100% POST method to create new data.
+We designed Controller as relationships between Model and View-side
 
-But there are some rules to use POST method, you can check it on RESTful API Configs.
+## Service
 
-What We Are Planning To
+We defined Service as the actual functions which operates for Controller, in Controller.
 
-We are planning to following functions.
+-----
 
-1. 100% RESTful API
+# Operating
 
-2. Session
+## JSON Configs
 
-3. Device informations(Header)
+In MkWeb, you can use several offered Controllers.
 
-# Developer E-mail
+To use those Controllers, you need to set, config them with modifying and adding JSON files.
 
-* dev-whoan
-dev.whoan@gmail.com
+And after you modify the json configs, you don't have to restart the webserver. The modifying information will be automatically covered. (however you have to restart when you create new one.)
 
-* hyeonic
-evan3566@gmail.com
+## Controllers and Services
 
-* koh
-khj1538104@gmail.com
+JSON Configs are the biggest profit when you use MkWeb.
+
+You can easily access to Model via Services and Controllers.
+
+For example, you just need to set relevant Configs to access DB, one is about Page, and another is about Sql.
+
+However, before using MkWeb you need to design DBA, DBO, and whatever you need to access to the DB.
+
+Using MkWeb, the hassle is gone!
+
+## Logger
+
+MkWeb includes MkLogger which logs everything happend in MkWeb.
+
+-----
+
+# Features
+
+## Logging
+
+MkLogger logs every tasks on MkWeb, so you can easily trace the currently situation in MkWeb.
+
+- Some JSON settings are wrong, and how can I fix it.
+
+- Someone request something, and how MkWeb responses about it.
+
+- Some error have occured, and what is wrong.
+
+## Connecting to RDBMS(mariadb, mysql)
+
+MkWeb can connect to RDBMS without programming about it.
+
+You just need to set DB information on MkWeb.conf, and setting JSON for pages and sqls.
+
+## RESTful API
+
+MkWeb supports RESTful API.
+
+Request header content type must be `application/json`.
+
+`GET` for getting data, `POST` for generating data, `PUT` for modifying data, `DELETE` for deleting data, and `HEAD`, `OPTIONS`.
+
+GET: You can get specify the target data with Document URI.
+```bash
+curl --request GET "http://localhost/users/name/Jhon"
+```
+
+POST: You can generate data with sending Body parameter. 
+```bash
+curl --request POST "http://localhost/users" --data '{"name":"Jhon", "age":"23"}'
+```
+
+PUT: You can modify exists data or generating new data. Condition to search original data will be sent with Document URI, and new data will be sent in Body parameter.
+```bash
+curl --request PUT "http://localhost/users/name/Jhon" --data '{"age":"24"}'
+```
+
+DELETE: You can remove exists data with specifying in Body parmater
+```bash
+curl --request DELETE "http://localhost/users" --data '{"name":"Jhon"}'
+```
+
+### Options for RESTful API
+
+`pretty`: You can receive the response in pretty json.
+```bash
+curl --request GET "http://localhost/users?pretty"
+```
+
+`paging`: You can paging the result datas.
+```bash
+curl --request GET "http://localhost/users?paging=5"
+```
+
+`orderby`: You can ordering the result datas.
+`orderway`: You can specify the ordering method, DESC or ASC.
+
+```bash
+curl --request GET "http://localhost/users?orderby=name&orderway=desc"
+```
+
+-----
+# Please don't hesitate to contact us
+
+## dev-whoan, PM & Developer (2020.04 ~ )
+- dev.whoan@gmail.com
+
+## hyeonic, Developer (2020.04~2020.09)
+- evan3566@gmail.com
+
+## koh, Developer     (2021.01~2021.03)
+- khj1538104@gmail.com
 
 # What we want you to do when you use MKWeb or copy and distribute MKWeb(convey).
 * MKWeb을 사용하거나 복제, 배포할 때 해줬으면 하는 일
 
-1. Don't forget who created it.
-- Minwhoan, Kihyeon. We just wanted to be well known programmers.
+1. Don't hesitate to feedback.
+- We are opened for your feedback!
 
 2. Please scout us.
