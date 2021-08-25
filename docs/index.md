@@ -15,6 +15,7 @@ Or you can clone from github, use json files under WebContent with modifying sou
   - You must change WebContent folder name into ROOT
   - The sources you downloaded must be compiled into .class, and put them inside of ROOT/WEB-INF/classes
 	- com/mkweb/...
+  - Remove deploy folders
 
 ## With War file
 
