@@ -10,9 +10,10 @@ layout: custom
 
 You can download WAR file here: [Download War](https://github.com/dev-whoan/MKWeb/tree/master/deploy)
 
-Or you can clone from github, and you can use files under WebContent, and sources in src/com/mkweb.
-- You must change WebContent folder name into ROOT
-- The sources you downloaded must be compiled into .class, and put them inside of ROOT/WEB-INF/classes
+Or you can clone from github, use json files under WebContent with modifying sources in src/com/mkweb.
+- To operate MkWeb with cloning...
+  - You must change WebContent folder name into ROOT
+  - The sources you downloaded must be compiled into .class, and put them inside of ROOT/WEB-INF/classes
 	- com/mkweb/...
 
 ## With War file
