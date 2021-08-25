@@ -18,9 +18,7 @@ Or you can clone from github, use json files under WebContent with modifying sou
 
 ## With War file
 
----
-JDK Version: Java13
----
+* We compiled War with JDK13, so you have to use Java 13 for Servlet Container.
 
 ### For Windows
 
