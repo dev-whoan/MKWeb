@@ -18,6 +18,10 @@ Or you can clone from github, use json files under WebContent with modifying sou
 
 ## With War file
 
+---
+JDK Version: Java13
+---
+
 ### For Windows
 
 1. Place war file in servlet container such as Tomcat.
@@ -31,8 +35,6 @@ Or you can clone from github, use json files under WebContent with modifying sou
 5. Restart the tomcat
 
 ### For Linux
-
-### WAR file compiled in Java13, so you have to use Java13 to run your servlet container. 
 
 1. Place war file specified location.
 ```bash
