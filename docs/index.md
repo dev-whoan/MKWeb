@@ -68,7 +68,7 @@ $ cd ROOT/WEB-INF/classes/configs
 $ systemctl restart tomcat@
 ```
 
-- If tomcat doesn't respond to log or any ftp requests, you need to check Servlet Container's permission.
+- If Tomcat doesn't respond to log or any I/O request, you need to check Servlet Container's permission level.
 
 ```bash
 # For tomcat
