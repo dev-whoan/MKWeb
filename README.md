@@ -14,10 +14,12 @@ You can download WAR file here: [https://github.com/dev-whoan/MKWeb/tree/master/
 Or you can clone from github, use json files under WebContent with modifying sources in src/com/mkweb.
 - To operate MkWeb with cloning...
   - You must change WebContent folder name into ROOT
-  - The sources you downloaded must be compiled into .class, and put them inside of ROOT/WEB-INF/classes
+  - The sources you downloaded must be compiled and put them into ROOT/WEB-INF/classes folder
 	- com/mkweb/...
 
 ## With War file
+
+### WAR file compiled by Java version 13, so you have to use Java13 to run your servlet container. 
 
 ### For Windows
 
@@ -25,50 +27,51 @@ Or you can clone from github, use json files under WebContent with modifying sou
 
 2. Unzip war file with starting servlet container as Administrator.
 
-3. Move to /path/to/mkweb/ROOT/WEB-INF/classes/configs
+3. Go to /path/to/mkweb/ROOT/WEB-INF/classes/configs
 
 4. Modify MkWeb.conf and require json configs and add Controllers you want to use.
+- Controller means such as View Controllers, SQL Controllers, FTP Controllers, ...
 
 5. Restart the tomcat
 
 ### For Linux
 
-### WAR file compiled in Java13, so you have to use Java13 to run your servlet container. 
-
-1. Place war file specified location.
+1. Place war file to specified location.
 ```bash
+# Specified location; for example /mkweb/webapps/...
 $ mkdir /mkweb/webapps
 $ mv MkWeb.war /mkweb/webapps
 ```
 
-2. Give Read Write Permission on MkWeb's location to servlet container.
+2. Allow Read/Write to servlet container for the location.
 ```bash
 $ chown -R SERVLET_CONTAINER /mkweb
 $ chmod -R 755 /mkweb
 ```
 
-3. Unzip the war file with starting servlet container.
+3. Unzip the war file by starting servlet container.
 ```bash
-# With Tomcat9
-$ systemctl start tomcat9
+# Tomcat@ → @ means number. for me, tomcat9
+$ systemctl start tomcat@
 ```
 
-4. Rename just unzipped folder into ROOT, and move to configs folder
+4. Rename the just unzipped folder into ROOT and go to configs folder under the folder.
 ```bash
 $ cd /mkweb/webapps
 $ mv MkWeb ROOT
+# abs path: /mkweb/webapps/ROOT/WEB-INF/classes/configs
 $ cd ROOT/WEB-INF/classes/configs
 ```
 
 5. Modify MkWeb.conf and require json configs and add Controller you want to use.
+- Controller means such as View Controllers, SQL Controllers, FTP Controllers, ...
 
 6. Restart the tomcat
 ```bash
-# @ will be version of tomcat. for me, tomcat@ => tomcat9
 $ systemctl restart tomcat@
 ```
 
-- If tomcat doesn't respond to log or any ftp requests, you need to check Servlet Container's permission.
+- If tomcat doesn't respond to log or any ftp requests, you need to check Servlet Container's permission level.
 
 ```bash
 # For tomcat
@@ -83,7 +86,7 @@ $ sudo vi tomcat@.service
 ReadWritePaths=/etc/tomcat@/Catalina/
 ReadWritePaths=/var/lib/tomcat@/webapps/
 ReadWritePaths=/var/log/tomcat@/
-#Add your mkweb paths
+# Add your mkweb paths
 ReadWritePaths=/mkweb/webapps/
 ```
 
@@ -101,13 +104,16 @@ fi
 ```
 
 Save the catalina.sh, and restart the tomcat.
+```bash
+$ systemctl daemon-reload
+$ systemctl restart tomcat9
+```
 
 ## With Cloning Codes
 
 1. Open the project with Java IDE.
 
 2. Modify require json configs and the source you want to change.
-
 - json configs are located in WebContent/WEB-INF/classes/configs
 
 3. Export Project to WAR file
