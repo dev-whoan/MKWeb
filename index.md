@@ -125,7 +125,7 @@ $ systemctl restart tomcat9
 	  - Follow [With War file] above.
 
 - For IntelliJ, Build artifacts.
-![artifacts](https://raw.githubusercontent.com/dev-whoan/MKWeb/master/docs/assets/img/png/intellij.png)
+![artifacts](https://raw.githubusercontent.com/dev-whoan/MKWeb/docs/assets/img/png/intellij.png)
 
 4. Follow [With War file] above.
 
@@ -135,10 +135,10 @@ $ systemctl restart tomcat9
 ## When you operate MkWeb...
 
 - with standalone logging
-![standalone](https://raw.githubusercontent.com/dev-whoan/MKWeb/master/docs/assets/img/png/operated_log.png)
+![standalone](https://raw.githubusercontent.com/dev-whoan/MKWeb/docs/assets/img/png/operated_log.png)
 
 - with catalina
-![catalina](https://raw.githubusercontent.com/dev-whoan/MKWeb/master/docs/assets/img/png/operated_cat.png)
+![catalina](https://raw.githubusercontent.com/dev-whoan/MKWeb/docs/assets/img/png/operated_cat.png)
 
 -----
 # About
