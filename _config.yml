@@ -20,3 +20,9 @@ link5_label: FTP
 link6: true
 link6_uri: /jwt
 link6_label: JWT
+analytics:
+  provider               : "google-gtag" 
+                          # false (default), "google", "google-universal", "google-gtag", "custom"
+  google:
+    tracking_id          : "G-C45ZFV66FH"
+    anonymize_ip         : # true, false (default)
