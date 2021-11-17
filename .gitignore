@@ -8,6 +8,7 @@
 MKWeb.iml
 /classes/
 /WebContent/META-INF/
+/WebContent/WEB-INF/classes/configs/MkWeb.conf
 
 common.properties
 UML_MKWeb.ucls
