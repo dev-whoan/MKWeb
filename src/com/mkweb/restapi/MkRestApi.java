@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -26,12 +25,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.mkweb.config.MkSqlConfig;
+import com.mkweb.config.MkViewConfig;
 import com.mkweb.utils.MkUtils;
 import org.json.simple.JSONObject;
 
 import com.mkweb.config.MkConfigReader;
-import com.mkweb.config.MkRestApiPageConfigs;
-import com.mkweb.config.MkRestApiSqlConfigs;
 import com.mkweb.utils.MkJsonData;
 import com.mkweb.data.MkPageJsonData;
 import com.mkweb.data.MkSqlJsonData;
@@ -316,7 +315,7 @@ public class MkRestApi extends HttpServlet {
 					allowMethods = "  \"Allow\":\"";
 				else
 					allowMethods = "\"Allow\":\"";
-				ArrayList<MkPageJsonData> control = MkRestApiPageConfigs.Me().getControl(mkPage);
+				ArrayList<MkPageJsonData> control = MkViewConfig.Me().getApiControl(mkPage);
 				for(int i = 0; i < control.size(); i++) {
 
 					allowMethods += control.get(i).getMethod().toString().toUpperCase();
@@ -374,8 +373,7 @@ public class MkRestApi extends HttpServlet {
 			apiResponse.setCode(406);
 			apiResponse.setMessage("Content type not supported.");
 		}
-		
-		//		String customTable = request.getParameter(MKWEB_CUSTOM_TABLE);
+
 		String prettyParam = null;
 		String pagingParam = null;
 		String sortingParam = null;
@@ -422,7 +420,7 @@ public class MkRestApi extends HttpServlet {
 			mklogger.info("From: " + ipAddress);
 			mklogger.info("Data: " + mkPage + "\tMethod: " + REQUEST_METHOD);
 
-			ArrayList<MkPageJsonData> control = MkRestApiPageConfigs.Me().getControl(mkPage);
+			ArrayList<MkPageJsonData> control = MkViewConfig.Me().getApiControl(mkPage);
 			if (control == null) {
 				mklogger.error("[API] Control " + mkPage + " is not exist.");
 				apiResponse.setMessage("There is no api named : " + mkPage);
@@ -570,7 +568,6 @@ public class MkRestApi extends HttpServlet {
 					break;
 				}
 			}
-
 			removeOptionsFromParameter(requestParameterJson, prettyParam, pagingParam, sortingParam);
 			removeOptionsFromParameter(requestParameterJsonToModify, prettyParam, pagingParam, sortingParam);
 
@@ -580,7 +577,7 @@ public class MkRestApi extends HttpServlet {
 				Set<String> requestKeySet = requestParameterJson.keySet();
 				Iterator<String> requestIterator = requestKeySet.iterator();
 
-				ArrayList<MkPageJsonData> pageControl = MkRestApiPageConfigs.Me().getControl(mkPage);
+				ArrayList<MkPageJsonData> pageControl = MkViewConfig.Me().getApiControl(mkPage);
 
 				for (MkPageJsonData service : pageControl) {
 					if (REQUEST_METHOD.contentEquals(service.getMethod())) {
@@ -595,8 +592,8 @@ public class MkRestApi extends HttpServlet {
 					apiResponse.setCode(405);
 					break;
 				}
-
-				ArrayList<MkSqlJsonData> sqlControl = MkRestApiSqlConfigs.Me().getControlByServiceName(pageService.getServiceName());
+				ArrayList<MkSqlJsonData> sqlControl = MkSqlConfig.Me().getControlByServiceName(pageService.getServiceName(), true);
+				String[] tttt = sqlControl.get(0).getCondition();
 				String[] sqlConditions = sqlControl.get(0).getCondition();
 
 				if (sqlConditions.length == 0) {
@@ -706,7 +703,6 @@ public class MkRestApi extends HttpServlet {
 		response.setContentType(apiResponse.getContentType());
 		response.setCharacterEncoding("UTF-8");
 		response.setHeader("Result", "HTTP/1.1 " + apiResponse.getCode() + " " + apiResponse.getStatus());
-	//	response.addHeader("Life-Time", "" + apiResponse.getLifeTime());
 		mklogger.debug("Result: " + resultObject);
 		mklogger.info("Response Code: " + apiResponse.getCode());
 
@@ -719,56 +715,6 @@ public class MkRestApi extends HttpServlet {
 				START_MILLIS,
 				(prettyParam != null)
 		);
-//		PrintWriter out = response.getWriter();
-//
-//		String result = null;
-//		boolean pretty = false;
-//		pretty = (prettyParam != null);
-//
-//		if(resultObject == null) {
-//			String allowMethods = "";
-//			if(apiResponse.getCode() < 400 && REQUEST_METHOD.contentEquals("options")) {
-//				if(pretty)
-//					allowMethods = "  \"Allow\":\"";
-//				else
-//					allowMethods = "\"Allow\":\"";
-//				ArrayList<MkPageJsonData> control = MkRestApiPageConfigs.Me().getControl(mkPage);
-//				for(int i = 0; i < control.size(); i++) {
-//
-//					allowMethods += control.get(i).getMethod().toString().toUpperCase();
-//
-//					if( i < control.size()-1) {
-//						allowMethods += ",";
-//					}
-//				}
-//				allowMethods += "\"";
-//			}
-//			result = apiResponse.generateResult(apiResponse.getCode(), REQUEST_METHOD, allowMethods, pretty, START_MILLIS);
-//			out.print(result);
-//		}else {
-//			if(pretty)
-//				result = MkJsonData.jsonToPretty(resultObject);
-//			else
-//				result = resultObject.toString();
-//
-//			result = result.substring(1, result.length()-1);
-//			Object roPut = resultObject.get("PUT_UPDATE_DONE");
-//			Object roPost = resultObject.get("PUT_INSERT_DONE");
-//			Object roDelete = resultObject.get("DELETE_DONE");
-//			if(roPut != null) {
-//				result = "";
-//			}else if(roPost != null) {
-//				resultObject.remove("PUT_INSERT_DONE");
-//			}else if(roDelete != null) {
-//				resultObject.remove("DELETE_DONE");
-//			}
-//			apiResponse.setContentLength(resultObject.toString().length());
-//
-//			String temp = apiResponse.generateResult(apiResponse.getCode(), REQUEST_METHOD, result, pretty, START_MILLIS);
-//			out.print(temp);
-//		}
-//		out.flush();
-//		out.close();
 	}
 
 	private JSONObject doTaskGet(MkPageJsonData pjData, MkSqlJsonData sqlData, JSONObject jsonObject, String mkPage,

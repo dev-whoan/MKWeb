@@ -53,8 +53,8 @@ public class MkWebContextListener implements ServletContextListener {
 		 */
 		File mkweb_sql_config = new File(new File(context.getRealPath("/")), sqlConfigsUri);
 		File[] config_sqls = mkweb_sql_config.listFiles();
-		MkSQLConfigs sjc = MkSQLConfigs.Me();
-		sjc.setSqlConfigs(config_sqls);
+		MkSqlConfig sjc = MkSqlConfig.Me();
+		sjc.setSqlConfigs(config_sqls, "SQL");
 		/*
 		 * Setting Pages
 		 */
@@ -84,13 +84,13 @@ public class MkWebContextListener implements ServletContextListener {
 				size = config_pages.length;
 			}
 		}
-		MkPageConfigs pc = MkPageConfigs.Me();
-		pc.setPageConfigs(config_pages);
+		MkViewConfig pc = MkViewConfig.Me();
+		pc.setPageConfigs(config_pages, "Page");
 		
 		/*
 		 * FTP Server Settings
 		 */
-		if(MkConfigReader.Me().get("mkweb.ftp.use").contentEquals("yes")) {
+		if(MkConfigReader.Me().get("mkweb.ftp.use").toLowerCase().contentEquals("yes")) {
 			File mkweb_ftp_configs = new File(new File(context.getRealPath("/")), ftpConfigsUri);
 			File[] config_ftps = mkweb_ftp_configs.listFiles();
 			MkFTPConfigs fjc = MkFTPConfigs.Me();
@@ -103,11 +103,11 @@ public class MkWebContextListener implements ServletContextListener {
 		/*
 		 *  Rest Api Settings
 		*/
-		if(MkConfigReader.Me().get("mkweb.restapi.use").contentEquals("yes")) {
+		if(MkConfigReader.Me().get("mkweb.restapi.use").toLowerCase().contentEquals("yes")) {
 			File mkweb_apisql_config = new File(new File(context.getRealPath("/")), apiSqlConfigs);
 			File[] config_api_sqls = mkweb_apisql_config.listFiles();
-			MkRestApiSqlConfigs mrasc = MkRestApiSqlConfigs.Me();
-			mrasc.setSqlConfigs(config_api_sqls);
+			MkSqlConfig mrasc = MkSqlConfig.Me();
+			mrasc.setSqlConfigs(config_api_sqls, "API SQL");
 			
 			File mkweb_apipage_config = new File(new File(context.getRealPath("/")), apiPageConfigs);
 			File[] config_api_pages = mkweb_apipage_config.listFiles();
@@ -134,9 +134,9 @@ public class MkWebContextListener implements ServletContextListener {
 					size = config_api_pages.length;
 				}
 			}
-			
-			MkRestApiPageConfigs mrac = MkRestApiPageConfigs.Me();
-			mrac.setPageConfigs(config_api_pages);
+
+			MkViewConfig mrac = MkViewConfig.Me();
+			mrac.setPageConfigs(config_api_pages, "API Page");
 
 			ServletRegistration.Dynamic registration = context.addServlet("MkRestApiServlet", MkRestApi.class);
 			registration.addMapping("/" + MkConfigReader.Me().get("mkweb.restapi.uri") + "/*");

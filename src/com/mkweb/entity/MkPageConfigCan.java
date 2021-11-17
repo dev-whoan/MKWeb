@@ -40,9 +40,10 @@ public abstract class MkPageConfigCan extends MkPageJsonData {
 			"file",
 			"uri"
 	};
-	
-	public abstract ArrayList<MkPageJsonData> getControl(String k);
-	public abstract void setPageConfigs(File[] pageConfigs);
+
+	public abstract void setPageConfigs(File[] pageConfigs, String pageType);
+	public abstract ArrayList<MkPageJsonData> getNormalControl(String requestURI);
+	public abstract ArrayList<MkPageJsonData> getApiControl(String k);
 	protected abstract MkPageJsonData setPageJsonData(boolean pageStatic, String controlName, String pageLastURI, String serviceName, String serviceType, String debugLevel, ArrayList<MkDeviceData> device, String objectType, String method, String PRM_NAME, String[] VAL_INFO, boolean isApi, String auth);
 
 	public void printPageInfo(MkLogger mklogger, MkPageJsonData jsonData, String type) {

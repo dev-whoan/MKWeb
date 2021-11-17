@@ -17,30 +17,26 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
 
+import com.mkweb.config.MkViewConfig;
 import com.mkweb.data.MkFtpData;
 import com.mkweb.data.MkPageJsonData;
 import com.mkweb.logger.MkLogger;
-import com.mkweb.utils.ConnectionChecker;
 import com.mkweb.utils.MkCrypto;
-import com.mkweb.config.MkConfigReader;
 import com.mkweb.config.MkFTPConfigs;
-import com.mkweb.config.MkPageConfigs;
 
 public class tagFTP extends SimpleTagSupport {
 	private String obj;
 	private String name = "name";
 	private String id = "id";
 	private String target = null;
-	private String img = "false";
 	private String dir = null;
 	
 	private static final String TAG = "[tagFTP]";
 	private static final MkLogger mklogger = new MkLogger(TAG);
-	//Log ?���?
+
 	public void setObj(String obj) {	this.obj = obj;	}
 	public void setName(String name) {	this.name = name;	}
 	public void setId(String id) {	this.id = id;	}
-	public void setImg(String img) {	this.img = img;	}
 	public void setTarget(String target) {	this.target = target;	}
 	public void setDir(String dir) {	this.dir = dir;	}
 	
@@ -49,7 +45,7 @@ public class tagFTP extends SimpleTagSupport {
 		if(o == null) {	return null;	}
 
 		String controlName = o.toString();
-		return MkPageConfigs.Me().getControl(controlName);
+		return MkViewConfig.Me().getNormalControl(controlName);
 	}
 
 	private ArrayList<MkFtpData> getFtpControl(String ftpControlName){
@@ -68,13 +64,13 @@ public class tagFTP extends SimpleTagSupport {
 		ArrayList<MkPageJsonData> pageInfo = getPageControl(request);
 		ArrayList<MkFtpData> ftpInfo = getFtpControl(this.name);
 
-		boolean isSet = (pageInfo == null || pageInfo.size() == 0) ? false : true;
+		boolean isSet = pageInfo != null && pageInfo.size() != 0;
 		MkPageJsonData pageStaticData = null;
 
 		if(isSet) {
-			for(int i = 0; i < pageInfo.size(); i++) {
-				if(pageInfo.get(i).getPageStatic()) {
-					pageStaticData = pageInfo.get(i);
+			for (MkPageJsonData mkPageJsonData : pageInfo) {
+				if (mkPageJsonData.getPageStatic()) {
+					pageStaticData = mkPageJsonData;
 					break;
 				}
 			}
@@ -113,9 +109,6 @@ public class tagFTP extends SimpleTagSupport {
 		MkFtpData ftpService = ftpInfo.get(ftpServiceIndex);
 		
 		String filePath = ftpService.getPath();
-		/*
-		 * 똑같이 여기서도 prefix 달아주고 hash 해주면 됨
-		 */
 		String ftpDirPrefix = ftpService.getDirPrefix();
 		String[] dirs = null;
 		boolean ftpDirHash = ftpService.getHashDirPrefix();
@@ -127,15 +120,15 @@ public class tagFTP extends SimpleTagSupport {
 			
 			if(ftpDirPrefix.contains("^")) {
 				dirs = ftpDirPrefix.split("\\^");
-				String tempDir = "";
+				StringBuilder tempDir = new StringBuilder();
 				for(String dir : dirs) {
 					if(ftpDirHash)
-						tempDir += "/" + MkCrypto.MD5(dir + "__TRIP_!!_DIARY__");
+						tempDir.append("/").append(MkCrypto.MD5(dir + "__TRIP_!!_DIARY__"));
 					else
-						tempDir += "/" + dir;
+						tempDir.append("/").append(dir);
 				}
 				
-				ftpDirPrefix = tempDir;
+				ftpDirPrefix = tempDir.toString();
 			}else {
 				if(ftpDirHash) 
 					ftpDirPrefix = "/" + MkCrypto.MD5(ftpDirPrefix + "__TRIP_!!_DIARY__");
@@ -148,10 +141,6 @@ public class tagFTP extends SimpleTagSupport {
 		mklogger.debug("ftDirPrefix : " + ftpDirPrefix);
 		filePath = filePath + ftpDirPrefix;
 
-		/*
-		if(!(MkConfigReader.Me().get("mkweb.ftp.absolute").contentEquals("yes")))
-			filePath = MkFTPConfigs.Me().getPrefix() + filePath; 
-*/
 		mklogger.debug("tag filePath : " + filePath);
 		
 		/*
@@ -186,35 +175,7 @@ public class tagFTP extends SimpleTagSupport {
 					ftpResult.put("result", source);
 					resultObject.add(ftpResult);
 				}
-				/*
-				if(img.contentEquals("yes")) {
-					if(!selectAll) {
-						if(fileName.contentEquals(this.target)) {
-							ServletContext sc = request.getServletContext();
-							resultObject.add(readImageFromStream(sc, source, fileName, extension));
-						}
-					} else {
-						ServletContext sc = request.getServletContext();
-						resultObject.add(readImageFromStream(sc, source, fileName, extension));
-					}
-				}else {
-					if(!selectAll) {
-						if(result.getName().contentEquals(this.target)) {
-							LinkedHashMap<String, String> ftpResult = new LinkedHashMap<>();
-							
-							ftpResult.put("name", fileName);
-							ftpResult.put("result", source);
-							resultObject.add(ftpResult);
-						}
-					}else{
-						LinkedHashMap<String, String> ftpResult = new LinkedHashMap<>();
-						
-						ftpResult.put("name", fileName);
-						ftpResult.put("result", source);
-						resultObject.add(ftpResult);
-					}
-				}
-				*/
+
 			}
 		}
 		
@@ -229,10 +190,7 @@ public class tagFTP extends SimpleTagSupport {
 				getJspBody().invoke(null);
 			}
 			((PageContext)getJspContext()).getRequest().removeAttribute("mkw");
-		}else {
-			return;
 		}
-		
 	}
 	
 	private LinkedHashMap<String, String> readImageFromStream(ServletContext sc, String source, String fileName, String extension) throws IOException{

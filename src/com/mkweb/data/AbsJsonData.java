@@ -29,7 +29,7 @@ public class AbsJsonData implements MkDefaultModelImpl {
 	public void setDirPrefix(String dirPrefix) {	this.dirPrefix = dirPrefix;	}
 	public String getDirPrefix() {	return this.dirPrefix;	}
 
-	public void setAuth(String auths){	this.auth = (auths.contentEquals("yes") ? 2 : ( auths.contentEquals("part") ? 1 : 0) );;	}
+	public void setAuth(String auths){	this.auth = (auths.contentEquals("yes") ? 2 : ( auths.contentEquals("part") ? 1 : 0) );	}
 	public int getAuth(){	return this.auth;	}
 
 	public void setHashDirPrefix(boolean hash) {	this.hashDirPrefix = hash;	}

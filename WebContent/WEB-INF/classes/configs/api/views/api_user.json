@@ -24,8 +24,9 @@
         "obj":"list",
         "parameter_name":"",
         "value":{
-          "1":"SEQ",
-          "2":"userid"
+          "1": "user_SEQ",
+          "2": "name",
+          "3": "address"
         }
       },
       {
@@ -38,8 +39,9 @@
         "obj":"list",
         "parameter_name":"",
         "value":{
-          "1":"SEQ",
-          "2":"userid"
+          "1": "user_SEQ",
+          "2": "name",
+          "3": "address"
         }
       },
       {
@@ -52,8 +54,8 @@
         "obj":"list",
         "parameter_name":"",
         "value":{
-          "1":"userid",
-          "2":"userpw"
+          "1": "name",
+          "2": "address"
         }
       },
       {
@@ -79,9 +81,9 @@
         "obj":"list",
         "parameter_name":"",
         "value":{
-            "1":"SEQ",
-            "2":"userid",
-            "3":"userpw"
+          "1": "user_SEQ",
+          "2": "name",
+          "3": "address"
         }
       },
       {
@@ -94,8 +96,7 @@
         "obj":"list",
         "parameter_name":"",
         "value":{
-            "1":"SEQ",
-            "2":"userid"
+            "1":"user_SEQ"
         }
       }
     ]

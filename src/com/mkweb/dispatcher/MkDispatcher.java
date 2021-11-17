@@ -14,10 +14,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.mkweb.auths.MkAuthToken;
 import com.mkweb.config.MkConfigReader;
+import com.mkweb.config.MkViewConfig;
 import com.mkweb.data.MkPageJsonData;
 import com.mkweb.logger.MkLogger;
 import com.mkweb.utils.ConnectionChecker;
-import com.mkweb.config.MkPageConfigs;
 
 /**
  * Servlet implementation class testMkDispatcher
@@ -60,7 +60,7 @@ public class MkDispatcher extends HttpServlet {
 			response.sendError(404);
 			return;
 		}
-		ArrayList<MkPageJsonData> resultPageData = MkPageConfigs.Me().getControl(mkPage);
+		ArrayList<MkPageJsonData> resultPageData = MkViewConfig.Me().getNormalControl(mkPage);
 
 		String userAcceptLanguage = request.getHeader("Accept-Language");
 		String userAgent = request.getHeader("User-Agent").toLowerCase();
@@ -101,7 +101,7 @@ public class MkDispatcher extends HttpServlet {
 		mklogger.debug("cookie: " + request.getCookies().length);
 		MkAuthToken.printCookies(request.getCookies());
 		mklogger.info("Page Called by " + clientAddress);
-		MkPageConfigs.Me().printPageInfo(mklogger, resultPageData.get(0), "no-sql");
+		MkViewConfig.Me().printPageInfo(mklogger, resultPageData.get(0), "no-sql");
 		dispatch(request, response, targetURI);
 	}
 

@@ -5,6 +5,6 @@
 		"print_date":"yes",
 		"print_time":"yes",
 		"use_catalina":"no",
-		"log_location":"../webapps/log/MkLogger.log"
+		"log_location":"/mkweb/webapps/log/MkLogger.log"
 	}
 }

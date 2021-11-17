@@ -126,7 +126,7 @@ public class MkAuthTokenConfigs {
 			mklogger.error("NullSQLControllerException: No controller set for \"auths\" field. 2");
 			return false;
 		}
-		ArrayList<MkSqlJsonData> sqls = MkSQLConfigs.Me().getControl(controller);
+		ArrayList<MkSqlJsonData> sqls = MkSqlConfig.Me().getControl(controller, false);
 		if( sqls == null ){
 			mklogger.error("NoSQLControllerFoundException: " + controller);
 			return false;

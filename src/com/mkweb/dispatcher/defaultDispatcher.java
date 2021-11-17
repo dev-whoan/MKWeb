@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.mkweb.auths.MkAuthToken;
-import com.mkweb.config.MkPageConfigs;
+import com.mkweb.config.MkViewConfig;
 import com.mkweb.data.MkPageJsonData;
 import com.mkweb.logger.MkLogger;
 import com.mkweb.utils.ConnectionChecker;
@@ -73,7 +73,7 @@ public class defaultDispatcher extends HttpServlet {
 			return;
 		}
 
-		MkPageJsonData pages = MkPageConfigs.Me().getControl(mkPage).get(0);
+		MkPageJsonData pages = MkViewConfig.Me().getNormalControl(mkPage).get(0);
 
 		if(!pages.IsApiPage()){
 			request.setAttribute("mkPage", mkPage);
@@ -84,7 +84,7 @@ public class defaultDispatcher extends HttpServlet {
 			mklogger.debug("cookie: " + request.getCookies().length);
 			MkAuthToken.printCookies(request.getCookies());
 			mklogger.info("API Page Called by " + ipAddress);
-			MkPageConfigs.Me().printPageInfo(mklogger, pages, "no-sql");
+			MkViewConfig.Me().printPageInfo(mklogger, pages, "no-sql");
 		}
 	}
 }

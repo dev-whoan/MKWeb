@@ -23,11 +23,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
+import com.mkweb.config.MkViewConfig;
 import org.json.simple.JSONObject;
 
 import com.mkweb.config.MkConfigReader;
 import com.mkweb.config.MkFTPConfigs;
-import com.mkweb.config.MkPageConfigs;
 import com.mkweb.data.MkFtpData;
 import com.mkweb.utils.MkJsonData;
 import com.mkweb.data.MkPageJsonData;
@@ -78,7 +78,7 @@ public class MkFileReceiver extends HttpServlet {
 
 		}
 		mklogger.debug("mkpage :" + mkPage);
-		return MkPageConfigs.Me().getControl(mkPage);
+		return MkViewConfig.Me().getNormalControl(mkPage);
 	}
 
 	private boolean checkMethod(HttpServletRequest request, String rqMethod, String rqPageURL) {
@@ -90,7 +90,7 @@ public class MkFileReceiver extends HttpServlet {
 			mklogger.error(" Hostname is not set. You must set hostname on configs/MkWeb.conf");
 			return false;
 		} 
-		host = String.valueOf(host) + "/";
+		host = host + "/";
 		String requestURI = rqPageURL.split(MkConfigReader.Me().get("mkweb.web.hostname"))[1];
 		String mkPage = !hostCheck.contentEquals(host) ? requestURI : "";
 		if (!ConnectionChecker.isValidPageConnection(mkPage)) {
@@ -102,7 +102,7 @@ public class MkFileReceiver extends HttpServlet {
 			return false;
 		}
 		
-		ArrayList<MkPageJsonData> pal = MkPageConfigs.Me().getControl(mkPage);
+		ArrayList<MkPageJsonData> pal = MkViewConfig.Me().getNormalControl(mkPage);
 		for (MkPageJsonData pj : pal) {
 			if (pj.getParameter().equals(this.requestParameterName)) {
 				mklogger.debug("requestParameterName : " + requestParameterName);
@@ -124,7 +124,6 @@ public class MkFileReceiver extends HttpServlet {
 			return false;
 		}
 
-		//	this.requestValues = this.cpi.getRequestParameterValues(request, this.pjData.getParameter(), this.pageStaticData);
 		return (this.pjData != null);
 	}
 
@@ -164,19 +163,16 @@ public class MkFileReceiver extends HttpServlet {
 			responseCode = 400;
 			mklogger.error("There is no FTP service named : " + service);
 		}
-		while(!isDone) {
+		while(true) {
 			if(!Arrays.asList(FTP_MODE).contains(ftpService.getServiceType())) {
-				isDone = true;
 				responseMsg = new StringBuilder("This cannot receive a file.");
 				responseCode = 400;
 				mklogger.error("This service is not kind of file receiver. Please check FTP controller, or request parameters");
 				break;
 			}
-			
+
 			String[] allowFormats = ftpService.getData();
-			
-			if(isDone)
-				break;
+
 			/* duplicate code */
 			String filePath = ftpService.getPath();
 			String ftpDirPrefix = ftpService.getDirPrefix();
@@ -191,8 +187,7 @@ public class MkFileReceiver extends HttpServlet {
 					
 					responseCode = 400;
 					responseMsg = new StringBuilder("Need to send path.");
-					
-					isDone = true;
+
 					break;
 				}
 				
@@ -283,14 +278,12 @@ public class MkFileReceiver extends HttpServlet {
 								responseCode = 500;
 								responseMsg = new StringBuilder("Server have some problems! Please contact Admin.");
 								mklogger.error( "Failed to create path. [" + filePath +"]");
-								isDone = true;
 								break;
 							}
 						} catch (Exception e) {
 							mklogger.error("Failed to create path. [" + filePath +"] " + e.getMessage());
 							responseCode = 500;
 							responseMsg = new StringBuilder("Server have some problems! Please contact Admin.");
-							isDone = true;
 							break;
 						}
 					}
@@ -338,8 +331,7 @@ public class MkFileReceiver extends HttpServlet {
 					}
 				}
 			}
-		
-			isDone = true;
+
 			break;
 		}
 		
@@ -380,10 +372,8 @@ public class MkFileReceiver extends HttpServlet {
 			responseCode = 400;
 			mklogger.error("There is no FTP service named : " + service);
 		}
-		while(!isDone) {
-			
+		while(true) {
 			if(!Arrays.asList(FTP_MODE).contains(ftpService.getServiceType())) {
-				isDone = true;
 				responseMsg = "This cannot receive a file.";
 				responseCode = 400;
 				mklogger.error("This service is not kind of file receiver. Please check FTP controller, or request parameters");
@@ -391,10 +381,7 @@ public class MkFileReceiver extends HttpServlet {
 			}
 			
 			String[] allowFormats = ftpService.getData();
-			
-			if(isDone)
-				break;
-			
+
 			String filePath = ftpService.getPath();
 			String ftpDirPrefix = ftpService.getDirPrefix();
 			String[] dirs = null;
@@ -410,8 +397,7 @@ public class MkFileReceiver extends HttpServlet {
 					
 					responseCode = 400;
 					responseMsg = "Need to send path.";
-					
-					isDone = true;
+
 					break;
 				}
 				
@@ -465,7 +451,6 @@ public class MkFileReceiver extends HttpServlet {
 				} catch (NullPointerException e) {
 					mklogger.warn("File extension is not valid. return HTTP.204");
 					responseCode = 204;
-					isDone = true;
 					break;
 				}
 				
@@ -476,7 +461,6 @@ public class MkFileReceiver extends HttpServlet {
 				if(!ftpResults.exists()) {
 					responseCode = 204;
 					mklogger.warn("File is not exists. However, return HTTP.204");
-					isDone = true;
 					break;
 				}
 				
@@ -485,7 +469,6 @@ public class MkFileReceiver extends HttpServlet {
 						responseCode = 204;
 						uploaded = ftpResults.getName();
 						mklogger.info("Success to remove file : " + ftpResults.getPath() + " / " + ftpResults.getName());
-						isDone = true;
 						break;
 					}else {
 						responseCode = 500;
@@ -498,12 +481,9 @@ public class MkFileReceiver extends HttpServlet {
 					mklogger.flush("error");
 					responseCode = 500;
 					responseMsg = "Some error occured while deleting file. Please contact Admin.";
-					isDone = true;
 					break;
 				}
 			}
-			
-			isDone = true;
 			break;
 		}
 		
@@ -681,7 +661,7 @@ public class MkFileReceiver extends HttpServlet {
 		if (isPiSet) {
 			int i;
 			for (i = 0; i < this.pi.size(); i++) {
-				if (((MkPageJsonData)pi.get(i)).getPageStatic()) {
+				if (pi.get(i).getPageStatic()) {
 					pageStaticData = pi.get(i);
 					break;
 				} 

@@ -34,16 +34,10 @@ public class ConnectionChecker {
 
 	public static String regularQuery(String controlName, String serviceName, boolean isApi) {
 		ArrayList<MkSqlJsonData> resultSqlData = null;
-		if(isApi)
-			resultSqlData = MkRestApiSqlConfigs.Me().getControl(controlName);
-		else
-			resultSqlData = MkSQLConfigs.Me().getControl(controlName);
+		resultSqlData = MkSqlConfig.Me().getControl(controlName, isApi);
 
 		if(resultSqlData == null) {
-			if(isApi)
-				resultSqlData = MkRestApiSqlConfigs.Me().getControlByServiceName(serviceName);
-			else
-				resultSqlData = MkSQLConfigs.Me().getControlByServiceName(serviceName);
+			resultSqlData = MkSqlConfig.Me().getControlByServiceName(controlName, isApi);
 
 			if(resultSqlData == null) {
 				mklogger.error("There is no sql control named : " + controlName);
@@ -387,7 +381,7 @@ public class ConnectionChecker {
 	}
 
 	public static boolean isValidPageConnection(String requestControlName) {
-		ArrayList<MkPageJsonData> resultPageData = MkPageConfigs.Me().getControl(requestControlName);
+		ArrayList<MkPageJsonData> resultPageData = MkViewConfig.Me().getNormalControl(requestControlName);
 		return resultPageData != null && resultPageData.size() >= 1;
 	}
 	
@@ -475,7 +469,7 @@ public class ConnectionChecker {
 	}
 
 	public static boolean isValidApiPageConnection(String requestControlName, String[] requestDir) {
-		ArrayList<MkPageJsonData> resultPageData = MkRestApiPageConfigs.Me().getControl(requestControlName);
+		ArrayList<MkPageJsonData> resultPageData = MkViewConfig.Me().getApiControl(requestControlName);
 
 		if(resultPageData == null || resultPageData.size() < 1)
 			return false;

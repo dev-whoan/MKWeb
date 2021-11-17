@@ -1,3 +1,12 @@
+# 11/17/2021 (KST) 0.1.2 Updated
+
+1. Designing Architecture...
+
+- MkViewConfig: MkPageConfigs + MkRestApiPageConfigs
+
+- MkSqlConfig: MkSQLConfigs + MkRestApiSqlConfigs
+
+- Updated several codes for the updates...
 
 # 08/14/2021 (KST) 0.1.1 Updated
 

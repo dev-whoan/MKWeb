@@ -12,17 +12,16 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.mkweb.config.MkSQLConfigs;
+import com.mkweb.config.MkSqlConfig;
+import com.mkweb.config.MkViewConfig;
 import com.mkweb.data.MkPageJsonData;
 import com.mkweb.data.MkSqlJsonData;
 import com.mkweb.database.MkDbAccessor;
 import com.mkweb.logger.MkLogger;
 import com.mkweb.utils.ConnectionChecker;
 import com.mkweb.config.MkConfigReader;
-import com.mkweb.config.MkPageConfigs;
 import com.mkweb.utils.MkJsonData;
 import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 
 /**
  * Servlet implementation class MkReceiveFormData
@@ -61,7 +60,7 @@ public class MkHttpSQLExecutor extends HttpServlet{
 
 		mklogger.debug("receive mkpage : " + mkPage);
 		
-		return MkPageConfigs.Me().getControl(mkPage);		
+		return MkViewConfig.Me().getNormalControl(mkPage);
 	}
     
     private boolean checkMethod(HttpServletRequest request, String rqMethod, String rqPageURL) {
@@ -88,7 +87,7 @@ public class MkHttpSQLExecutor extends HttpServlet{
 		
 		requestParams = ConnectionChecker.getRequestPageParameterName(request, false, pageStaticData);
 		
-		ArrayList<MkPageJsonData> pal = MkPageConfigs.Me().getControl(mkPage);
+		ArrayList<MkPageJsonData> pal = MkViewConfig.Me().getNormalControl(mkPage);
 		for(MkPageJsonData pj : pal) {
 			if(pj.getParameter().equals(requestParams)) {
 				pjData = pj;
@@ -123,8 +122,8 @@ public class MkHttpSQLExecutor extends HttpServlet{
 		
 		String control = pjData.getControlName();
 		String service = pjData.getServiceName();
-		ArrayList<MkSqlJsonData> sqlServices = MkSQLConfigs.Me().getControlByServiceName(service);
-		MkSqlJsonData sqlService = MkSQLConfigs.Me().getServiceInfoByServiceName(sqlServices, service);
+		ArrayList<MkSqlJsonData> sqlServices = MkSqlConfig.Me().getControlByServiceName(service, false);
+		MkSqlJsonData sqlService = MkSqlConfig.Me().getServiceInfoByServiceName(sqlServices, service);
 		String serviceType = sqlService.getServiceType();
 		
 		mklogger.debug("control : " + control + "| service : " + service + "| type: " + serviceType);

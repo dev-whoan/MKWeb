@@ -2,13 +2,13 @@
   "Controller": {
     "name":"api_user",
     "debug":"error",
-    "db":"database",
-    "table":"user",
+    "db":"mkweb",
+    "table":"User",
     "api":"yes",
     "condition":{
-      "1":"SEQ",
-      "2":"userid",
-      "3":"userpw"
+      "1":"user_SEQ",
+      "2":"name",
+      "3":"address"
     },
     "parameter":{
       "1":"*"
@@ -19,8 +19,9 @@
         "query":{
           "crud":"select",
           "column":{
-            "1":"SEQ",
-            "2":"userid"
+            "1": "user_SEQ",
+            "2": "name",
+            "3": "address"
           },
           "data":{
             "1":""
@@ -33,12 +34,12 @@
         "query":{
           "crud":"insert",
           "column":{
-            "1":"userid",
-            "2":"userpw"
+            "1": "name",
+            "2": "address"
           },
           "data":{
-            "1":"userid",
-            "2":"userpw"
+            "1": "name",
+            "2": "address"
           },
           "where":""
           

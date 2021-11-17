@@ -17,13 +17,13 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
 
+import com.mkweb.config.MkSqlConfig;
+import com.mkweb.config.MkViewConfig;
 import com.mkweb.data.MkPageJsonData;
 import com.mkweb.data.MkSqlJsonData;
 import com.mkweb.database.MkDbAccessor;
 import com.mkweb.logger.MkLogger;
 import com.mkweb.utils.ConnectionChecker;
-import com.mkweb.config.MkPageConfigs;
-import com.mkweb.config.MkSQLConfigs;
 
 public class tagSEL extends SimpleTagSupport {
 	private String obj;
@@ -58,11 +58,11 @@ public class tagSEL extends SimpleTagSupport {
 		if(o == null) {	return null;	}
 
 		String controlName = o.toString();
-		return MkPageConfigs.Me().getControl(controlName);
+		return MkViewConfig.Me().getNormalControl(controlName);
 	}
 
 	private ArrayList<MkSqlJsonData> getSqlControl(String sqlControlName){
-		return MkSQLConfigs.Me().getControl(sqlControlName);
+		return MkSqlConfig.Me().getControl(sqlControlName, false);
 	}
 
 	public void doTag() throws JspException, IOException{
