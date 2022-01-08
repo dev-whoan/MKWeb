@@ -49,7 +49,7 @@ public class MkRestApi extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static final String TAG = "[MkRestApi]";
 	private static final MkLogger mklogger = new MkLogger(TAG);
-
+	private static boolean MKAPI_CRYPTO = MkConfigReader.Me().get("mkweb.restapi.crypto.use").contentEquals("yes");
 	private static String MKWEB_URI_PATTERN = MkConfigReader.Me().get("mkweb.restapi.uri");
 	private static String MKWEB_SEARCH_KEY = MkConfigReader.Me().get("mkweb.restapi.search.keyexp");
 	private static boolean MKWEB_USE_KEY = MkConfigReader.Me().get("mkweb.restapi.search.usekey").contentEquals("yes");
@@ -80,9 +80,9 @@ public class MkRestApi extends HttpServlet {
 		MkRestApiGetKey mra = new MkRestApiGetKey();
 		String keyColumn = MkConfigReader.Me().get("mkweb.restapi.key.column.name");
 		String remarkColumn = MkConfigReader.Me().get("mkweb.restapi.key.column.remark");
-		ArrayList<Object> apiKeyList = mra.GetKey();
+		ArrayList<Object> apiKeyList = mra.GetKey(key);
 
-		mklogger.temp("API Key searching: " + key + " Result: ", false);
+		mklogger.temp("[" + mkPage + "] API Key searching: " + key + " Result: ", false);
 
 		if (apiKeyList != null) {
 			for (Object o : apiKeyList) {
@@ -244,6 +244,7 @@ public class MkRestApi extends HttpServlet {
 		request.setAttribute("api-method", "put");
 		try{
 			doTask(request, response);
+
 		} catch (Exception e){
 			mklogger.error("Unknown error occured. You can trace it on catalina : " + e.getMessage());
 			e.printStackTrace();
@@ -317,7 +318,6 @@ public class MkRestApi extends HttpServlet {
 					allowMethods = "\"Allow\":\"";
 				ArrayList<MkPageJsonData> control = MkViewConfig.Me().getApiControl(mkPage);
 				for(int i = 0; i < control.size(); i++) {
-
 					allowMethods += control.get(i).getMethod().toString().toUpperCase();
 
 					if( i < control.size()-1) {
@@ -327,6 +327,8 @@ public class MkRestApi extends HttpServlet {
 				allowMethods += "\"";
 			}
 			result = apiResponse.generateResult(apiResponse.getCode(), requestMethod, allowMethods, pretty, START_MILLIS);
+			if(MKAPI_CRYPTO && MkRestCrypto.isSet())
+				result = MkRestCrypto.encrypt(result);
 			out.print(result);
 		} else {
 			if(pretty)
@@ -348,6 +350,8 @@ public class MkRestApi extends HttpServlet {
 			apiResponse.setContentLength(resultObject.toString().length());
 
 			String temp = apiResponse.generateResult(apiResponse.getCode(), requestMethod, result, pretty, START_MILLIS);
+			if(MKAPI_CRYPTO && MkRestCrypto.isSet())
+				temp = MkRestCrypto.encrypt(temp);
 			out.print(temp);
 		}
 		out.flush();
@@ -550,7 +554,9 @@ public class MkRestApi extends HttpServlet {
 			mklogger.info("Data: " + requestParameterJson);
 			if (MKWEB_USE_KEY){
 				if(authToken != null){
+					mklogger.debug("Token From Header[Authorization]: " + authToken);
 					userKey = authToken.toLowerCase().split("bearer ")[1];
+					mklogger.debug("userKey: " + userKey);
 					if(requestParameterJson == null){
 						requestParameterJson = new JSONObject();
 						requestParameterJsonToModify = new JSONObject();
@@ -592,9 +598,18 @@ public class MkRestApi extends HttpServlet {
 					apiResponse.setCode(405);
 					break;
 				}
+
 				ArrayList<MkSqlJsonData> sqlControl = MkSqlConfig.Me().getControlByServiceName(pageService.getServiceName(), true);
-				String[] tttt = sqlControl.get(0).getCondition();
-				String[] sqlConditions = sqlControl.get(0).getCondition();
+				String[] sqlConditions;
+				try{
+					sqlConditions = sqlControl.get(0).getCondition();
+				} catch (NullPointerException e){
+					mklogger.error("There is no sql service matches page service name:" + pageService.getServiceName());
+					apiResponse.setMessage("The method you requested is not defined.");
+					apiResponse.setCode(405);
+					break;
+				}
+
 
 				if (sqlConditions.length == 0) {
 					mklogger.error("Something wrong in SQL Config. Condition is not entered. If you want to allow search whole datas, please set \"1\":\"*\"");
@@ -814,8 +829,8 @@ public class MkRestApi extends HttpServlet {
 		if (resultList != null) {
 			for (int l = 0; l < resultList.size(); l++) {
 				String damn = resultList.get(l).toString();
-				mklogger.debug("damn: " + damn);
 				damn = damn.replaceAll("=", ":");
+				mklogger.debug("damn check: " + damn);
 				test += damn;
 
 				if (l < resultList.size() - 1)

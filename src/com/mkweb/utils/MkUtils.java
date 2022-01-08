@@ -31,9 +31,7 @@ public class MkUtils {
 		}
 		if(map.size() > 0) {
 			result = new ArrayList<>();
-			
-			Set<Object> keys = map.keySet();
-			Iterator<Object> iter = keys.iterator();
+			Iterator<Object> iter = map.keySet().iterator();
 			
 			while(iter.hasNext())
 				result.add(iter.next());
@@ -89,17 +87,22 @@ public class MkUtils {
 		return result;
 	}
 
-	public static JSONObject getPOSTJsonData(HttpServletRequest request){
+	private static String getRequestInputStream(HttpServletRequest request){
 		StringBuilder stringBuilder = new StringBuilder(); // String Builder
 		BufferedReader bufferedReader = null;
 		try(InputStream inputStream = request.getInputStream()){
 			if(inputStream != null){
+				mklogger.debug("Hey 1");
 				bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-				char[] charBuffer = new char[256];
+				char[] charBuffer = new char[512];
 				int bytesRead = -1;
+				mklogger.debug("Hey 2");
 				while ((bytesRead = bufferedReader.read(charBuffer)) > 0){
 					stringBuilder.append(charBuffer, 0, bytesRead);
 				}
+				mklogger.debug("stb: " + stringBuilder.toString());
+			} else {
+				mklogger.debug("inputstream of request is null");
 			}
 		} catch (IOException e){
 			e.printStackTrace();
@@ -113,16 +116,28 @@ public class MkUtils {
 			}
 		}
 
-		mklogger.debug("stringBuilder:" +  stringBuilder.toString());
+		return stringBuilder.toString();
+	}
+
+	public static JSONObject getPOSTInputStreamAsJsonObject(HttpServletRequest request){
+		String str = getRequestInputStream(request);
+
+		mklogger.debug("stringBuilder:" +  str);
 		JSONObject result = null;
 
 		mklogger.debug("1");
-		result = MkJsonData.createJsonObject(stringBuilder.toString());
+		result = MkJsonData.createJsonObject(str);
 		mklogger.debug("result: " + result);
 		if(result == null)
-			result = MkJsonData.createJsonObject(MkJsonData.stringToJsonString(stringBuilder.toString()));
+			result = MkJsonData.createJsonObject(MkJsonData.stringToJsonString(str));
 		mklogger.debug("final result: " + result);
 		return result;
+	}
+
+	public static List<String> getPOSTInputStreamAsArrayList(HttpServletRequest request){
+		String str = getRequestInputStream(request);
+		mklogger.debug("You want to see: " + str);
+		return null;
 	}
 
 	public static Map<String, Object[]> getQueryParameters(String queryString) throws UnsupportedEncodingException {

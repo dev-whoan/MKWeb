@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Properties;
 
 import com.mkweb.logger.MkLogger;
-import com.mkweb.utils.MkCrypto;
+import com.mkweb.utils.crypto.MkCrypto;
 
 public class MkConfigReader {
 	private static final HashMap<String, String> urlPatterns = new HashMap<>();

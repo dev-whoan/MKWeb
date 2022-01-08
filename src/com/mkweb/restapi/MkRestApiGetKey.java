@@ -23,7 +23,7 @@ public class MkRestApiGetKey extends MkDbAccessor {
 		dbCon = super.getDbCon();
 	}
 
-	public ArrayList<Object> GetKey(){
+	public ArrayList<Object> GetKey(String _key){
 		ArrayList<Object> rst = new ArrayList<Object>();
 		ResultSet rs = null;
 		
@@ -31,9 +31,13 @@ public class MkRestApiGetKey extends MkDbAccessor {
 		{
 			try {
 				PreparedStatement prestmt;
-				this.psmt = "SELECT * FROM " + MkConfigReader.Me().get("mkweb.restapi.key.table") + ";";
-				prestmt = dbCon.prepareStatement(this.psmt, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+				String sColumns = MkConfigReader.Me().get("mkweb.restapi.key.column.name") + "," + MkConfigReader.Me().get("mkweb.restapi.key.column.remark");
+				this.psmt = "SELECT " + sColumns + " FROM " + MkConfigReader.Me().get("mkweb.restapi.key.table") +
+						" WHERE " + MkConfigReader.Me().get("mkweb.restapi.key.column.name") + " = ?;";
 
+				prestmt = dbCon.prepareStatement(this.psmt, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+				prestmt.setString(1, _key);
+				mklogger.debug(psmt);
 				rs = prestmt.executeQuery(); 
 
 				ResultSetMetaData rsmd;

@@ -27,20 +27,6 @@
 				"value":{
 					"1":""
 				}
-			},
-			{
-				"page_static":"false",
-				"type":{
-					"kind":"sql",
-					"id":"user_login"
-				},
-				"method":"post",
-				"obj":"list",
-				"parameter_name":"user",
-				"value":{
-					"1":"id",
-					"2":"password"
-				}
 			}
 		]
 	}

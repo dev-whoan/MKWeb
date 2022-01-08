@@ -1,4 +1,16 @@
-# 11/17/2021 (KST) 0.1.2 Updated
+# 01/08/2022 (KST) 0.1.2 Update
+
+1. Bug Fix
+
+- View Controller Bug Fix
+
+2. RSA Helper
+
+- Updates for testing RSA Encryption / Decryption for communication
+
+3. Add some picture for architecture & designs
+
+# 11/17/2021 (KST) 0.1.2 Update
 
 1. Designing Architecture...
 
@@ -6,9 +18,9 @@
 
 - MkSqlConfig: MkSQLConfigs + MkRestApiSqlConfigs
 
-- Updated several codes for the updates...
+- Update several codes for the updates...
 
-# 08/14/2021 (KST) 0.1.1 Updated
+# 08/14/2021 (KST) 0.1.1 Update
 
 1. MkAuthToken bug fixed
 
@@ -16,7 +28,7 @@
 
 - Use HS256 as default if no algorithm or invalid algorithm have set.
 
-# 08/12/2021 (KST) 0.1.0 Updated
+# 08/12/2021 (KST) 0.1.0 Update
 
 1. MkRestApi bug fixed
 
@@ -26,7 +38,7 @@
 
 3. MkFileTransfer bug fixed
 
-# 02/23/2021 (KST) 0.0.8a updated
+# 02/23/2021 (KST) 0.0.8a Update
 
 1. MkFileTransfer now supports remove mode.
 
@@ -42,15 +54,15 @@
 
 - For this update, MkLogger is no longer singleton designed.
 
-# 02/22/2021 (KST) 0.0.7 updated
+# 02/22/2021 (KST) 0.0.7 Update
 
-1. Mk RESTful API updated
+1. Mk RESTful API Update
 
 - MkWeb.conf property added : mkweb.restapi.refonly.host
 
 - Which set allow CORS or not. If yes, only RESTful API accessed via "mkweb.web.hostname".
 
-# 02/21/2021 (KST) 0.0.7 updated
+# 02/21/2021 (KST) 0.0.7 Update
 
 1. Bug fix
 

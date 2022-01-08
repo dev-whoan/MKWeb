@@ -21,7 +21,7 @@ import com.mkweb.config.MkViewConfig;
 import com.mkweb.data.MkFtpData;
 import com.mkweb.data.MkPageJsonData;
 import com.mkweb.logger.MkLogger;
-import com.mkweb.utils.MkCrypto;
+import com.mkweb.utils.crypto.MkCrypto;
 import com.mkweb.config.MkFTPConfigs;
 
 public class tagFTP extends SimpleTagSupport {

@@ -55,11 +55,13 @@ public class MkDispatcher extends HttpServlet {
 			return;
 		}
 		String mkPage = request.getAttribute("mkPage").toString();
+		mklogger.debug("mkPage:" + mkPage);
 		if(!ConnectionChecker.isValidPageConnection(mkPage)) {
 			mklogger.error("Here no page");
 			response.sendError(404);
 			return;
 		}
+		mklogger.info("requestURI: " + requestURI + ", mkPage:" + mkPage);
 		ArrayList<MkPageJsonData> resultPageData = MkViewConfig.Me().getNormalControl(mkPage);
 
 		String userAcceptLanguage = request.getHeader("Accept-Language");
@@ -86,8 +88,9 @@ public class MkDispatcher extends HttpServlet {
 
 		//  For each service, the service executor will ask authorize.
 
-		if(!ConnectionChecker.isPageAuthorized(request, response, resultPageData)){
+		if(!ConnectionChecker.isPageAuthorized(request, resultPageData)){
 			if(MkConfigReader.Me().get("mkweb.auth.redirect.use").contentEquals("yes")){
+				mklogger.debug("Fail to authorize redirect to login page");
 				response.sendRedirect(MkConfigReader.Me().get("mkweb.auth.redirect.uri"));
 			} else {
 				response.sendError(401);
@@ -95,11 +98,11 @@ public class MkDispatcher extends HttpServlet {
 			return;
 		}
 
-
 		request.setAttribute("mkPage", mkPage);
-
-		mklogger.debug("cookie: " + request.getCookies().length);
-		MkAuthToken.printCookies(request.getCookies());
+		try{
+			mklogger.debug("cookie: " + request.getCookies().length);
+			MkAuthToken.printCookies(request.getCookies());
+		} catch (NullPointerException ignored) {}
 		mklogger.info("Page Called by " + clientAddress);
 		MkViewConfig.Me().printPageInfo(mklogger, resultPageData.get(0), "no-sql");
 		dispatch(request, response, targetURI);

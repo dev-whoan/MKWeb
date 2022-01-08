@@ -21,7 +21,6 @@ import com.mkweb.logger.MkLogger;
 import com.mkweb.config.MkConfigReader;
 
 public class MkDbAccessor {
-	//�α� �����
 	private Connection dbCon = null;
 	private String psmt = null;
 	private ArrayList<String> reqValue = null;
@@ -54,6 +53,8 @@ public class MkDbAccessor {
 	protected Connection getDbCon() {	return this.dbCon;	}
 	public void setPreparedStatement(String qr) {
 		this.psmt = qr;
+
+		mklogger.debug("set prepared message:" + psmt);
 	}
 
 	public void setGenerateKeys(String[] keys) {
@@ -62,69 +63,80 @@ public class MkDbAccessor {
 	}
 
 	public void setRequestValue(ArrayList<String> arr) {
-		reqValue = new ArrayList<>();
-		mklogger.temp("=====RequestValue=====", false);
-		mklogger.temp(this.psmt, false);
-		String s = "Values : (";
-		for(int i = 0; i < arr.size(); i++) {
-			reqValue.add(arr.get(i));
+		if(arr != null && arr.size() > 0){
+			reqValue = new ArrayList<>();
+			mklogger.temp("=====(1) RequestValue=====", false);
+			mklogger.temp(this.psmt, false);
+			String s = "Values : (";
+			for(int i = 0; i < arr.size(); i++) {
+				reqValue.add(arr.get(i));
 
-			s += (arr.get(i).length() < 20 ? arr.get(i) : arr.get(i).substring(0, 19) + "...");
-			if(i < arr.size() - 1)
-				s += ", ";
+				s += (arr.get(i).length() < 20 ? arr.get(i) : arr.get(i).substring(0, 19) + "...");
+				if(i < arr.size() - 1)
+					s += ", ";
+			}
+			s += ")";
+			mklogger.temp(s, false);
+			mklogger.flush("info");
+		} else {
+			mklogger.info("There is no Request Value for the statement.");
 		}
-		s += ")";
-		mklogger.temp(s, false);
-		mklogger.flush("info");
 	}
 
 	public void setApiRequestValue(ArrayList<String> arr) {
-		reqValue = new ArrayList<>();
-		mklogger.temp("=====RequestValue=====", false);
-		mklogger.temp(this.psmt, false);
-		String s = "Values : (";
-		for(int i = 0; i < arr.size(); i++) {
-			reqValue.add(arr.get(i));
+		if(arr != null && arr.size() > 0){
+			reqValue = new ArrayList<>();
+			mklogger.temp("=====(2) RequestValue=====", false);
+			mklogger.temp(this.psmt, false);
+			String s = "Values : (";
+			for(int i = 0; i < arr.size(); i++) {
+				reqValue.add(arr.get(i));
 
-			s += (arr.get(i).length() < 20 ? arr.get(i) : arr.get(i).substring(0, 19) + "...");
-			if(i < arr.size() - 1)
-				s += ", ";
-		}
-		s += ")";
-		mklogger.temp(s, false);
-		mklogger.flush("info");
+				s += (arr.get(i).length() < 20 ? arr.get(i) : arr.get(i).substring(0, 19) + "...");
+				if(i < arr.size() - 1)
+					s += ", ";
+			}
+			s += ")";
+			mklogger.temp(s, false);
+			mklogger.flush("info");
+		} else { 	mklogger.info("There is no Request Value for the statement."); 	}
+
 	}
 
 	public void setRequestValue(String[] arr) {
-		reqValueArr = new String[arr.length];
-		mklogger.temp("=====RequestValue=====", false);
-		mklogger.temp(this.psmt, false);
-		String s = "Values : (";
-		for(int i = 0; i < reqValueArr.length; i++) {
-			reqValueArr[i] = arr[i];
-			s += (arr[i].length() < 20 ? arr[i] : arr[i].substring(0, 19) + "...");
-			if(i < reqValueArr.length - 1)
-				s += ", ";
-		}
-		s += ")";
-		mklogger.temp(s, false);
-		mklogger.flush("info");
+		if(arr != null && arr.length > 0) {
+			reqValueArr = new String[arr.length];
+			mklogger.temp("=====(3) RequestValue=====", false);
+			mklogger.temp(this.psmt, false);
+			String s = "Values : (";
+			for (int i = 0; i < reqValueArr.length; i++) {
+				reqValueArr[i] = arr[i];
+				s += (arr[i].length() < 20 ? arr[i] : arr[i].substring(0, 19) + "...");
+				if (i < reqValueArr.length - 1)
+					s += ", ";
+			}
+			s += ")";
+			mklogger.temp(s, false);
+			mklogger.flush("info");
+		} else { 	mklogger.info("There is no Request Value for the statement."); 	}
 	}
 
 	public void setRequestValue(ArrayList<String> arr, JSONObject jsonObject) {
-		reqValue = new ArrayList<>();
-		mklogger.temp("=====RequestValue=====", false);
-		mklogger.temp(this.psmt, false);
-		String s = "Values : (";
-		for(int i = 0; i < arr.size(); i++) {
-			reqValue.add( jsonObject.get(arr.get(i)).toString() );
-			s += (jsonObject.get(arr.get(i)).toString().length() < 20 ? jsonObject.get(arr.get(i)).toString() : jsonObject.get(arr.get(i)).toString().substring(0, 19) + "...");
-			if(i < arr.size() - 1)
-				s += ", ";
-		}
-		s += ")";
-		mklogger.temp(s, false);
-		mklogger.flush("info");
+		if(arr != null && arr.size() > 0) {
+			reqValue = new ArrayList<>();
+			mklogger.temp("=====(4) RequestValue=====", false);
+			mklogger.temp(this.psmt, false);
+			String s = "Values : (";
+			for (int i = 0; i < arr.size(); i++) {
+				reqValue.add(jsonObject.get(arr.get(i)).toString());
+				s += (jsonObject.get(arr.get(i)).toString().length() < 20 ? jsonObject.get(arr.get(i)).toString() : jsonObject.get(arr.get(i)).toString().substring(0, 19) + "...");
+				if (i < arr.size() - 1)
+					s += ", ";
+			}
+			s += ")";
+			mklogger.temp(s, false);
+			mklogger.flush("info");
+		} else { 	mklogger.info("There is no Request Value for the statement."); 	}
 	}
 
 	public void printRequestValues() {
@@ -211,13 +223,29 @@ public class MkDbAccessor {
 //							result.put("\"" + name + "\"", "\"" + rs.getObject(name) + "\"");
 							try{
 								if(rs.getObject(name).getClass().getName().contentEquals("[B")) {
-									result.put("\"" + name + "\"", "\"" + Arrays.toString(rs.getBytes(name)) + "\"");
-									mklogger.debug("damn5: " + Arrays.toString(rs.getBytes(name)) + "\nString: " + new String(rs.getBytes(name)));
+									String _bToString = Arrays.toString(rs.getBytes(name));
+									if(!_bToString.startsWith("{")){
+										result.put("\""+name+"\"", "\""+_bToString+"\"");
+									} else {
+										result.put("\""+name+"\"", _bToString);
+									}
+
+//									result.put("\"" + name + "\"", "\"" + Arrays.toString(rs.getBytes(name)) + "\"");
 								} else {
-									result.put("\"" + name + "\"", "\"" + rs.getObject(name) + "\"");
+									if(!rs.getObject(name).toString().startsWith("{")){
+										result.put("\""+name+"\"", "\""+rs.getObject(name)+"\"");
+									} else {
+										result.put("\""+name+"\"", rs.getObject(name));
+									}
+//									result.put("\"" + name + "\"", "\"" + rs.getObject(name) + "\"");
 								}
 							} catch (NullPointerException e){
-								result.put("\"" + name + "\"", "\"" + rs.getObject(name) + "\"");
+								if(!rs.getObject(name).toString().startsWith("{")){
+									result.put("\""+name+"\"", "\""+rs.getObject(name)+"\"");
+								} else {
+									result.put("\""+name+"\"", rs.getObject(name));
+								}
+//								result.put("\"" + name + "\"", "\"" + rs.getObject(name) + "\"");
 							}
 
 						}
@@ -226,7 +254,6 @@ public class MkDbAccessor {
 							try{
 								if(rs.getObject(name).getClass().getName().contentEquals("[B")){
 									result.put(name, Arrays.toString(rs.getBytes(name)));
-									mklogger.debug("damn5: " + Arrays.toString(rs.getBytes(name)) + "\nString: " + new String(rs.getBytes(name)));
 								} else {
 									result.put(name, rs.getObject(name));
 								}
@@ -246,8 +273,8 @@ public class MkDbAccessor {
 				if(rs != null)
 					rs.close();
 
-			}else {
-				mklogger.debug("psmt ����");
+			} else {
+				mklogger.debug("psmt is not set");
 			}
 		}
 		return rst;
@@ -303,9 +330,14 @@ public class MkDbAccessor {
 					result = new LinkedHashMap<String, Object>();
 					for( String name : columnNames )
 					{
-						if(asJson)
-							result.put("\""+name+"\"", "\""+rs.getObject(name)+"\"");
-						else 
+						if(asJson){
+							if(!rs.getObject(name).toString().startsWith("{")){
+								result.put("\""+name+"\"", "\""+rs.getObject(name)+"\"");
+							} else {
+								result.put("\""+name+"\"", rs.getObject(name));
+							}
+						}
+						else
 							result.put(name, rs.getObject(name));
 					}
 
@@ -331,7 +363,6 @@ public class MkDbAccessor {
 		{
 			if(this.psmt != null)
 			{
-
 				PreparedStatement prestmt;
 				prestmt = dbCon.prepareStatement(this.psmt, Statement.RETURN_GENERATED_KEYS);
 

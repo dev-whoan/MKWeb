@@ -38,12 +38,13 @@ public class MkSqlConfig extends MkSqlConfigCan {
 
     @Override
     public void setSqlConfigs(File[] sqlConfigs, String typeName) {
-        sql_configs.clear();
         if(typeName.contentEquals("SQL")) {
+            sql_configs.clear();
             normalDefaultFiles = sqlConfigs;
             lastModified = new long[sqlConfigs.length];
         }
         else if(typeName.contentEquals("API SQL")){
+            apiSql_configs.clear();
             apiDefaultFiles = sqlConfigs;
             lastApiModified = new long[sqlConfigs.length];
         }
@@ -79,6 +80,7 @@ public class MkSqlConfig extends MkSqlConfigCan {
                 String sqlDB = sqlObject.get("db").toString();
                 String sqlAPI = sqlObject.get("api").toString();
                 String[] serviceConditions = null;
+                String[] sqlParameters = null;
                 boolean isApiSql = sqlAPI.toLowerCase().contentEquals("yes");
                 /* API 영역 */
                 String sqlTable = null; //sqlObject.get("table").toString();
@@ -87,7 +89,6 @@ public class MkSqlConfig extends MkSqlConfigCan {
                     sqlTable = sqlObject.get("table").toString();
 
                     Object sqlParamObject = sqlObject.get("parameter");
-                    String[] sqlParameters = null;
                     if (sqlParamObject != null) {
                         JSONObject sqlParameterObject = (JSONObject) sqlParamObject;
                         sqlParameters = new String[sqlParameterObject.size()];
@@ -144,7 +145,7 @@ public class MkSqlConfig extends MkSqlConfigCan {
 
                         JSONObject serviceQueryData = mjd.getJsonObject();
                         // -1 for table object
-                        serviceQuery = (isApiSql ? new String[serviceQueryData.size() + 1] : new String[serviceQueryData.size() - 1]);
+                        serviceQuery = (isApiSql ? new String[serviceQueryData.size() + 1] : new String[serviceQueryData.size()]);
 
                         if (serviceQuery.length != 5) {
                             mklogger.error("[Controller: " + sqlName + " | service: " + serviceId + "] The format of query is not valid. Please check your page configs.");
@@ -241,19 +242,18 @@ public class MkSqlConfig extends MkSqlConfigCan {
                     sqlData.setDebugLevel(sqlDebugLevel);
                     sqlData.setAuth(isApiSql ? (serviceAuth ? "yes" : "no") : "no");
                     sqlData.setApiSQL((sqlAPI.toLowerCase().contentEquals("yes")));
-                    if(isApiSql)
+                    if(isApiSql) {
                         sqlData.setCondition(serviceConditions);
+                        sqlData.setParameters(sqlParameters);
+                    }
                     sqlJsonData.add(sqlData);
 
                     printSqlInfo(sqlData, "info", isApiSql);
                 }
-                if(typeName.contentEquals("SQL")){
+                if(typeName.contentEquals("SQL"))
                     sql_configs.put(sqlName, sqlJsonData);
-                } else if(typeName.contentEquals("API SQL")) {
-                    mklogger.debug("apiSql_configs.put: " + sqlName + " | sjd: " + sqlJsonData);
+                else if(typeName.contentEquals("API SQL"))
                     apiSql_configs.put(sqlName, sqlJsonData);
-                    mklogger.debug("api Size: " + apiSql_configs.size());
-                }
             } catch(ParseException | IOException e){
                 mklogger.error("Error occured while setting Controller: " + e.getMessage());
                 e.printStackTrace();
@@ -268,6 +268,71 @@ public class MkSqlConfig extends MkSqlConfigCan {
             printApiSqlInfo(jsonData, type);
         else
             printNormalSqlInfo(jsonData, type);
+    }
+
+    @Override
+    protected String[] createSQL(String[] befQuery, HashMap<String, Object> tableData, boolean isApi) {
+        {
+            String[] result = new String[1];
+
+            String rawFrom = tableData.get("from").toString();
+            String dataFrom = rawFrom;
+
+            boolean doJoin = (tableData.get("join") != null);
+            String joinType = "";
+            String joinFrom = "";
+            String joinOn = "";
+            if(doJoin) {
+                joinType = tableData.get("type").toString();
+                joinFrom = tableData.get("joinfrom").toString();
+                joinOn = tableData.get("on").toString();
+
+                dataFrom = rawFrom + " " + joinType + " " + joinFrom + " ON " + joinOn;
+            }
+            mklogger.debug("befQuery 0 : " + befQuery[0].toLowerCase());
+
+            switch(befQuery[0].toLowerCase()) {
+                case "select": {
+                    if (!isApi) {
+                        if (befQuery[3].length() > 0)
+                            result[0] = "SELECT " + befQuery[1] + " FROM " + dataFrom + " WHERE " + befQuery[3] + ";";
+                        else
+                            result[0] = "SELECT " + befQuery[1] + " FROM " + dataFrom + ";";
+                    } else {
+                        result[0] = "SELECT " + befQuery[1] + " FROM " + dataFrom + " WHERE " + befQuery[3] + ";";
+                    }
+
+                    break;
+                }
+                case "insert": {
+                    result[0] = "INSERT INTO " + dataFrom + "(" + befQuery[1] + ") VALUE (" + befQuery[2] + ");";
+                    break;
+                }
+                case "update": {
+                    String[] tempColumns = befQuery[1].split(",");
+                    String[] tempDatas = befQuery[2].split(",");
+                    String tempField = "";
+                    if (tempColumns.length != tempDatas.length) {
+                        mklogger.error("(func createQuery) UPDATE Query is not valid. Columns count and data count is not same.");
+                        return null;
+                    }
+
+                    for (int i = 0; i < tempColumns.length; i++) {
+                        tempField += tempColumns[i] + "=" + tempDatas[i];
+
+                        if (i < tempColumns.length - 1)
+                            tempField += ", ";
+                    }
+                    result[0] = "UPDATE " + dataFrom + " SET " + tempField + " WHERE " + befQuery[3] + ";";
+                    break;
+                }
+                case "delete": {
+                    result[0] = "DELETE FROM " + dataFrom + " WHERE " + befQuery[3] + ";";
+                    break;
+                }
+            }
+            return result;
+        }
     }
 
     private void printNormalSqlInfo(MkSqlJsonData jsonData, String type) {
@@ -323,7 +388,8 @@ public class MkSqlConfig extends MkSqlConfigCan {
         }
     }
 
-    public MkSqlJsonData getServiceInfoByServiceName(ArrayList<MkSqlJsonData> control, String serviceName){
+    public MkSqlJsonData getServiceInfoByServiceName(String serviceName){
+        ArrayList<MkSqlJsonData> control = getControlByServiceName(serviceName, false);
         for(MkSqlJsonData service : control){
             if(service.getServiceName().contentEquals(serviceName)){
                 return service;
@@ -332,19 +398,9 @@ public class MkSqlConfig extends MkSqlConfigCan {
         return null;
     }
 
-    public String getServiceTypeByServiceName(ArrayList<MkSqlJsonData> control, String serviceName){
-        for(MkSqlJsonData service : control){
-            if(service.getServiceName().contentEquals(serviceName)){
-                return service.getServiceType();
-            }
-        }
-        return null;
-    }
-
     @Override
     public ArrayList<MkSqlJsonData> getControl(String controlName, boolean isApi) {
         updateConfigs(isApi);
-
         return (isApi ? apiSql_configs.get(controlName) : sql_configs.get(controlName));
     }
 

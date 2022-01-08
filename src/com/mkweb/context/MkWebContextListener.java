@@ -2,20 +2,18 @@ package com.mkweb.context;
 
 import java.io.File;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import javax.servlet.ServletRegistration;
+import javax.servlet.*;
 
 import com.mkweb.config.*;
 import com.mkweb.core.MkAuthorizeGuard;
 import com.mkweb.core.MkFileReceiver;
 import com.mkweb.core.MkHttpSQLExecutor;
 import com.mkweb.logger.MkLogger;
-import com.mkweb.restapi.MkRestApi;;
+import com.mkweb.restapi.MkRestApi;
+import com.mkweb.restapi.MkRestCrypto;
+;
 
 public class MkWebContextListener implements ServletContextListener {
-
 	@Override
 	public void contextDestroyed(ServletContextEvent event) {
 		// TODO Auto-generated method stub
@@ -140,6 +138,16 @@ public class MkWebContextListener implements ServletContextListener {
 
 			ServletRegistration.Dynamic registration = context.addServlet("MkRestApiServlet", MkRestApi.class);
 			registration.addMapping("/" + MkConfigReader.Me().get("mkweb.restapi.uri") + "/*");
+
+			try{
+				if(MkConfigReader.Me().get("mkweb.restapi.crypto.use").contentEquals("yes")){
+					MkRestCrypto.setKeyFile(MkConfigReader.Me().get("mkweb.restapi.crypto.keyfile"));
+					ml.info("=*=*=*=*=*=*=* MkRestCrypto Config  Done*=*=*=*=*=*=*=*=");
+				}
+			} catch (Exception e){
+				ml.error("Fail to set MkRestCrypto");
+				e.printStackTrace();
+			}
 		}
 		if(MkConfigReader.Me().get("mkweb.auth.use").contentEquals("yes")){
 			File mkAuthProperties = new File(new File(context.getRealPath("/")), authConfigsUri);

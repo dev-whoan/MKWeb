@@ -54,7 +54,7 @@ public class MkAuthorizeGuard extends HttpServlet {
     }
 
     private boolean isParameterValid(HttpServletRequest request){
-        JSONObject requestObject = MkUtils.getPOSTJsonData(request);
+        JSONObject requestObject = MkUtils.getPOSTInputStreamAsJsonObject(request);
         List<Object> keys = MkUtils.keyGetter(tokenParameter);
         List<String> values = MkUtils.valueGetter(tokenParameter, keys);
 
@@ -134,7 +134,6 @@ public class MkAuthorizeGuard extends HttpServlet {
         MkDbAccessor DA = new MkDbAccessor();
         DA.setPreparedStatement(query);
         DA.setRequestValue(requestValues);
-        PrintWriter writer = response.getWriter();
         JSONObject responseObject = new JSONObject();
         int statusCode = 200;
         String token = null;
@@ -154,7 +153,7 @@ public class MkAuthorizeGuard extends HttpServlet {
                 return;
             }
 
-            mklogger.debug(MkJsonData.removeQuoteFromJsonObject(jsonObject));
+            mklogger.debug("jwt payload: " + MkJsonData.removeQuoteFromJsonObject(jsonObject));
             authToken = new MkAuthToken();
             token = authToken.generateToken(MkJsonData.removeQuoteFromJsonObject(jsonObject)).getToken();
             if(!MkAuthToken.verify(token))
@@ -166,10 +165,13 @@ public class MkAuthorizeGuard extends HttpServlet {
             statusCode = 500;
         }
         response.setStatus(statusCode);
+        response.setContentType("application/json;charset=UTF-8");
+        response.setCharacterEncoding("UTF-8");
 
         responseObject.put("code", statusCode);
         responseObject.put("token", token);
 
+        PrintWriter writer = response.getWriter();
         writer.print(responseObject);
     }
 }

@@ -71,4 +71,10 @@ public class MkPageJsonData extends AbsJsonData {
 	public MkDeviceData getDevice(int index) {	return this.device.get(index);	}
 	
 	public boolean getPageStatic() {	return this.isPageStatic;	}
+
+	@Override
+	public String toString(){
+		return "{debug: " + getDebug() + ", parameter: " + getParameter() + ", objectType: " + getObjectType() + ", method: " + getMethod() +
+		", pageValue: " + getPageValue() + "}";
+	}
 }

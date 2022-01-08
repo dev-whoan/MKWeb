@@ -1,19 +1,11 @@
 package com.mkweb.utils;
 
-import java.util.ArrayList;
+import java.util.*;
 
 
-
-
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Locale;
-import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.servlet.ServletInputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -33,9 +25,10 @@ public class ConnectionChecker {
 	private ConnectionChecker(){}
 
 	public static String regularQuery(String controlName, String serviceName, boolean isApi) {
+		mklogger.debug(String.format("(func regularQuery) controlName: %s, serviceName: %s, isApi: %s", controlName, serviceName, isApi));
 		ArrayList<MkSqlJsonData> resultSqlData = null;
 		resultSqlData = MkSqlConfig.Me().getControl(controlName, isApi);
-
+		mklogger.debug("(func regularQuery) resultSqlData Size:" + resultSqlData.size());
 		if(resultSqlData == null) {
 			resultSqlData = MkSqlConfig.Me().getControlByServiceName(controlName, isApi);
 
@@ -45,16 +38,17 @@ public class ConnectionChecker {
 			}
 		}
 
-		String[] result = null;
-
 		for (MkSqlJsonData tempJsonData : resultSqlData) {
+			mklogger.debug("tempJsonData name: " + tempJsonData.getServiceName());
 			if (tempJsonData.getServiceName().contentEquals(serviceName)) {
-				result = tempJsonData.getData();
-				break;
+				mklogger.debug(tempJsonData.getRawSql()[1]);
+				mklogger.debug(tempJsonData.getRawSql()[3]);
+				mklogger.debug(tempJsonData.getTableData());
+				mklogger.debug(tempJsonData.getServiceName());
+				return tempJsonData.getData()[0];
 			}
 		}
-
-		return result[0];
+		return null;
 	}
 
 	/*
@@ -189,6 +183,12 @@ public class ConnectionChecker {
 	public static ArrayList<String> getRequestParameterValues(HttpServletRequest request, String parameter, MkPageJsonData pageStaticData){
 		ArrayList<String> requestValues = new ArrayList<String>();
 
+		try{
+			mklogger.debug("Parameter: " + parameter + "pageStaticData: " + pageStaticData.toString());
+		} catch (NullPointerException e){
+			mklogger.debug("Parameter: " + parameter + "pageStaticData: " + pageStaticData);
+		}
+
 		Enumeration<String> params = request.getParameterNames();
 		String pageStaticParameter = null;
 		String[] pageStaticParameterValues = null;
@@ -197,7 +197,18 @@ public class ConnectionChecker {
 			pageStaticParameterValues = pageStaticData.getData();
 		}
 
+		requestValues = (ArrayList<String>) getValueFromParameterNames(params, parameter, pageStaticParameter, pageStaticParameterValues);
+		if(requestValues.size() == 0){
+			List<String> isArrayList = MkUtils.getPOSTInputStreamAsArrayList(request);
+	//		requestValues = (ArrayList<String>) getValueFromInputStraem(request.getInputStream(), parameter, pageStaticParameter, pageStaticParameterValues);
+		}
+		return requestValues;
+	}
+
+	private static List<String> getValueFromParameterNames(Enumeration<String> params, String parameter, String pageStaticParameter, String[] pageStaticParameterValues){
+		ArrayList<String> requestValues = new ArrayList<>();
 		while(params.hasMoreElements()) {
+			mklogger.debug("there are some request parameter");
 			String name = params.nextElement().toString().trim();
 			if(name.contains(".")) {
 				String[] nname = name.split("\\.");
@@ -225,8 +236,12 @@ public class ConnectionChecker {
 				}
 			}
 		}
-
 		return requestValues;
+	}
+
+	private static List<String> getValueFromInputStraem(ServletInputStream inputStream, String parameter, String pageStaticParameter, String[] pageStaticParameterValues){
+
+		return null;
 	}
 
 	public static String setQuery(String query) {
@@ -247,27 +262,32 @@ public class ConnectionChecker {
 						replaceTarget[i] = testQueryList[(i*2)+1];
 					}
 				}else {	return null;	}
+
+				if(replaceTarget != null) {
+					for (String s : replaceTarget) {
+						aftQuery = aftQuery.replaceFirst(("@" + s + "@"), "?");
+					}
+				}else {
+					return null;
+				}
 			}
 
-			if(replaceTarget != null) {
-				for (String s : replaceTarget) {
-					aftQuery = aftQuery.replaceFirst(("@" + s + "@"), "?");
-				}
-			}else {
-				return null;
-			}
+			mklogger.debug("(func setQuery): aftQuery: " + aftQuery);
 		}
 		return aftQuery;
 	}
 
-	public static String setApiQuery(String query) {
-		String aftQuery = query;
-
-		if(aftQuery != null) {
-
+	public static List<String> setRequestValueSequences(List<String> requestValue, Map<String, Boolean> pageValue){
+		if(requestValue.size() != pageValue.size()){
+			mklogger.error("(func) setRequestValueSequences: Request value is not valid. [r:p] = " + requestValue.size() + "/" + pageValue.size());
+			return null;
 		}
+		mklogger.debug(pageValue.toString());
+		List<String> result = new ArrayList<>(pageValue.keySet());
+		mklogger.debug(result.stream().iterator().toString());
+		mklogger.debug(result.toString());
 
-		return aftQuery;
+		return result;
 	}
 
 	public static boolean comparePageValueWithRequestValue(LinkedHashMap<String, Boolean> pageValue, ArrayList<String> requestValue, MkPageJsonData pageStaticDatas, boolean isStaticService, boolean isApi) {
@@ -402,7 +422,15 @@ public class ConnectionChecker {
 		}
 
 		String lastURI = resultPageData.get(0).getLastURI();
-		String requestServiceURI = (!lastURI.contentEquals("") ? requestControlName.substring(0, requestControlName.indexOf(lastURI)) : requestControlName);
+		mklogger.debug("lastURI: " + lastURI);
+		mklogger.debug("requestControlName: " + requestControlName + ", indexOf(lastURI): " + requestControlName.indexOf(lastURI));
+		String requestServiceURI;
+		try{
+			requestServiceURI = (!lastURI.contentEquals("") ? requestControlName.substring(0, requestControlName.indexOf(lastURI)) : requestControlName);
+		} catch (StringIndexOutOfBoundsException e){
+			requestServiceURI = requestControlName;
+		}
+
 		if(!requestServiceURI.contentEquals("")) {
 			if(requestServiceURI.charAt(requestServiceURI.length()-1) == '/') {
 				requestServiceURI = requestServiceURI.substring(0, requestServiceURI.length()-1);
@@ -468,34 +496,45 @@ public class ConnectionChecker {
 		return uriInfo[0] + "/" + uriInfo[1];
 	}
 
-	public static boolean isValidApiPageConnection(String requestControlName, String[] requestDir) {
-		ArrayList<MkPageJsonData> resultPageData = MkViewConfig.Me().getApiControl(requestControlName);
-
-		if(resultPageData == null || resultPageData.size() < 1)
-			return false;
-		MkPageJsonData jsonData = resultPageData.get(0);
-
-		String userLogicalDir = "";
-
-		if(requestDir != null) {
-			for(int i = 1; i < requestDir.length-1; i++) 
-				userLogicalDir += "/" + requestDir[i];
-		}
-
-		if(userLogicalDir.equals(""))
-			userLogicalDir = "/";
-
-		String c1 = userLogicalDir + requestControlName;
-		String c2 = "/" + jsonData.getControlName();
-
-		return c1.equals(c2);
-	}
-
-	public static boolean isPageAuthorized(HttpServletRequest request, HttpServletResponse response, ArrayList<MkPageJsonData> pageJsonData){
+	public static boolean isPageAuthorized(HttpServletRequest request, ArrayList<MkPageJsonData> pageJsonData){
 		if(MkConfigReader.Me().get("mkweb.auth.use").contentEquals("no"))
 			return true;
 
 		int pageLevel = pageJsonData.get(0).getAuth();
+		mklogger.debug("pageLevel: " + pageLevel);
+		String token = request.getHeader("Authorization");
+
+		if(token == null){
+			try{
+				Cookie tokenCookie = MkAuthToken.getTokenCookie(request.getCookies());
+				token = tokenCookie.getValue();
+				mklogger.debug("token: " + token);
+			} catch (NullPointerException e) {
+				token = null;
+			}
+		}
+
+		if(token == null && pageLevel == 2){
+			mklogger.debug("false 1");
+			return false;
+		}
+
+		if(pageLevel == 2)
+			return MkAuthToken.verify(token);
+		else{
+			mklogger.debug("true 2");
+			return true;
+		}
+
+	}
+
+	public static boolean isSqlAuthorized(HttpServletRequest request, MkSqlJsonData sqlJsonData){
+		if(MkConfigReader.Me().get("mkweb.auth.use").contentEquals("no"))
+			return true;
+		boolean authRequire = (sqlJsonData.getAuth() == 2);
+
+		if(!authRequire)
+			return true;
 
 		String token = request.getHeader("Authorization");
 
@@ -508,20 +547,13 @@ public class ConnectionChecker {
 			}
 		}
 
-		if(token == null && pageLevel == 2){
-			return false;
-		}
-
-		if(pageLevel == 2)
-			return MkAuthToken.verify(token);
-		else
-			return true;
+		return MkAuthToken.verify(token);
 	}
 
-	public static boolean isSqlAuthorized(HttpServletRequest request, HttpServletResponse response, MkSqlJsonData sqlJsonData){
+	public static boolean isFtpAuthorized(HttpServletRequest request, MkFtpData ftpJsonData){
 		if(MkConfigReader.Me().get("mkweb.auth.use").contentEquals("no"))
 			return true;
-		boolean authRequire = (sqlJsonData.getAuth() == 2);
+		boolean authRequire = (ftpJsonData.getAuth() == 2);
 
 		if(!authRequire)
 			return true;

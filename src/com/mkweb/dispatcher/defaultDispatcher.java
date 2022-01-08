@@ -60,10 +60,19 @@ public class defaultDispatcher extends HttpServlet {
 		
 		String hostcheck = request.getRequestURL().toString().split("://")[1];
 		String host = MkConfigReader.Me().get("mkweb.web.hostname") + "/";
+		String host_lastSegment = null;
+		try{
+			host_lastSegment = hostcheck.split("/")[1];
+		} catch (Exception ignored) { }
+		mklogger.debug(host_lastSegment);
 
 		if(!hostcheck.equals(host))
 		{
-			mkPage = requestURI;
+			if(host_lastSegment == null)
+				mkPage = requestURI;
+			else{
+				mkPage = requestURI.split(host_lastSegment)[1];
+			}
 		}else {
 			mkPage = "";
 		}
@@ -72,7 +81,7 @@ public class defaultDispatcher extends HttpServlet {
 			response.sendError(404);
 			return;
 		}
-
+		mklogger.info("requestURI: " + requestURI + ", mkPage:" + mkPage);
 		MkPageJsonData pages = MkViewConfig.Me().getNormalControl(mkPage).get(0);
 
 		if(!pages.IsApiPage()){
@@ -81,8 +90,12 @@ public class defaultDispatcher extends HttpServlet {
 			RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher(requestURI + ".mkw");
 			dispatcher.forward(request, response);
 		} else {
-			mklogger.debug("cookie: " + request.getCookies().length);
-			MkAuthToken.printCookies(request.getCookies());
+			try{
+				mklogger.debug("cookie: " + request.getCookies().length);
+				MkAuthToken.printCookies(request.getCookies());
+			} catch (NullPointerException ignored) {}
+
+
 			mklogger.info("API Page Called by " + ipAddress);
 			MkViewConfig.Me().printPageInfo(mklogger, pages, "no-sql");
 		}

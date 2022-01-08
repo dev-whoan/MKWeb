@@ -11,16 +11,16 @@
 				"query":{
 					"crud":"select",
 					"column":{
-						"1":"userid as id",
-						"2":"userage as age"
+						"1":"name as id",
+						"2":"address as email"
 					},
 					"table":{
-						"from":"user"
+						"from":"User"
 					},
 					"data":{
 						"1":""
 					},
-					"where":"userid = @id@ AND userpw = @password@"
+					"where":"name = @id@ AND address = @password@"
 				}
 			}
 		]

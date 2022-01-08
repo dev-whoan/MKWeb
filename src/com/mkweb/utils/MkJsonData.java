@@ -36,6 +36,7 @@ public class MkJsonData {
 	}
 
 	private static JSONObject isValidDataForJson(String data) {
+		mklogger.debug("(func isValidDataForJson) data: " + data);
 		boolean isDone = false;
 		try {
 			JSONObject jo = new JSONObject();
@@ -177,8 +178,7 @@ public class MkJsonData {
 			mklogger.error("(func printObject) JSONObject is null");
 			return;
 		}
-	    Set entrySet = jsonObject.keySet();
-	    Iterator iter = entrySet.iterator();
+	    Iterator iter = jsonObject.keySet().iterator();
 	    
 		String result = "";
 		while(iter.hasNext()) {
@@ -226,6 +226,7 @@ public class MkJsonData {
 	
 	public static JSONObject objectMapToJson(Map<String, Object> map) {
 		try {
+			mklogger.debug("(func objectMaptoJson): " + map);
 			return new JSONObject(map);
 		} catch (Exception e) {
 			mklogger.error("func mapToJson(): Given data is not valid." + map);

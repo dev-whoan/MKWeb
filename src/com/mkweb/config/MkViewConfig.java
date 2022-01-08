@@ -50,14 +50,18 @@ public class MkViewConfig extends MkPageConfigCan {
 
     @Override
     public void setPageConfigs(File[] pageConfigs, String pageType) {
-        page_configs.clear();
-        if(pageType.toLowerCase().contentEquals("page"))
+        if(pageType.toLowerCase().contentEquals("page")) {
+            page_configs.clear();
             normalDefaultFiles = pageConfigs;
-        else if(pageType.toLowerCase().contentEquals("api page"))
+        }
+        else if(pageType.toLowerCase().contentEquals("api page")) {
+            apiPage_configs.clear();
             apiDefaultFiles = pageConfigs;
+        }
 
         ArrayList<MkPageJsonData> pageJsonData = null;
         lastModified = new long[pageConfigs.length];
+        allowURI = new HashMap<String, String>();
         int lmi = 0;
         for(File defaultFile : pageConfigs) {
             if (defaultFile.isDirectory())
@@ -327,13 +331,17 @@ public class MkViewConfig extends MkPageConfigCan {
     }
 
     private String getURIControl(String requestURI) {
+
 		Iterator<String> iter = allowURI.keySet().iterator();
-		mklogger.temp(TAG + "my allwed pages", false);
+		mklogger.temp(TAG + "requested: " + requestURI + " and my allwed pages", false);
 		while(iter.hasNext()) {
 			String key = iter.next();
 			mklogger.temp(key + ":" + allowURI.get(key), false);
 		}
 		mklogger.flush("debug");
+
+		if(requestURI.contentEquals("/"))
+		    requestURI = "";
 
         return allowURI.get(requestURI);
     }

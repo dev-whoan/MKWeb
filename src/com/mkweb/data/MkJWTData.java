@@ -3,11 +3,10 @@ package com.mkweb.data;
 import com.mkweb.config.MkAuthTokenConfigs;
 import com.mkweb.config.MkConfigReader;
 import com.mkweb.logger.MkLogger;
-import com.mkweb.utils.MkCrypto;
+import com.mkweb.utils.crypto.MkCrypto;
 import com.mkweb.utils.MkUtils;
 import org.json.simple.JSONObject;
 
-import java.util.Base64;
 import java.util.List;
 
 public class MkJWTData {
@@ -52,6 +51,8 @@ public class MkJWTData {
 
         JSONObject tempObject = new JSONObject();
         try{
+            mklogger.debug("(func createPreparedPayloadObject) preparedPayloadObject: " + preparedPayload);
+            mklogger.debug("(func createPreparedPayloadObject) payloadObject: " + payloadObject);
             for(int i = 0; i < keys.size(); i++){
                 String value = payloadObject.get(keys.get(i)).toString();
                 tempObject.put(keys.get(i), value);
@@ -63,7 +64,7 @@ public class MkJWTData {
 
         this.payloadObject = new JSONObject(tempObject);
         this.payloadObject.put("timestamp", this.timestamp);
-        this.payload = MkUtils.base64urlEncoding(this.headerObject.toString());
+        this.payload = MkUtils.base64urlEncoding(this.payloadObject.toString());
     }
     private void createPayloadObject(){
         MkAuthTokenData matd = MkAuthTokenConfigs.Me().getControl(MkConfigReader.Me().get("mkweb.auth.controller.name"));
@@ -73,6 +74,8 @@ public class MkJWTData {
 
         JSONObject tempObject = new JSONObject();
         try{
+            mklogger.debug("(func createPayloadObject) preparedPayloadObject: " + preparedPayload);
+            mklogger.debug("(func createPayloadObject) payloadObject: " + payloadObject);
             for(int i = 0; i < keys.size(); i++){
                 String value = payloadObject.get(values.get(i)).toString();
                 tempObject.put(keys.get(i), value);
@@ -84,7 +87,7 @@ public class MkJWTData {
 
         this.payloadObject = new JSONObject(tempObject);
         this.payloadObject.put("timestamp", this.timestamp);
-        this.payload = MkUtils.base64urlEncoding(this.headerObject.toString());
+        this.payload = MkUtils.base64urlEncoding(this.payloadObject.toString());
     }
 
     private void generateSignature(){

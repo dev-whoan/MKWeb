@@ -3,7 +3,7 @@ package com.mkweb.data;
 import com.mkweb.entity.MkDefaultModelImpl;
 import org.json.simple.JSONObject;
 
-public class MkAuthTokenData extends AbsJsonData implements MkDefaultModelImpl {
+public class MkAuthTokenData extends AbsJsonData {
     private String algorithm;
     private String secretKey;
     private JSONObject payload;

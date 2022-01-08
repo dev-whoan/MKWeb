@@ -2,11 +2,13 @@ package com.mkweb.config;
 
 import java.io.File;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 
+import com.mkweb.data.MkFileServerAttributes;
+import com.mkweb.data.MkSqlJsonData;
+import com.mkweb.entity.MkSqlConfigCan;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -24,7 +26,8 @@ public class MkFTPConfigs {
 	private static final String TAG = "[FTP Configs]";
 	private static final MkLogger mklogger = new MkLogger(TAG);
 	private String filePrefix = null;
-
+	private static MkFileServerAttributes ftpAttributes;
+	private ArrayList<String> queries;
 	public static MkFTPConfigs Me() {
 		if(mfd == null) 
 			mfd = new MkFTPConfigs();
@@ -38,13 +41,104 @@ public class MkFTPConfigs {
 	}
 	
 	public String getPrefix() {	return this.filePrefix;	}
-	
+
+	public MkFileServerAttributes getAttributes(){	return ftpAttributes;	}
+
+	private boolean setFtpQuery(){
+		queries = new ArrayList<>();
+		ArrayList<MkSqlJsonData> sqlControl = MkSqlConfig.Me().getControl(ftpAttributes.getSqlControlName(), false);
+		if(sqlControl.size() != 4) {
+			mklogger.error("Sql services for ftp must include `select`, `insert`, `update`, `delete`!");
+			return false;
+		}
+/*
+            case "table":{  return getTableNameAttr();  }
+            case "control":{    return getControllerNameAttr(); }
+            case "service":{    return getServiceNameAttr();    }
+            case "filedir":{    return getFileDirectoryAttr();  }
+            case "format":{ return getFileFormat();   }
+            case "filehash":{   return getFileHashAttr();   }
+            case "filealive":{  return getFileAliveAttr();  }
+*/
+		try{
+			String[] crud = {"select", "insert", "update", "delete"};
+			String serviceColumns = ftpAttributes.get("control") + "," + ftpAttributes.get("service") + "," + ftpAttributes.get("filedir") + "," + ftpAttributes.get("format");
+			String whereAs = ftpAttributes.get("seq") + " = @" + ftpAttributes.get("seq") + "@;";
+			for(int i = 0; i < sqlControl.size(); i++){
+				String[] sqlInfo = new String[5];
+
+				sqlInfo[0] = crud[i];
+				sqlInfo[1] = (i == 1) ? serviceColumns : ftpAttributes.get("seq") + "," + ftpAttributes.get("filehash") + "," + ftpAttributes.get("filealive") + "," + ftpAttributes.get("format");
+				sqlInfo[2] = (i == 1) ? ("@" + ftpAttributes.get("control") + "@,@" + ftpAttributes.get("service") + "@,@" + ftpAttributes.get("filedir") + "@,@" + ftpAttributes.get("format") + "@")
+						: "";
+				sqlInfo[3] = (i != 1) ? whereAs : "";
+
+				if(i == 2){
+					sqlInfo[1] = ftpAttributes.get("filehash") + ", " + ftpAttributes.get("filealive");
+					sqlInfo[2] = "@"+ftpAttributes.get("filehash")+"@,@"+ftpAttributes.get("filealive")+"@";
+					sqlInfo[3] = ftpAttributes.get("seq") + " =@" + ftpAttributes.get("seq")+"@";
+				}
+
+				if(i == 3){
+					sqlInfo[1] = "";
+					sqlInfo[2] = "";
+					sqlInfo[3] = ftpAttributes.get("seq") + "=@" + ftpAttributes.get("seq") + "@";
+				}
+
+				sqlControl.get(i).setRawSql(sqlInfo);
+				HashMap<String, Object> tableData = new HashMap<>();
+				tableData.put("from", ftpAttributes.getTableNameAttr());
+				sqlControl.get(i).setData(MkSqlConfig.Me().createSQL(sqlInfo, tableData, false));
+			}
+
+			mklogger.info("=*=*=*=*=*=*=* Setting FTP SQLs  Done! *=*=*=*=*=*=*=*=");
+		} catch (Exception e){
+			mklogger.error("(func setFtpQuery) Error occured while generating ftp query: " + e.getMessage());
+			mklogger.info("=*=*=*=*=*=*=* Setting FTP SQLs  Fail. *=*=*=*=*=*=*=*=");
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
 	public void setFtpConfigs(File[] ftpConfigs) {
 		ftp_configs.clear();
 		defaultFiles = ftpConfigs;
 		ArrayList<MkFtpData> ftpJsonData = null;
 		lastModified = new long[ftpConfigs.length];
 		int lmi = 0;
+		if(ftpConfigs != null && ftpConfigs.length > 0){
+			ftpAttributes = new MkFileServerAttributes()
+					.setTableName(MkConfigReader.Me().get("mkweb.ftp.db.table"))
+					.setSequenceAttr(MkConfigReader.Me().get("mkweb.ftp.db.table.attr.seq"))
+					.setControllerAttr(MkConfigReader.Me().get("mkweb.ftp.db.table.attr.name.control"))
+					.setServiceAttr(MkConfigReader.Me().get("mkweb.ftp.db.table.attr.name.service"))
+					.setFileDirectory(MkConfigReader.Me().get("mkweb.ftp.db.table.attr.file.directory"))
+					.setFormatAttr(MkConfigReader.Me().get("mkweb.ftp.db.table.attr.file.format"))
+					.setFileHashAttr(MkConfigReader.Me().get("mkweb.ftp.db.table.attr.file.hash"))
+					.setFileAliveAttr(MkConfigReader.Me().get("mkweb.ftp.db.table.attr.file.alive"))
+					.setSqlControlName(MkConfigReader.Me().get("mkweb.ftp.db.controller"));
+			mklogger.debug(
+					String.format("table: %s, sequence: %s, controlatt: %s, serviceatt: %s" +
+							    "\nfiledir: %s, fileformat: %s, filehash: %s, filealive: %s, sqlControl: %s",
+							ftpAttributes.getTableNameAttr(),
+							ftpAttributes.getSequenceAttr(),
+							ftpAttributes.getControllerNameAttr(),
+							ftpAttributes.getServiceNameAttr(),
+							ftpAttributes.getFileDirectoryAttr(),
+							ftpAttributes.getFileFormatAttr(),
+							ftpAttributes.getFileHashAttr(),
+							ftpAttributes.getFileAliveAttr(),
+							ftpAttributes.getSqlControlName()
+					)
+			);
+		}
+
+		if(ftpAttributes == null){
+			mklogger.error("You need to set databases to use MkFileTransfer. You may missed attributes for `mkweb.ftp.table` at `MkWeb.conf`");
+			return;
+		}
+
 		for(File defaultFile : defaultFiles)
 		{
 			if(defaultFile.isDirectory())
@@ -87,7 +181,6 @@ public class MkFTPConfigs {
 					String[] serviceAllowFileFormat = null;
 					try {
 						serviceId = serviceObject.get("id").toString();
-						serviceType = serviceObject.get("type").toString();
 						servicePath = serviceObject.get("servicepath").toString();
 						Object prefix = serviceObject.get("dir");
 						mklogger.debug("prefix : " + prefix);
@@ -136,7 +229,7 @@ public class MkFTPConfigs {
 
 					MkFtpData result = new MkFtpData();
 					result.setControlName(ftpName);
-					result.setServiceType(serviceType);
+					result.setServiceType("ftp");
 					result.setPath(servicePath);
 					result.setDebugLevel(ftpDebugLevel);
 					result.setServiceName(serviceId);
@@ -156,6 +249,8 @@ public class MkFTPConfigs {
 				mklogger.error(e.getMessage());
 				e.printStackTrace();
 			}
+			mklogger.info("=*=*=*=*=*=*=* Setting   FTP   SQLs... *=*=*=*=*=*=*=*=");
+			setFtpQuery();
 			mklogger.info("=*=*=*=*=*=*=* MkWeb FTP  Configs  Done*=*=*=*=*=*=*=*=");
 		}
 	}
@@ -163,7 +258,7 @@ public class MkFTPConfigs {
 	public void printFTPInfo(MkFtpData jsonData, String type) {
 		String tempMsg = "\n===============================FTP  Control================================="
 				+ "\n|Controller:\t" + jsonData.getControlName()
-				+ "\n|FTP ID:\t" + jsonData.getServiceName() + "\t\tFTP Type:\t" + jsonData.getServiceType()
+				+ "\n|FTP ID:\t" + jsonData.getServiceName()
 				+ "\n|FTP Path:\t" + jsonData.getPath()
 				+ "\n|FTP Prefix:\t" + jsonData.getDirPrefix() + "\t\tFile Counts:\t" + jsonData.getMaxCount()
 				+ "\n|Debug Level:\t" + jsonData.getDebugLevel()
@@ -194,9 +289,8 @@ public class MkFTPConfigs {
 	
 	public ArrayList<MkFtpData> getControlByServiceName(String serviceName){
 		reloadControls();
-		
-		Set<String> keys = ftp_configs.keySet();
-		Iterator<String> iter  = keys.iterator();
+
+		Iterator<String> iter  = ftp_configs.keySet().iterator();
 		String resultControlName = null;
 		ArrayList<MkFtpData> jsonData = null;
 		while(iter.hasNext()) {
@@ -225,7 +319,7 @@ public class MkFTPConfigs {
 		if(!isDirExists)
 		{
 			mklogger.info("The directory is not exists. Creating new one...");
-			try {		
+			try {
 				isDirExists = folder.mkdirs();
 				folder.setReadable(true, false);
 				folder.setExecutable(true, false);

@@ -1,0 +1,33 @@
+{
+  "Controller": {
+    "name":"ftp-test",
+    "last_uri":"ftp_test",
+    "debug":"error",
+    "auth":"no",
+    "api":"no",
+    "device":{
+      "desktop":{
+        "default":{
+          "path":"/views/root",
+          "file":"files.jsp",
+          "uri":""
+        }
+      }
+    },
+    "services":[
+      {
+        "page_static":"false",
+        "type":{
+          "kind":"ftp",
+          "id":"posts"
+        },
+        "method":"post",
+        "obj":"list",
+        "parameter_name":"post_file",
+        "value":{
+          "1":"upload"
+        }
+      }
+    ]
+  }
+}

@@ -109,10 +109,25 @@ public class MkHttpSQLExecutor extends HttpServlet{
 
     	return (pjData != null);
     }
-    
+
+	private boolean isRequestValid(ArrayList<String> requestValues, LinkedHashMap<String, Boolean> pageValue){
+		if(requestValues == null && pageValue.size() == 0){
+			mklogger.debug("return true");
+			return true;
+		}
+
+		if(requestValues == null && pageValue.size() > 0){
+			mklogger.debug("return false");
+			return false;
+		}
+
+		mklogger.debug("return " + requestValues != null);
+
+		return requestValues != null;
+	}
+
     private void doTask(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	request.setCharacterEncoding("UTF-8");
-    	MkDbAccessor DA = new MkDbAccessor();
 		
 		if(!ConnectionChecker.comparePageValueWithRequestValue(pjData.getPageValue(), requestValues, pageStaticData, false, false)) {
 			mklogger.error(" Request Value is not authorized. Please check page config.");
@@ -122,29 +137,30 @@ public class MkHttpSQLExecutor extends HttpServlet{
 		
 		String control = pjData.getControlName();
 		String service = pjData.getServiceName();
-		ArrayList<MkSqlJsonData> sqlServices = MkSqlConfig.Me().getControlByServiceName(service, false);
-		MkSqlJsonData sqlService = MkSqlConfig.Me().getServiceInfoByServiceName(sqlServices, service);
+		MkSqlJsonData sqlService = MkSqlConfig.Me().getServiceInfoByServiceName(service);
 		String serviceType = sqlService.getServiceType();
 		
 		mklogger.debug("control : " + control + "| service : " + service + "| type: " + serviceType);
-
-		if(ConnectionChecker.isSqlAuthorized(request, response, sqlService)){
-			String befQuery = ConnectionChecker.regularQuery(control, service, false);
+		if(ConnectionChecker.isSqlAuthorized(request, sqlService)){
+			String befQuery = ConnectionChecker.regularQuery(sqlService.getControlName(), service, false);
 			String query = ConnectionChecker.setQuery(befQuery);
-
-			if(requestValues != null) {
+			mklogger.debug("set query: " + query);
+			if(isRequestValid(requestValues, pjData.getPageValue())){//requestValues != null) {
+				mklogger.debug("passed");
+				requestValues = (ArrayList<String>) ConnectionChecker.setRequestValueSequences(requestValues, pjData.getPageValue());
 				String[] reqs = new String[requestValues.size()];
 				String tempValue = "";
 
+				MkDbAccessor DA = new MkDbAccessor();
 				DA.setPreparedStatement(query);
-
 				for(int i = 0; i < reqs.length; i++) {
 					tempValue = request.getParameter(requestParams + "." + requestValues.get(i));
 					reqs[i] = tempValue;
 				}
 
 				tempValue = null;
-				DA.setRequestValue(reqs);
+				if(reqs != null && reqs.length > 0)
+					DA.setRequestValue(reqs);
 				reqs = null;
 
 				try {
@@ -173,7 +189,7 @@ public class MkHttpSQLExecutor extends HttpServlet{
 						DA.executeDML();
 					}
 				} catch (SQLException e) {
-					mklogger.error("(executeDML) psmt = this.dbCon.prepareStatement(" + query + ") :" + e.getMessage());
+					mklogger.error("(doTask_try) psmt = this.dbCon.prepareStatement(" + query + ") :" + e.getMessage());
 					response.setStatus(500);
 				}
 			}
@@ -247,7 +263,7 @@ public class MkHttpSQLExecutor extends HttpServlet{
 		}
 		if(!checkMethod(request, "post", refURL)) {
 			mklogger.error(" Request method is not authorized. [Tried: POST]");
-			response.sendError(401);
+			response.sendError(405);
 			return;
 		}
 		doTask(request, response);
