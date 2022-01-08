@@ -145,7 +145,7 @@ $ systemctl restart tomcat9
 
 MkWeb is Web Server Framework based on Servlet.
 
-You can use MkWeb with JSP, HTML and even another front library like Reactjs, Vuejs.
+You can use MkWeb with Web: JSP, HTML and even another front library like Reactjs, Vuejs. And Mobile application(iOS, Android)
 
 ## Motive
 
@@ -167,10 +167,13 @@ So MkWeb's idea is started with 'Front developer just need to focus on the Plann
 
 We are designing MkWeb with Independent MVSC pattern, inspired from MVC pattern.
 
-![MVSC Pattern](https://user-images.githubusercontent.com/65178775/81583650-9b94b300-93ec-11ea-8683-c4ffc67215f9.png)
+![Baseline Architecture](https://user-images.githubusercontent.com/65178775/81583650-9b94b300-93ec-11ea-8683-c4ffc67215f9.png)
 
-![Architecture](https://github.com/dev-whoan/MKWeb/blob/docs/assets/img/png/architecture/design_architecture.png)
+-----
 
+![MVSC Pattern](https://github.com/dev-whoan/MKWeb/blob/docs/assets/img/png/architecture/design_MVsC.png)
+
+-----
 
 ## Model
 
@@ -178,11 +181,17 @@ We defined Model as server-side resources: DB, File server, Logger
 
 ## Controller
 
-We designed Controller as relationships between Model and View-side
+We designed Controller as relationships between Model and Service
 
 ## Service
 
-We defined Service as the actual functions which operates for Controller, in Controller.
+We defined Service as receiver which handles requests from front end software, such that Web, Mobile Application, ...
+
+Service will handle the request by getting data by Controller and responsing it to requester
+
+## View
+
+We allow Cross Platform. View is the front end software, such that Web(HTML, React, ...), Mobile Application(iOS, Android)
 
 -----
 
