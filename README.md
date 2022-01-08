@@ -165,9 +165,12 @@ So MkWeb's idea is started with 'Front developer just need to focus on the Plann
 
 ## Design
 
-We are designing our MkWeb with MVC pattern.
+We are designing MkWeb with Independent MVSC pattern, inspired from MVC pattern.
 
-![MVC Pattern](https://user-images.githubusercontent.com/65178775/81583650-9b94b300-93ec-11ea-8683-c4ffc67215f9.png)
+![MVSC Pattern](https://user-images.githubusercontent.com/65178775/81583650-9b94b300-93ec-11ea-8683-c4ffc67215f9.png)
+
+![Architecture](https://github.com/dev-whoan/MKWeb/blob/docs/assets/img/png/architecture/design_architecture.png)
+
 
 ## Model
 
