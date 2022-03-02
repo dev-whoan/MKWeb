@@ -1,3 +1,8 @@
+# This Project Has Been Shutdown.
+
+# New project, EgWeb is started to replace this project.
+
+# https://github.com/dev-whoan/EgWeb
 
 <img src="https://user-images.githubusercontent.com/65178775/83269009-6a481f80-a201-11ea-8475-0a779375a005.png" width="100%" />
 
